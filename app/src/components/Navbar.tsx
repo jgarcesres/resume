@@ -1,17 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Moon, Sun, Terminal, Code, Coffee, FileText, Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useNav } from '../context/NavContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { isScrolled, setIsScrolled } = useNav();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  // Add scroll event listener to detect when page is scrolled
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [setIsScrolled]);
+
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg relative">
+    <nav 
+      className={`${
+        isScrolled ? 'fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm' : 'bg-white dark:bg-gray-800 relative'
+      } shadow-lg transition-all duration-300`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <NavLink to="/" className="flex items-center space-x-2 relative z-50">

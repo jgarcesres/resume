@@ -1,0 +1,24 @@
+# Dependencies
+app/node_modules
+app/npm-debug.log
+
+# Build output
+app/dist
+app/build
+
+# Version control
+.git
+.gitignore
+
+# Environment files
+app/.env
+app/.env.local
+app/.env.*
+
+# Editor directories
+.idea
+.vscode
+
+# System files
+.DS_Store
+Thumbs.db

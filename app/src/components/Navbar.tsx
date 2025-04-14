@@ -21,6 +21,20 @@ function Navbar() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+
+              
+            <NavLink 
+              to="/resume"
+              className={({ isActive }) => 
+                `flex items-center space-x-1 hover:text-blue-500 transition-colors ${
+                  isActive ? 'text-blue-500' : ''
+                }`
+              }
+            >
+              <FileText className="w-4 h-4" />
+              <span>Resume</span>
+            </NavLink>
+            
             <NavLink 
               to="/projects" 
               className={({ isActive }) => 
@@ -43,18 +57,6 @@ function Navbar() {
             >
               <Coffee className="w-4 h-4" />
               <span>Hobbies</span>
-            </NavLink>
-            
-            <NavLink 
-              to="/resume"
-              className={({ isActive }) => 
-                `flex items-center space-x-1 hover:text-blue-500 transition-colors ${
-                  isActive ? 'text-blue-500' : ''
-                }`
-              }
-            >
-              <FileText className="w-4 h-4" />
-              <span>Resume</span>
             </NavLink>
             
             <button

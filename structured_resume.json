@@ -1,0 +1,111 @@
+{
+  "name": "Juan Garces",
+  "email": "jobinfo@garces.xyz",
+  "experience": [
+    {
+      "company": "Scuba Analytics",
+      "role": "Site Reliability Engineer (SRE)",
+      "location": "Remote (California/Florida)",
+      "dates": "October 2021 \u2013 Present",
+      "responsibilities": [
+        "Managed application clusters in AWS and Azure for enterprise clients (Microsoft, Salesforce, Asana).",
+        "Built custom monitoring/metrics systems using open-source tools (AWS EKS, Grafana stack).",
+        "Improved CI/CD pipelines using GitLab and Terraform.",
+        "Participated in on-call rotations and incident response (PagerDuty, Alertmanager).",
+        "Collaborated with TAMs for customer success and continuous improvement.",
+        "Supported ETL and analytics pipelines (Python, Scuba)."
+      ]
+    },
+    {
+      "company": "SONOS, INC",
+      "role": "Desktop Systems Analyst",
+      "location": "Santa Barbara, California",
+      "dates": "June 2014 \u2013 October 2021",
+      "responsibilities": [
+        "Resolved support tickets and implemented an integrated incident management system (Jira, Slack, PagerDuty, Confluence).",
+        "Automated reporting tasks in HR using Python, Workday, ADP, AWS Glue, AWS Lambda.",
+        "Developed an inventory system with Snipe-IT and integrated with deployments (ECS, Jamf, SCCM).",
+        "Administered IT services (AD, Okta, Jamf, SCCM, Slack, O365, Box, GSuite, Zoom).",
+        "Onboarded/offboarded employees and maintained workflows (Okta, Google Scripts, Rclone).",
+        "Managed hardware lab equipment (CNC, 3D printers, oscilloscopes)."
+      ]
+    },
+    {
+      "company": "Bancolombia S.A",
+      "role": "Implementation Analyst",
+      "location": "Medellin, Colombia",
+      "dates": "May 2012 \u2013 August 2013",
+      "responsibilities": [
+        "Reduced reporting workload from 5 people \u00d7 10 hours to 1 hour via automation.",
+        "Led analysts to consolidate Excel-based reports into Finacle platform.",
+        "Authored contingency plans for credit card backend migration."
+      ]
+    },
+    {
+      "company": "Sophos Banking",
+      "role": "PL/SQL Developer",
+      "location": "Medellin, Colombia",
+      "dates": "February 2012 \u2013 May 2012",
+      "responsibilities": [
+        "Developed PL/SQL-based reports.",
+        "Maintained Medellin branch infrastructure.",
+        "Trained new employees on tech systems."
+      ]
+    }
+  ],
+  "education": {
+    "institution": "EAFIT University",
+    "degree": "Bachelor of Computer Science",
+    "location": "Medellin, Colombia",
+    "graduation": "December 2012",
+    "notes": [
+      "Full-ride EAFIT Scholarship",
+      "GPA: 4.0/5.0",
+      "Assisted with Pilot PLM system at textile plant"
+    ]
+  },
+  "certifications": [
+    "Jamf 200",
+    "Jamf 300",
+    "Jamf 400"
+  ],
+  "skills_and_technologies": {
+    "cloud_devops": [
+      "AWS",
+      "Azure",
+      "Terraform",
+      "Kubernetes",
+      "Docker",
+      "Ansible",
+      "Vault",
+      "Boundary"
+    ],
+    "ci_cd": [
+      "GitLab CI",
+      "GitHub Actions"
+    ],
+    "operating_systems": [
+      "Windows",
+      "macOS",
+      "Linux",
+      "iOS"
+    ],
+    "languages": [
+      "Python",
+      "Bash",
+      "PowerShell"
+    ],
+    "other": [
+      "Microsoft AD/LDAP",
+      "Exchange",
+      "SQL",
+      "SAML",
+      "OAuth",
+      "RESTful APIs"
+    ],
+    "spoken_languages": [
+      "English",
+      "Spanish"
+    ]
+  }
+}

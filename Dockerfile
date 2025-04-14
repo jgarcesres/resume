@@ -17,6 +17,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Copy structured_resume.json to the appropriate location
+COPY structured_resume.json /app/structured_resume.json
+
 # Expose port 80
 EXPOSE 80
 

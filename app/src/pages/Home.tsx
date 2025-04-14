@@ -2,6 +2,7 @@ import React from 'react';
 import PageTransition from '../components/PageTransition';
 import { Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
+import homeContent from '../../resources/home_content.json';
 
 function Home() {
   return (
@@ -24,30 +25,21 @@ function Home() {
         </div>
         
         <h1 className="text-4xl font-bold text-center mb-6">
-          Hi, I'm Juan Garces
+          {homeContent.title}
         </h1>
         
         <div className="prose dark:prose-invert mx-auto">
           <p className="text-lg text-center mb-8">
-            Site Reliability Engineer with expertise in DevOps, automation, and infrastructure.
-            I specialize in building robust, scalable systems and streamlining development workflows.
+            {homeContent.subtitle}
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h3 className="font-semibold mb-2">DevOps</h3>
-              <p className="text-sm">Implementing CI/CD pipelines and infrastructure as code solutions.</p>
-            </div>
-            
-            <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h3 className="font-semibold mb-2">Automation</h3>
-              <p className="text-sm">Creating efficient workflows and automated processes for development teams.</p>
-            </div>
-            
-            <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h3 className="font-semibold mb-2">Infrastructure</h3>
-              <p className="text-sm">Managing and optimizing cloud and on-premise infrastructure solutions.</p>
-            </div>
+            {homeContent.skills.map((skill, index) => (
+              <div key={index} className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h3 className="font-semibold mb-2">{skill.title}</h3>
+                <p className="text-sm">{skill.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

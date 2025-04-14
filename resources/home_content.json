@@ -1,0 +1,19 @@
+{
+  "title": "Hi, I'm Juan Garces",
+  "subtitle": "Site Reliability Engineer with expertise in DevOps, automation, and infrastructure. I specialize in building robust, scalable systems and streamlining development workflows.",
+  "skills": [
+    {
+      "title": "DevOps",
+      "description": "Implementing CI/CD pipelines and infrastructure as code solutions."
+    },
+    {
+      "title": "Automation",
+      "description": "Creating efficient workflows and automated processes for development teams."
+    },
+    {
+      "title": "Infrastructure",
+      "description": "Managing and optimizing cloud and on-premise infrastructure solutions."
+    }
+  ]
+}
+

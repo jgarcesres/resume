@@ -6,6 +6,10 @@ COPY app/package*.json ./
 RUN npm ci
 
 COPY app/ .
+
+# Copy resources folder to the appropriate location
+COPY resources/ /app/resources/
+
 RUN npm run build
 
 # Production stage
@@ -16,9 +20,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy resources folder to the appropriate location
-COPY resources/ /app/resources/
 
 # Expose port 80
 EXPOSE 80

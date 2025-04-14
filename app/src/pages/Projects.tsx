@@ -34,8 +34,8 @@ function Projects() {
             </div>
             
             <p className="text-lg mb-4">
-              A webhook-based automation tool that synchronizes Git repositories with Jamf Pro,
-              streamlining the deployment of scripts and configurations.
+              A github action that synchronizes Git repositories with Jamf Pro,
+              streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.
             </p>
             
             <div className="flex flex-wrap gap-2 mb-4">
@@ -57,7 +57,7 @@ function Projects() {
               <h3 className="font-semibold">Key Features:</h3>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>Automated synchronization between Git repositories and Jamf Pro</li>
-                <li>Webhook-based triggers for real-time updates</li>
+                <li>Git triggers for real-time updates</li>
                 <li>Comprehensive logging and error handling</li>
                 <li>Docker containerization for easy deployment</li>
               </ul>

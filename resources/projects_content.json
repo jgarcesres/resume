@@ -1,0 +1,17 @@
+{
+  "projects": [
+    {
+      "title": "git2jamf",
+      "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
+      "githubUrl": "https://github.com/jgarcesres/git2jamf",
+      "technologies": ["Python", "Docker", "CI/CD", "Automation"],
+      "features": [
+        "Automated synchronization between Git repositories and Jamf Pro",
+        "Git triggers for real-time updates",
+        "Comprehensive logging and error handling",
+        "Docker containerization for easy deployment"
+      ]
+    }
+  ]
+}
+

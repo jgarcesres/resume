@@ -11,30 +11,16 @@ function Navbar() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg relative z-50">
+    <nav className="bg-white dark:bg-gray-800 shadow-lg relative">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <NavLink to="/" className="flex items-center space-x-2">
+          <NavLink to="/" className="flex items-center space-x-2 relative z-50">
             <Terminal className="w-6 h-6" />
             <span className="font-bold text-xl">Juan Garces</span>
           </NavLink>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-
-              
-            <NavLink 
-              to="/resume"
-              className={({ isActive }) => 
-                `flex items-center space-x-1 hover:text-blue-500 transition-colors ${
-                  isActive ? 'text-blue-500' : ''
-                }`
-              }
-            >
-              <FileText className="w-4 h-4" />
-              <span>Resume</span>
-            </NavLink>
-            
             <NavLink 
               to="/projects" 
               className={({ isActive }) => 
@@ -59,6 +45,18 @@ function Navbar() {
               <span>Hobbies</span>
             </NavLink>
             
+            <NavLink 
+              to="/resume"
+              className={({ isActive }) => 
+                `flex items-center space-x-1 hover:text-blue-500 transition-colors ${
+                  isActive ? 'text-blue-500' : ''
+                }`
+              }
+            >
+              <FileText className="w-4 h-4" />
+              <span>Resume</span>
+            </NavLink>
+            
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -73,7 +71,7 @@ function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center relative z-50">
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mr-2"
@@ -103,69 +101,67 @@ function Navbar() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg md:hidden"
-          >
-            <div className="flex flex-col p-4 space-y-4 pt-20">
-              <NavLink 
-                to="/projects" 
-                className={({ isActive }) => 
-                  `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                    isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
-                  }`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Code className="w-5 h-5" />
-                <span>Projects</span>
-              </NavLink>
-              
-              <NavLink 
-                to="/hobbies"
-                className={({ isActive }) => 
-                  `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                    isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
-                  }`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Coffee className="w-5 h-5" />
-                <span>Hobbies</span>
-              </NavLink>
-              
-              <NavLink 
-                to="/resume"
-                className={({ isActive }) => 
-                  `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                    isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
-                  }`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <FileText className="w-5 h-5" />
-                <span>Resume</span>
-              </NavLink>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black md:hidden"
-            onClick={() => setIsMenuOpen(false)}
-            style={{ zIndex: 40 }}
-          />
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black md:hidden z-40"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed top-0 right-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg md:hidden z-50"
+            >
+              <div className="flex flex-col p-4 space-y-4 pt-20">
+                <NavLink 
+                  to="/projects" 
+                  className={({ isActive }) => 
+                    `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                      isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Code className="w-5 h-5" />
+                  <span>Projects</span>
+                </NavLink>
+                
+                <NavLink 
+                  to="/hobbies"
+                  className={({ isActive }) => 
+                    `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                      isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Coffee className="w-5 h-5" />
+                  <span>Hobbies</span>
+                </NavLink>
+                
+                <NavLink 
+                  to="/resume"
+                  className={({ isActive }) => 
+                    `flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                      isActive ? 'text-blue-500 bg-gray-100 dark:bg-gray-700' : ''
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <FileText className="w-5 h-5" />
+                  <span>Resume</span>
+                </NavLink>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

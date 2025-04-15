@@ -1,19 +1,6 @@
 {
   "projects": [
     {
-      "title": "git2jamf",
-      "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
-      "githubUrl": "https://github.com/jgarcesres/git2jamf",
-      "technologies": ["Python", "Docker", "CI/CD", "Automation"],
-      "features": [
-        "Automated synchronization between Git repositories and Jamf Pro",
-        "Git triggers for real-time updates",
-        "Comprehensive logging and error handling",
-        "Docker containerization for easy deployment"
-      ]
-    },
-    
-    {
       
       "title": "resume",
       "description": "this resume is defined in github and deployed through github actions to a static site. The resume is built using React and Tailwind CSS, and the content is managed through JSON files.",
@@ -25,6 +12,18 @@
         "Content management through JSON",
         "Leverages CI/CD (github actions) for automated lint, build, test and deploy",
         "Dockerized for easy deployment"
+      ]
+    },
+    {
+      "title": "git2jamf",
+      "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
+      "githubUrl": "https://github.com/jgarcesres/git2jamf",
+      "technologies": ["Python", "Docker", "CI/CD", "Automation"],
+      "features": [
+        "Automated synchronization between Git repositories and Jamf Pro",
+        "Git triggers for real-time updates",
+        "Comprehensive logging and error handling",
+        "Docker containerization for easy deployment"
       ]
     }
   ]

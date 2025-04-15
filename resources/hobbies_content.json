@@ -1,10 +1,10 @@
 {
   "hobbies": [
     {
-      "title": "Gaming",
-      "icon": "Gamepad2",
-      "iconColor": "text-purple-500",
-      "description": "Enthusiast gamer with a passion for RPGs and strategy games. Currently exploring indie game development as a hobby."
+      "title": "Homelabbing",
+      "icon": "Server",
+      "iconColor": "text-green-500",
+      "description": "Running a personal homelab for experimenting with new technologies, self-hosting services, and learning about infrastructure management."
     },
     {
       "title": "Cooking",
@@ -13,10 +13,28 @@
       "description": "Love experimenting with different cuisines and perfecting my sous vide technique. Specialty in fusion dishes combining Asian and Mediterranean flavors."
     },
     {
-      "title": "Homelabbing",
-      "icon": "Server",
-      "iconColor": "text-green-500",
-      "description": "Running a personal homelab for experimenting with new technologies, self-hosting services, and learning about infrastructure management."
+      "title": "Gaming",
+      "icon": "Gamepad2",
+      "iconColor": "text-purple-500",
+      "description": "Enthusiast gamer with a passion for RPGs and strategy games. Currently exploring indie game development as a hobby."
+    },
+    {
+      "title": "Traveling",
+      "icon": "Plane",
+      "iconColor": "text-blue-500",
+      "description": "Exploring new cultures and landscapes through travel."
+    },
+    {
+      "title": "Coffee-ing?",
+      "icon": "Coffee",
+      "iconColor": "text-amber-700",
+      "description": "Exploring different brewing methods and coffee beans, with a focus on pourover. Huge fan of Colombian coffee from my hometown."
+    },
+    {
+      "title": "Reading",
+      "icon": "BookOpen",
+      "iconColor": "text-yellow-500",
+      "description": "Enjoying a mix of fiction and non-fiction, with a focus on technology and history. Favorite book is Aztec by Gary Jennings."
     }
   ],
   "projects": [
@@ -25,12 +43,12 @@
       "description": "Building a comprehensive home automation setup using Home Assistant, integrating smart devices and custom sensors."
     },
     {
-      "title": "Kubernetes Cluster",
+      "title": "Kubernetes@home",
       "description": "Managing a personal k3s cluster for running various services and experimenting with cloud-native technologies."
     },
     {
-      "title": "Cooking Blog",
-      "description": "Documenting my cooking experiments and recipes on a self-hosted blog platform built with modern web technologies."
+      "title": "Selhosted AI models",
+      "description": "Exploring the world of AI by self-hosting models like Stable Diffusion and experimenting with their capabilities."
     }
   ]
 }

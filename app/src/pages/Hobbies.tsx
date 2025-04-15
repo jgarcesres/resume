@@ -1,6 +1,6 @@
 import React from 'react';
 import PageTransition from '../components/PageTransition';
-import { Gamepad2, ChefHat, Server } from 'lucide-react';
+import { Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import hobbiesContent from '../../resources/hobbies_content.json';
 
@@ -12,6 +12,9 @@ function Hobbies() {
       'text-purple-500': '#A855F7', // Purple-500 in Tailwind
       'text-red-500': '#EF4444',    // Red-500 in Tailwind
       'text-green-500': '#10B981',  // Green-500 in Tailwind
+      'text-blue-500': '#3B82F6',   // Blue-500 in Tailwind
+      'text-yellow-500': '#F59E42', // Yellow-500 in Tailwind
+      'text-amber-700': '#B45309',  // Amber-700 in Tailwind
       // Add more color mappings as needed
     };
     
@@ -29,6 +32,12 @@ function Hobbies() {
         return <ChefHat className="w-12 h-12" color={color} />;
       case 'Server':
         return <Server className="w-12 h-12" color={color} />;
+      case 'Plane':
+        return <Plane className="w-12 h-12" color={color} />;
+      case 'Coffee':
+        return <Coffee className="w-12 h-12" color={color} />;
+      case 'BookOpen':
+        return <BookOpen className="w-12 h-12" color={color} />;
       default:
         return null;
     }
@@ -47,7 +56,19 @@ function Hobbies() {
     Server: {
       animate: { scale: [1, 1.1, 1] },
       transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" }
-    }
+    },
+    Plane: {
+      animate: { rotate: [0, 10, -10, 0] },
+      transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+    },
+    Coffee: {
+      animate: { scale: [1, 1.1, 1] },
+      transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" }
+    },
+    BookOpen: {
+      animate: { rotate: [0, 10, -10, 0] },
+      transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+    },
   };
 
   return (

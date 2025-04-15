@@ -1,31 +1,60 @@
 {
-  "projects": [
+  "projects":
     {
-      
-      "title": "resume",
-      "description": "this resume is defined in github and deployed through github actions to a static site. The resume is built using React and Tailwind CSS, and the content is managed through JSON files.",
-      "githubUrl": "https://github.com/jgarcesres/resume",
-      "technologies": ["GitHub Actions", "Docker", "traefik2", "React", "Tailwind CSS", "JSON"],
-      "features": [
-        "Static site deployment",
-        "Responsive design",
-        "Content management through JSON",
-        "Leverages CI/CD (github actions) for automated lint, build, test and deploy",
-        "Dockerized for easy deployment"
+      "public": [
+        {
+          
+          "title": "resume",
+          "description": "this resume is defined in github and deployed through github actions to a static site hosted on my homelab. The resume is built using React and Tailwind CSS, and the content is managed through JSON files.",
+          "githubUrl": "https://github.com/jgarcesres/resume",
+          "technologies": ["GitHub Actions", "Docker", "traefik2", "React", "Tailwind CSS", "JSON"],
+          "features": [
+            "Static site deployment",
+            "Responsive design",
+            "Content management through JSON",
+            "Leverages CI/CD (github actions) for automated lint, build, test and deploy",
+            "Dockerized for easy deployment"
+          ]
+        },
+        {
+          "title": "git2jamf",
+          "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
+          "githubUrl": "https://github.com/jgarcesres/git2jamf",
+          "technologies": ["Python", "Docker", "CI/CD", "Automation"],
+          "features": [
+            "Automated synchronization between Git repositories and Jamf Pro",
+            "Git triggers for real-time updates",
+            "Comprehensive logging and error handling",
+            "Docker containerization for easy deployment"
+          ]
+        }
       ]
     },
-    {
-      "title": "git2jamf",
-      "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
-      "githubUrl": "https://github.com/jgarcesres/git2jamf",
-      "technologies": ["Python", "Docker", "CI/CD", "Automation"],
-      "features": [
-        "Automated synchronization between Git repositories and Jamf Pro",
-        "Git triggers for real-time updates",
-        "Comprehensive logging and error handling",
-        "Docker containerization for easy deployment"
-      ]
-    }
-  ]
+    "work": [
+      {
+        "title": "Metrics and Monitoring",
+        "description": "Implemented Grafana's mimir on AWS EKS for metrics storage and monitoring, enhancing observability and creating a centralized dashboard for all cluster and services.",	
+        "technologies": ["AWS", "EKS", "kubernetes", "Grafana", "Monitoring"],
+        "features": [
+          "Centralized metrics dashboard",
+          "Enhanced observability",
+          "Real-time monitoring",
+          "Scalable architecture"
+        ]
+      },
+      {
+        "title":"OSS Inventory - SnipeIT",
+        "description": "Implemented the first inventory system for Sonos's IT assets, including hardware and software, using SnipeIT. This system allows for better tracking and management of IT resources, ensuring compliance and optimizing asset utilization. Offered it as a service to other teams in the org.",
+        "technologies": ["terraform", "ECS", "jamf", "intune", "sccm", "SnipeIT", "Inventory Management", "Asset Tracking"],
+        "features": [
+          "Centralized asset management",
+          "Integrated with existing systems (jamf, intune, sccm) to automatically add and track assets",
+          "Automated inventory updates"
+        ]
+      }
+
+
+    ]
+    
 }
 

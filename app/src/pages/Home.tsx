@@ -1,6 +1,6 @@
 import React from 'react';
 import PageTransition from '../components/PageTransition';
-import { Terminal } from 'lucide-react';
+import { Github, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import homeContent from '../../resources/home_content.json';
 
@@ -8,20 +8,28 @@ function Home() {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-center mb-8">
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 5, -5, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
+        <div className="flex items-center justify-center mb-8 space-x-6">
+          <motion.a
+            href={homeContent.socials.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="transition-colors duration-300 hover:text-blue-500"
           >
-            <Terminal className="w-16 h-16 text-blue-500" />
-          </motion.div>
+            <Github className="w-10 h-10" />
+          </motion.a>
+          
+          <motion.a
+            href={homeContent.socials.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="transition-colors duration-300 hover:text-blue-500"
+          >
+            <Linkedin className="w-10 h-10" />
+          </motion.a>
         </div>
         
         <h1 className="text-4xl font-bold text-center mb-6">

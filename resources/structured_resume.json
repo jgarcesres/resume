@@ -24,7 +24,7 @@
       "responsibilities": [
         "Resolved support tickets and implemented an integrated incident management system (Jira, Slack, PagerDuty, Confluence).",
         "Automated reporting tasks in HR using Python, Workday, ADP, AWS Glue, AWS Lambda.",
-        "Implemented an inventory system using OSS (Snipe-IT and integrated with deployments (ECS, Jamf, SCCM).",
+        "Implemented an inventory system using OSS (Snipe-IT) and integrated with deployments (ECS, Jamf, SCCM).",
         "Administered IT services (AD, Okta, Jamf, SCCM, Slack, O365, Box, GSuite, Zoom).",
         "Onboarded/offboarded employees and maintained workflows (Okta, Google Scripts, Rclone).",
         "Managed hardware lab equipment (CNC, 3D printers, oscilloscopes)."

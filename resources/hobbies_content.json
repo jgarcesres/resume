@@ -22,7 +22,7 @@
       "title": "Traveling",
       "icon": "Plane",
       "iconColor": "text-blue-500",
-      "description": "Exploring new cultures and landscapes through travel."
+      "description": "Exploring new cultures and landscapes through travel. Trying new cuisines and unlocking new flavors."
     },
     {
       "title": "Coffee-ing?",
@@ -48,7 +48,7 @@
     },
     {
       "title": "Selhosted AI models",
-      "description": "Exploring the world of AI by self-hosting models like Stable Diffusion and experimenting with their capabilities."
+      "description": "Exploring the world of AI by self-hosting models like Stable Diffusion and llama, experimenting with their capabilities."
     }
   ]
 }

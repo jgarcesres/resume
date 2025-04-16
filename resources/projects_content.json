@@ -43,6 +43,17 @@
         ]
       },
       {
+        "title": "Custom Metrics Exporter",
+        "description": "Wrote a custom metric's exporter for Scuba's services to expose metrics that were not natively generated  by the application. This allows for better monitoring and alerting on critical application metrics.",
+        "technologies": ["python", "fastapi", "Grafana", "Prometheus", "Monitoring"],
+        "features": [
+          "Custom metrics collection",
+          "Prometheus compatible exporter",
+          "Lightweight fastapi endpoint that generates metrics on scrape",
+          "Alerting on critical application metrics"
+        ]
+      },
+      {
         "title":"OSS Inventory - SnipeIT",
         "description": "Implemented the first inventory system for Sonos's IT assets, including hardware and software, using SnipeIT. This system allows for better tracking and management of IT resources, ensuring compliance and optimizing asset utilization. Offered it as a service to other teams in the org.",
         "technologies": ["terraform", "ECS", "jamf", "intune", "sccm", "SnipeIT", "Inventory Management", "Asset Tracking"],

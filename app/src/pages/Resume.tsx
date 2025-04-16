@@ -4,135 +4,132 @@ import { Download, Briefcase, GraduationCap, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import structuredResume from '../../resources/structured_resume.json';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 function Resume() {
   const resumeRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Helper for multi-line text
+  const addMultilineText = (doc, text, x, y, maxWidth, lineHeight, fontSize = 12, fontStyle = 'normal') => {
+    doc.setFontSize(fontSize);
+    doc.setFont(undefined, fontStyle);
+    const lines = doc.splitTextToSize(text, maxWidth);
+    lines.forEach((line, idx) => {
+      doc.text(line, x, y + idx * lineHeight);
+    });
+    return y + lines.length * lineHeight;
+  };
+
   const generatePDF = async () => {
-    if (!resumeRef.current) return;
-    
     setIsGenerating(true);
-    
     try {
-      // Create a temporary div to clone the resume content into
-      const tempDiv = document.createElement('div');
-      tempDiv.className = 'pdf-mode';
-      tempDiv.innerHTML = resumeRef.current.innerHTML;
-      
-      // Find and remove the download button from the cloned content
-      const downloadBtn = tempDiv.querySelector('.download-btn');
-      if (downloadBtn) {
-        downloadBtn.parentNode?.removeChild(downloadBtn);
-      }
-      
-      // Append to body temporarily (hidden) to render properly with styles
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.top = '-9999px';
-      document.body.appendChild(tempDiv);
-            
-      // Create PDF
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      // Add header with name and contact
-      pdf.setFontSize(22);
-      pdf.setTextColor(44, 62, 80);
-      pdf.text(structuredResume.name, 15, 20);
-      
-      pdf.setFontSize(12);
-      pdf.setTextColor(52, 73, 94);
-      pdf.text(structuredResume.email, 15, 25);
-      
-      // Calculate content width (A4 width minus margins)
-      const contentWidth = 210 - 30; // 210mm is A4 width, 30mm is for left+right margins
-      
-      // Get each section of content separately to prevent cross-page issues
-      const sections = tempDiv.querySelectorAll('section');
-      
-      let yPosition = 30; // Start position after the header
-      const pageHeight = 297; // A4 height in mm
-      const maxY = pageHeight - 15; // Maximum y position (minus bottom margin)
-      
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        
-        // Create a div just for this section
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'pdf-section pdf-mode';
-        sectionDiv.style.backgroundColor = 'white';
-        sectionDiv.appendChild(section.cloneNode(true));
-        document.body.appendChild(sectionDiv);
-        
-        // Capture the section
-        const canvas = await html2canvas(sectionDiv, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          onclone: (clonedDoc) => {
-            // Process elements in the cloned document to ensure proper styling
-            const forceWhiteBackground = (element) => {
-              if (element instanceof HTMLElement) {
-                // Default styling for most elements
-                element.style.backgroundColor = 'white';
-                element.style.boxShadow = 'none';
-                
-                // Apply light blue borders to section containers
-                if (element.classList.contains('dark:bg-gray-800') || 
-                    element.classList.contains('bg-gray-50')) {
-                  element.style.border = '1px solid #dbeafe'; // Light blue border
-                }
-                
-                // Special handling for skill bubbles to keep blue background
-                if (element.classList.contains('skill-bubble')) {
-                  element.style.backgroundColor = '#dbeafe !important'; // Light blue background
-                  element.style.color = '#1e40af';  // Darker blue text for contrast
-                  element.style.borderRadius = '10px';
-                  element.style.padding = '4px 12px';
-                }
-              }
-              
-              // Recursively process all child elements
-              if (element.children && element.children.length > 0) {
-                Array.from(element.children).forEach(child => forceWhiteBackground(child));
-              }
-            };
-            
-            // Start the recursive process from the root of the cloned content
-            const pdfSection = clonedDoc.querySelector('.pdf-section');
-            if (pdfSection) {
-              forceWhiteBackground(pdfSection);
-            }
-          }
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const marginX = 15;
+      let y = 20;
+      const maxWidth = 180;
+      const lineHeight = 7;
+
+      // Header: Name
+      doc.setFontSize(22);
+      doc.setTextColor(44, 62, 80);
+      doc.setFont('helvetica', 'bold');
+      doc.text(structuredResume.name, marginX, y);
+      y += 9;
+      // Email
+      doc.setFontSize(12);
+      doc.setTextColor(52, 73, 94);
+      doc.setFont('helvetica', 'normal');
+      doc.text(structuredResume.email, marginX, y);
+      y += 10;
+
+      // Section: Experience
+      doc.setFontSize(16);
+      doc.setTextColor(37, 99, 235); // blue-600
+      doc.setFont('helvetica', 'bold');
+      doc.text('Experience', marginX, y);
+      y += 7;
+      doc.setFontSize(12);
+      doc.setTextColor(33, 37, 41);
+      doc.setFont('helvetica', 'normal');
+      structuredResume.experience.forEach((job) => {
+        // Role and company
+        doc.setFont('helvetica', 'bold');
+        y = addMultilineText(doc, job.role, marginX, y, maxWidth, lineHeight, 13, 'bold');
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 116, 139); // slate-500
+        doc.text(`${job.company} • ${job.dates}`, marginX, y);
+        y += 6;
+        doc.setTextColor(33, 37, 41);
+        // Responsibilities
+        job.responsibilities.forEach((resp) => {
+          y = addMultilineText(doc, `• ${resp}`, marginX + 4, y, maxWidth - 8, lineHeight, 11);
         });
-        
-        document.body.removeChild(sectionDiv);
-        
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
-        
-        // Check if we need a new page
-        if (yPosition + imgHeight > maxY) {
-          pdf.addPage();
-          yPosition = 15; // Reset to top margin
-        }
-        
-        // Add the section image
-        pdf.addImage(imgData, 'JPEG', 15, yPosition, contentWidth, imgHeight);
-        yPosition += imgHeight + 10; // Add some space between sections
+        y += 3;
+      });
+      y += 2;
+
+      // Section: Education
+      doc.setFontSize(16);
+      doc.setTextColor(37, 99, 235);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Education', marginX, y);
+      y += 7;
+      doc.setFontSize(12);
+      doc.setTextColor(33, 37, 41);
+      doc.setFont('helvetica', 'bold');
+      y = addMultilineText(doc, structuredResume.education.degree, marginX, y, maxWidth, lineHeight, 13, 'bold');
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 116, 139);
+      doc.text(`${structuredResume.education.institution} • ${structuredResume.education.graduation}`, marginX, y);
+      y += 6;
+      doc.setTextColor(33, 37, 41);
+      y = addMultilineText(doc, structuredResume.education.notes.join(', '), marginX, y, maxWidth, lineHeight, 11);
+      y += 2;
+
+      // Section: Skills
+      doc.setFontSize(16);
+      doc.setTextColor(37, 99, 235);
+      doc.setFont('helvetica', 'bold');
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
       }
-      
-      // Remove the temporary element
-      document.body.removeChild(tempDiv);
-      
-      // Save the PDF
-      pdf.save(`${structuredResume.name.replace(' ', '_')}_Resume.pdf`);
+      doc.text('Skills', marginX, y);
+      y += 7;
+      doc.setFontSize(12);
+      doc.setTextColor(33, 37, 41);
+      doc.setFont('helvetica', 'normal');
+      Object.entries(structuredResume.skills_and_technologies).forEach(([category, skills]) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.setFont('helvetica', 'bold');
+        y = addMultilineText(doc, category.replace(/_/g, ' ').toUpperCase(), marginX, y, maxWidth, lineHeight, 12, 'bold');
+        doc.setFont('helvetica', 'normal');
+        y = addMultilineText(doc, skills.join(', '), marginX + 4, y, maxWidth - 8, lineHeight, 11);
+        y += 2;
+      });
+
+      // Section: Certifications (if any)
+      if (structuredResume.certifications && structuredResume.certifications.length > 0) {
+        doc.setFontSize(16);
+        doc.setTextColor(37, 99, 235);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Certifications', marginX, y);
+        y += 7;
+        doc.setFontSize(12);
+        doc.setTextColor(33, 37, 41);
+        doc.setFont('helvetica', 'normal');
+        y = addMultilineText(doc, structuredResume.certifications.join(', '), marginX, y, maxWidth, lineHeight, 11);
+      }
+
+      // Always fit to one page: if y > 280, warn user (optional)
+      // Save PDF
+      doc.save(`${structuredResume.name.replace(' ', '_')}_Resume.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
-    
     setIsGenerating(false);
   };
 

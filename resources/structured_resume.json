@@ -69,7 +69,7 @@
     "Jamf 400"
   ],
   "skills_and_technologies": {
-    "cloud_devops": [
+    "cloud/devops": [
       "AWS",
       "Azure",
       "Terraform",
@@ -82,15 +82,15 @@
       "Grafana",
       "mimir"
     ],
-    "ci_cd": [
+    "ci/cd": [
       "GitLab CI",
       "GitHub Actions",
       "argoCD"
     ],
     "operating_systems": [
+      "Linux",
       "Windows",
       "macOS",
-      "Linux",
       "iOS"
     ],
     "languages": [

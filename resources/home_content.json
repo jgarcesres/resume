@@ -13,6 +13,18 @@
     {
       "title": "Infrastructure",
       "description": "Managing and optimizing cloud and on-premise infrastructure solutions."
+    },
+    {
+      "title": "Monitoring",
+      "description": "Implementing observability solutions for real-time insights into system performance."
+    },
+    {
+      "title": "Security",
+      "description": "Applying security best practices and ensuring compliance in development workflows."
+    },
+    {
+      "title": "Identity",
+      "description": "Strong background in identity management and access control systems."
     }
   ],
   "socials": {

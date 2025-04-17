@@ -8,16 +8,16 @@
       "location": "Remote (California/Florida)",
       "dates": "October 2021 \u2013 Present",
       "responsibilities": [
-        "Managed application clusters in AWS and Azure for enterprise clients (Microsoft, Salesforce, Asana).",
+        "Managed application clusters in AWS and Azure for enterprise clients within their environments (Microsoft, Salesforce, Asana).",
         "Built custom monitoring/metrics systems using open-source tools (AWS EKS, Grafana stack).",
         "Improved CI/CD pipelines using GitLab and Terraform.",
         "Participated in on-call rotations and incident response (PagerDuty, Alertmanager).",
         "Collaborated with TAMs for customer success and continuous improvement.",
-        "Supported ETL and analytics pipelines (Python, Scuba)."
+        "Supported ETL and analytics pipelines (Python, Scuba/Interana)."
       ]
     },
     {
-      "company": "SONOS, INC",
+      "company": "SONOS Inc",
       "role": "Desktop Systems Analyst",
       "location": "Santa Barbara, California",
       "dates": "June 2014 \u2013 October 2021",

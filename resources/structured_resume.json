@@ -75,17 +75,19 @@
       "Terraform",
       "Kubernetes",
       "Docker",
-      "Ansible",
-      "Vault",
-      "Boundary",
-      "Prometheus",
-      "Grafana",
-      "mimir"
+      "Ansible"
     ],
     "ci/cd": [
       "GitLab CI",
       "GitHub Actions",
       "argoCD"
+    ],
+    "observability": [
+      "Grafana",
+      "Prometheus",
+      "Mimir",
+      "Alertmanager",
+      "PagerDuty"
     ],
     "operating_systems": [
       "Linux",
@@ -93,27 +95,34 @@
       "macOS",
       "iOS"
     ],
+    "databases": [
+      "PostgreSQL",
+      "MySQL",
+      "Redis"
+    ],
     "languages": [
       "Python",
       "Bash",
       "PowerShell"
     ],
+    "spoken_languages": [
+      "English",
+      "Spanish"
+    ],
     "other": [
       "AI Prompt Engineering",
+      "Hashicorp Vault",
+      "Git",
       "Data Analysis",
       "Data Visualization",
       "Okta",
       "Microsoft AD/LDAP",
+      "Microsoft O365",
+      "Google Workspace",
       "jamf",
-      "Exchange",
-      "SQL",
       "SAML",
       "OAuth",
       "RESTful APIs"
-    ],
-    "spoken_languages": [
-      "English",
-      "Spanish"
     ]
   }
 }

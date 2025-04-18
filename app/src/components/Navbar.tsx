@@ -32,13 +32,16 @@ function Navbar() {
 
   return (
     <nav 
-      className={`${
-        isScrolled ? 'fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm' : 'bg-white dark:bg-gray-800 relative'
-      } shadow-lg transition-all duration-300`}
+      className={`
+        ${isScrolled && !isMenuOpen ? 'fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm' : ''}
+        ${isMenuOpen ? 'fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 !backdrop-blur-none' : ''}
+        ${!isScrolled && !isMenuOpen ? 'bg-white dark:bg-gray-800 relative' : ''}
+        shadow-lg transition-all duration-300`
+      }
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <NavLink to="/" className="flex items-center space-x-2 relative z-50">
+          <NavLink to="/" className="flex items-center space-x-2 relative z-50" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <Terminal className="w-6 h-6" />
             <span className="font-bold text-xl">Juan Garces</span>
           </NavLink>
@@ -142,7 +145,8 @@ function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg md:hidden z-50"
+              className="fixed top-0 right-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg md:hidden z-50 !bg-opacity-100"
+              style={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#fff' }}
             >
               <div className="flex flex-col p-4 space-y-4 pt-20">
                 <NavLink 

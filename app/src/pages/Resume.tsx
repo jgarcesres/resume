@@ -135,7 +135,7 @@ function Resume() {
       } else {
         // not on new page, continue
       }
-      y += 4;
+      y += 6; // Match spacing between all sections (was 4, now 6)
       // Section: Education
       doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235);
@@ -152,7 +152,7 @@ function Resume() {
       y += 5;
       doc.setTextColor(33, 37, 41);
       y = addMultilineText(doc, structuredResume.education.notes.join(', '), marginX, y, maxWidth, lineHeight, fontSizeSmall);
-      y += 2;
+      y += 6; // Match spacing before certifications
       if (structuredResume.certifications && structuredResume.certifications.length > 0) {
         doc.setFontSize(fontSizeTitle);
         doc.setTextColor(37, 99, 235);
@@ -163,7 +163,7 @@ function Resume() {
         doc.setTextColor(33, 37, 41);
         doc.setFont('helvetica', 'normal');
         y = addMultilineText(doc, structuredResume.certifications.join(', '), marginX, y, maxWidth, lineHeight, fontSizeSmall);
-        y += 2;
+        y += 6; // Match spacing before skills
       }
       doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235);
@@ -173,17 +173,38 @@ function Resume() {
       doc.setFontSize(fontSizeSmall);
       doc.setTextColor(33, 37, 41);
       doc.setFont('helvetica', 'normal');
-      Object.entries(structuredResume.skills_and_technologies).forEach(([category, skills]) => {
-        if (y > 270) {
-          doc.addPage();
-          y = marginY;
-        }
+      // --- Two-column (twoleft) layout for skills ---
+      const skillCategories = Object.entries(structuredResume.skills_and_technologies);
+      const colWidth = (maxWidth - 8) / 2; // 2 columns, with some gap
+      let leftY = y;
+      let rightY = y;
+      for (let i = 0; i < skillCategories.length; i++) {
+        const [category, skills] = skillCategories[i];
+        const colX = i % 2 === 0 ? marginX : marginX + colWidth + 8;
+        let colY = i % 2 === 0 ? leftY : rightY;
+        // Category title - black, bold
         doc.setFont('helvetica', 'bold');
-        y = addMultilineText(doc, category.replace(/_/g, ' ').toUpperCase(), marginX, y, maxWidth, lineHeight, fontSizeNormal, 'bold');
+        doc.setTextColor(0, 0, 0); // Black
+        doc.setFontSize(fontSizeSection);
+        doc.text(category.replace(/_/g, ' ').toUpperCase(), colX, colY);
+        colY += 5;
         doc.setFont('helvetica', 'normal');
-        y = addMultilineText(doc, skills.join(', '), marginX + 4, y, maxWidth - 8, lineHeight, fontSizeSmall);
-        y += 1;
-      });
+        doc.setTextColor(33, 37, 41);
+        doc.setFontSize(fontSizeSmall);
+        // Skills as comma separated, left-aligned
+        const skillLines = doc.splitTextToSize(skills.join(', '), colWidth - 4);
+        skillLines.forEach((line) => {
+          doc.text(line, colX + 4, colY);
+          colY += lineHeight;
+        });
+        colY += 2;
+        if (i % 2 === 0) {
+          leftY = colY;
+        } else {
+          rightY = colY;
+        }
+      }
+      y = Math.max(leftY, rightY) + 2;
       doc.save(`${structuredResume.name.replace(' ', '_')}_Resume.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);

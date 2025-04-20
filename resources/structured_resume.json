@@ -1,19 +1,22 @@
 {
   "name": "Juan Garces",
   "email": "jobinfo@garces.xyz",
+  "intro": "Site Reliability Engineer with expertise in DevOps, automation, and infrastructure. I specialize in building robust, scalable systems and streamlining development workflows with a strong background in Security and Identity management.",
   "experience": [
     {
       "company": "Scuba Analytics",
       "role": "Site Reliability Engineer (SRE)",
       "location": "Remote (California/Florida)",
       "dates": "October 2021 \u2013 Present",
+      "summary": "Focused on building and maintaining robust infrastructure and CI/CD pipelines. Improved observability for the fleet and automated config managment.",
       "responsibilities": [
         "Managed application clusters in AWS and Azure for enterprise clients within their environments (Microsoft, Salesforce, Asana).",
         "Built custom monitoring/metrics systems using open-source tools (AWS EKS, Grafana stack).",
-        "Improved CI/CD pipelines using GitLab and Terraform.",
+        "Developed and maintained CI/CD pipelines using GitLab and Terraform.",
         "Participated in on-call rotations and incident response (PagerDuty, Alertmanager).",
         "Collaborated with TAMs for customer success and continuous improvement.",
-        "Supported ETL and analytics pipelines (Python, Scuba/Interana)."
+        "Supported ETL and analytics pipelines (Python, Scuba/Interana).",
+        "Wore an IT hat occasionally to help improve our Identity posture and security. (Okta, bambooHR, slack, gitlab, etc)."
       ]
     },
     {
@@ -21,13 +24,14 @@
       "role": "Desktop Systems Analyst",
       "location": "Santa Barbara, California",
       "dates": "June 2014 \u2013 October 2021",
+      "summary": "Started as IT support and worked with a distributed team to support employees globally. Ended my time in a different role that focused on automation and improving workflows.",
       "responsibilities": [
-        "Resolved support tickets and implemented an integrated incident management system (Jira, Slack, PagerDuty, Confluence).",
-        "Automated reporting tasks in HR using Python, Workday, ADP, AWS Glue, AWS Lambda.",
-        "Implemented an inventory system using OSS (Snipe-IT) and integrated with deployments (ECS, Jamf, SCCM).",
-        "Administered IT services (AD, Okta, Jamf, SCCM, Slack, O365, Box, GSuite, Zoom).",
-        "Onboarded/offboarded employees and maintained workflows (Okta, Google Scripts, Rclone).",
-        "Managed hardware lab equipment (CNC, 3D printers, oscilloscopes)."
+        "Developed the first incident management system for IT, improving response times and cutting down time spent on manual tasks (Jira, Slack, PagerDuty, Confluence).",
+        "Automated reporting tasks in HR, automationg multiple day long reports to near instant using Python, Workday, ADP, AWS Lambda.",
+        "Implemented first inventory system using OSS (Snipe-IT) and integrated with MDM for auto enrollment/update(AWS ECS, teraform, Jamf, SCCM).",
+        "Created a Legal Hold system for data retention and compliance, made it user friendly via self service tools (Gsuite, rclone, jamf, SCCM).",
+        "Administered IT services, helped implement a coherent SSO experience (AD, Okta, Jamf, SCCM, Slack, O365, Box, GSuite, Zoom, etc).",
+        "Managed hardware lab equipment for R&D (CNC, 3D printers, oscilloscopes)."
       ]
     },
     {
@@ -35,6 +39,7 @@
       "role": "Implementation Analyst",
       "location": "Medellin, Colombia",
       "dates": "May 2012 \u2013 August 2013",
+      "summary": "Worked with a team of analysts to implement a new banking system for the bank. My role was to help automate the reporting and data gathering process.",
       "responsibilities": [
         "Reduced reporting workload from 5 people \u00d7 10 hours to 1 hour via automation.",
         "Led analysts to consolidate Excel-based reports into Finacle platform.",
@@ -46,6 +51,7 @@
       "role": "PL/SQL Developer",
       "location": "Medellin, Colombia",
       "dates": "February 2012 \u2013 May 2012",
+      "summary": "First job out of college, primarily received work from analysts that gathered requirements at Bancolombia.",
       "responsibilities": [
         "Developed PL/SQL-based reports.",
         "Maintained Medellin branch infrastructure.",
@@ -106,8 +112,8 @@
       "PowerShell"
     ],
     "spoken_languages": [
-      "English",
-      "Spanish"
+      "Native English",
+      "Native Spanish"
     ],
     "other": [
       "AI Prompt Engineering",

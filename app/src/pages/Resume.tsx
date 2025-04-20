@@ -63,13 +63,13 @@ function Resume() {
       doc.setTextColor(33, 37, 41);
       doc.setFont('helvetica', 'normal');
       const pageHeight = doc.internal.pageSize.getHeight();
-      let jobs = structuredResume.experience;
-      let jobsOnFirstPage = [];
+      const jobs = structuredResume.experience;
+      const jobsOnFirstPage = [];
       let jobsOnSecondPage = [];
       let tempY = y;
       // Estimate how many jobs fit on first page
       for (let i = 0; i < jobs.length; i++) {
-        let job = jobs[i];
+        const job = jobs[i];
         let estY = tempY;
         estY += lineHeight; // role
         estY += 5; // company/dates

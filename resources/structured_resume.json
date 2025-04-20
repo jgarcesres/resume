@@ -16,7 +16,7 @@
         "Participated in on-call rotations and incident response (PagerDuty, Alertmanager).",
         "Collaborated with TAMs for customer success and continuous improvement.",
         "Supported ETL and analytics pipelines (Python, Scuba/Interana).",
-        "Wore an IT hat occasionally to help improve our Identity posture and security. (Okta, bambooHR, slack, gitlab, etc)."
+        "Wore an IT hat occasionally to help improve our Identity posture and security. (Okta, bambooHR, Slack, Gitlab, etc)."
       ]
     },
     {
@@ -27,8 +27,8 @@
       "summary": "Started as IT support and worked with a distributed team to support employees globally. Ended my time in a different role that focused on automation and improving workflows.",
       "responsibilities": [
         "Developed the first incident management system for IT, improving response times and cutting down time spent on manual tasks (Jira, Slack, PagerDuty, Confluence).",
-        "Automated reporting tasks in HR, automationg multiple day long reports to near instant using Python, Workday, ADP, AWS Lambda.",
-        "Implemented first inventory system using OSS (Snipe-IT) and integrated with MDM for auto enrollment/update(AWS ECS, teraform, Jamf, SCCM).",
+        "Automated reporting tasks in HR, automating multiple day long reports to near instant using Python, Workday, ADP, AWS Lambda.",
+        "Implemented first inventory system using OSS (Snipe-IT) and integrated with MDM for auto enrollment/update(AWS ECS, terraform, Jamf, SCCM).",
         "Created a Legal Hold system for data retention and compliance, made it user friendly via self service tools (Gsuite, rclone, jamf, SCCM).",
         "Administered IT services, helped implement a coherent SSO experience (AD, Okta, Jamf, SCCM, Slack, O365, Box, GSuite, Zoom, etc).",
         "Managed hardware lab equipment for R&D (CNC, 3D printers, oscilloscopes)."

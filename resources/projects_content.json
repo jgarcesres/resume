@@ -33,13 +33,14 @@
     "work": [
       {
         "title": "Metrics and Monitoring",
-        "description": "Implemented Grafana's mimir on AWS EKS for metrics storage and monitoring, enhancing observability and creating a centralized dashboard for all cluster and services.",	
+        "description": "Implemented Grafana's mimir along with grafana itself on AWS EKS for metrics storage and monitoring, enhancing observability and creating a centralized dashboard for all cluster and services. I secured the remote write endpoints using auth2proxy allowing for for m2m authentication with the prometheus clients and getting us off mainting whitelists and security groups",	
         "technologies": ["AWS", "EKS", "kubernetes", "Grafana", "Monitoring"],
         "features": [
           "Centralized metrics dashboard",
           "Enhanced observability",
           "Real-time monitoring",
-          "Scalable architecture"
+          "Scalable architecture",
+          "oauth2proxy Machine to machine authentication"
         ]
       },
       {
@@ -61,6 +62,16 @@
           "Centralized asset management",
           "Integrated with existing systems (jamf, intune, sccm) to automatically add and track assets",
           "Automated inventory updates"
+        ]
+      },
+      {
+        "title": "Incidnet Management for IT",
+        "description": "Created a workflow through the use of aws lambda, python and the API's of the various services we used (pagerduty, jira, confluence, slack) to create an Incicdent Mangement system for IT that handled the entire lifecycle of an incident from creation to resolution. This system allowed for better tracking and management of incidents, improving response times and reducing downtime.", 
+        "technologies": ["python", "aws", "lambda", "pagerduty", "jira", "confluence", "slack"],
+        "features": [
+          "Automated incident lifecycle management",
+          "Integration with existing tools (pagerduty, jira, confluence, slack)",
+          "Improved response times and reduced downtime"
         ]
       }
 

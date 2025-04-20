@@ -25,107 +25,165 @@ function Resume() {
     try {
       const doc = new jsPDF('p', 'mm', 'a4');
       const marginX = 15;
-      let y = 20;
+      const marginY = 18;
+      const bottomMargin = 20; // Add bottom margin
+      let y = marginY;
       const maxWidth = 180;
-      const lineHeight = 7;
+      const lineHeight = 6;
+      const fontSizeTitle = 16;
+      const fontSizeSection = 13;
+      const fontSizeNormal = 10;
+      const fontSizeSmall = 9;
 
       // Header: Name
-      doc.setFontSize(22);
+      doc.setFontSize(20);
       doc.setTextColor(44, 62, 80);
       doc.setFont('helvetica', 'bold');
       doc.text(structuredResume.name, marginX, y);
-      y += 9;
+      y += 8;
       // Email
-      doc.setFontSize(12);
+      doc.setFontSize(fontSizeNormal);
       doc.setTextColor(52, 73, 94);
       doc.setFont('helvetica', 'normal');
       doc.text(structuredResume.email, marginX, y);
-      y += 10;
+      y += 7;
+      // Intro
+      doc.setFontSize(fontSizeNormal);
+      doc.setTextColor(33, 37, 41);
+      y = addMultilineText(doc, structuredResume.intro, marginX, y, maxWidth, lineHeight, fontSizeNormal, 'italic');
+      y += 2;
 
-      // Section: Experience
-      doc.setFontSize(16);
+      // Section: Experience (try to fit all on first page)
+      doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235); // blue-600
       doc.setFont('helvetica', 'bold');
       doc.text('Experience', marginX, y);
       y += 7;
-      doc.setFontSize(12);
+      doc.setFontSize(fontSizeNormal);
       doc.setTextColor(33, 37, 41);
       doc.setFont('helvetica', 'normal');
-      structuredResume.experience.forEach((job) => {
-        // Role and company
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let jobs = structuredResume.experience;
+      let jobsOnFirstPage = [];
+      let jobsOnSecondPage = [];
+      let tempY = y;
+      // Estimate how many jobs fit on first page
+      for (let i = 0; i < jobs.length; i++) {
+        let job = jobs[i];
+        let estY = tempY;
+        estY += lineHeight; // role
+        estY += 5; // company/dates
+        estY += (doc.splitTextToSize(job.summary, maxWidth - 12).length) * lineHeight; // summary indent
+        estY += job.responsibilities.length * lineHeight;
+        estY += 6; // padding
+        if (estY > pageHeight - bottomMargin) {
+          jobsOnSecondPage = jobs.slice(i);
+          break;
+        }
+        jobsOnFirstPage.push(job);
+        tempY = estY;
+      }
+      // Render jobs for first page
+      jobsOnFirstPage.forEach((job) => {
         doc.setFont('helvetica', 'bold');
-        y = addMultilineText(doc, job.role, marginX, y, maxWidth, lineHeight, 13, 'bold');
+        y = addMultilineText(doc, job.role, marginX, y, maxWidth, lineHeight, fontSizeSection, 'bold');
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100, 116, 139); // slate-500
         doc.text(`${job.company} • ${job.dates}`, marginX, y);
-        y += 6;
+        y += 5;
         doc.setTextColor(33, 37, 41);
-        // Responsibilities
+        // Summary aligned with title/company
+        y = addMultilineText(doc, job.summary, marginX, y, maxWidth - 12, lineHeight, fontSizeSmall, 'italic');
+        doc.setFontSize(fontSizeSmall);
+        // Bullet points indented
         job.responsibilities.forEach((resp) => {
-          y = addMultilineText(doc, `• ${resp}`, marginX + 4, y, maxWidth - 8, lineHeight, 11);
+          y = addMultilineText(doc, `• ${resp}`, marginX + 4, y, maxWidth - 16, lineHeight, fontSizeSmall);
         });
-        y += 3;
+        y += 2;
       });
-      y += 2;
-
+      // If any jobs left, add new page and render them
+      if (jobsOnSecondPage.length > 0) {
+        doc.addPage();
+        y = marginY;
+        doc.setFontSize(fontSizeTitle);
+        doc.setTextColor(37, 99, 235);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Experience (cont.)', marginX, y);
+        y += 7;
+        doc.setFontSize(fontSizeNormal);
+        doc.setTextColor(33, 37, 41);
+        doc.setFont('helvetica', 'normal');
+        jobsOnSecondPage.forEach((job) => {
+          doc.setFont('helvetica', 'bold');
+          y = addMultilineText(doc, job.role, marginX, y, maxWidth, lineHeight, fontSizeSection, 'bold');
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(100, 116, 139);
+          doc.text(`${job.company} • ${job.dates}`, marginX, y);
+          y += 5;
+          doc.setTextColor(33, 37, 41);
+          y = addMultilineText(doc, job.summary, marginX, y, maxWidth - 12, lineHeight, fontSizeSmall, 'italic');
+          doc.setFontSize(fontSizeSmall);
+          job.responsibilities.forEach((resp) => {
+            y = addMultilineText(doc, `• ${resp}`, marginX + 8, y, maxWidth - 16, lineHeight, fontSizeSmall);
+          });
+          y += 2;
+        });
+      }
+      // Continue on same page for Education, Certifications, Skills
+      if (jobsOnSecondPage.length > 0) {
+        // already on new page
+      } else {
+        // not on new page, continue
+      }
+      y += 4;
       // Section: Education
-      doc.setFontSize(16);
+      doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235);
       doc.setFont('helvetica', 'bold');
       doc.text('Education', marginX, y);
       y += 7;
-      doc.setFontSize(12);
+      doc.setFontSize(fontSizeNormal);
       doc.setTextColor(33, 37, 41);
       doc.setFont('helvetica', 'bold');
-      y = addMultilineText(doc, structuredResume.education.degree, marginX, y, maxWidth, lineHeight, 13, 'bold');
+      y = addMultilineText(doc, structuredResume.education.degree, marginX, y, maxWidth, lineHeight, fontSizeSection, 'bold');
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 116, 139);
       doc.text(`${structuredResume.education.institution} • ${structuredResume.education.graduation}`, marginX, y);
-      y += 6;
+      y += 5;
       doc.setTextColor(33, 37, 41);
-      y = addMultilineText(doc, structuredResume.education.notes.join(', '), marginX, y, maxWidth, lineHeight, 11);
+      y = addMultilineText(doc, structuredResume.education.notes.join(', '), marginX, y, maxWidth, lineHeight, fontSizeSmall);
       y += 2;
-
-      // Section: Skills
-      doc.setFontSize(16);
+      if (structuredResume.certifications && structuredResume.certifications.length > 0) {
+        doc.setFontSize(fontSizeTitle);
+        doc.setTextColor(37, 99, 235);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Certifications', marginX, y);
+        y += 7;
+        doc.setFontSize(fontSizeSmall);
+        doc.setTextColor(33, 37, 41);
+        doc.setFont('helvetica', 'normal');
+        y = addMultilineText(doc, structuredResume.certifications.join(', '), marginX, y, maxWidth, lineHeight, fontSizeSmall);
+        y += 2;
+      }
+      doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235);
       doc.setFont('helvetica', 'bold');
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
       doc.text('Skills', marginX, y);
       y += 7;
-      doc.setFontSize(12);
+      doc.setFontSize(fontSizeSmall);
       doc.setTextColor(33, 37, 41);
       doc.setFont('helvetica', 'normal');
       Object.entries(structuredResume.skills_and_technologies).forEach(([category, skills]) => {
         if (y > 270) {
           doc.addPage();
-          y = 20;
+          y = marginY;
         }
         doc.setFont('helvetica', 'bold');
-        y = addMultilineText(doc, category.replace(/_/g, ' ').toUpperCase(), marginX, y, maxWidth, lineHeight, 12, 'bold');
+        y = addMultilineText(doc, category.replace(/_/g, ' ').toUpperCase(), marginX, y, maxWidth, lineHeight, fontSizeNormal, 'bold');
         doc.setFont('helvetica', 'normal');
-        y = addMultilineText(doc, skills.join(', '), marginX + 4, y, maxWidth - 8, lineHeight, 11);
-        y += 2;
+        y = addMultilineText(doc, skills.join(', '), marginX + 4, y, maxWidth - 8, lineHeight, fontSizeSmall);
+        y += 1;
       });
-
-      // Section: Certifications (if any)
-      if (structuredResume.certifications && structuredResume.certifications.length > 0) {
-        doc.setFontSize(16);
-        doc.setTextColor(37, 99, 235);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Certifications', marginX, y);
-        y += 7;
-        doc.setFontSize(12);
-        doc.setTextColor(33, 37, 41);
-        doc.setFont('helvetica', 'normal');
-        y = addMultilineText(doc, structuredResume.certifications.join(', '), marginX, y, maxWidth, lineHeight, 11);
-      }
-
-      // Always fit to one page: if y > 280, warn user (optional)
-      // Save PDF
       doc.save(`${structuredResume.name.replace(' ', '_')}_Resume.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -136,6 +194,19 @@ function Resume() {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto resume-container" ref={resumeRef}>
+        {/* Intro Section */}
+        <div className="flex flex-col items-center text-center mb-10">
+          <img
+            src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&q=80"
+            alt="Profile"
+            className="w-24 h-24 rounded-full object-cover border-4 border-blue-500 shadow-lg mb-4"
+          />
+          <h1 className="text-4xl font-bold mb-1">{structuredResume.name}</h1>
+          <a href={`mailto:${structuredResume.email}`} className="text-blue-600 dark:text-blue-400 hover:underline mb-2">{structuredResume.email}</a>
+          <p className="max-w-2xl text-lg text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900 rounded-xl px-6 py-4 shadow-md border border-blue-100 dark:border-blue-800">
+            {structuredResume.intro}
+          </p>
+        </div>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Resume</h1>
           <motion.button
@@ -162,7 +233,11 @@ function Resume() {
                 <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 job-item">
                   <h3 className="text-xl font-semibold break-words">{job.role}</h3>
                   <p className="text-gray-600 dark:text-gray-400">{job.company} • {job.dates}</p>
-                  <ul className="mt-4 list-disc list-inside space-y-2">
+                  {/* Job Summary */}
+                  <p className="mt-2 mb-3 text-base text-gray-800 dark:text-gray-200 italic bg-blue-100/60 dark:bg-blue-900/40 rounded px-4 py-2">
+                    {job.summary}
+                  </p>
+                  <ul className="mt-2 list-disc list-inside space-y-2">
                     {job.responsibilities.map((task, idx) => (
                       <li key={idx}>{task}</li>
                     ))}

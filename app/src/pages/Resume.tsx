@@ -217,11 +217,6 @@ function Resume() {
       <div className="max-w-4xl mx-auto resume-container" ref={resumeRef}>
         {/* Intro Section */}
         <div className="flex flex-col items-center text-center mb-10">
-          <img
-            src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&q=80"
-            alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-4 border-blue-500 shadow-lg mb-4"
-          />
           <h1 className="text-4xl font-bold mb-1">{structuredResume.name}</h1>
           <a href={`mailto:${structuredResume.email}`} className="text-blue-600 dark:text-blue-400 hover:underline mb-2">{structuredResume.email}</a>
           <p className="max-w-2xl text-lg text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900 rounded-xl px-6 py-4 shadow-md border border-blue-100 dark:border-blue-800">

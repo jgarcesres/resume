@@ -1,6 +1,6 @@
 {
   "title": "Hi, I'm Juan Garces",
-  "subtitle": "Site Reliability Engineer with expertise in DevOps, automation, and infrastructure. I specialize in building robust, scalable systems and streamlining development workflows with a strong background in Security and Identity management.",
+  "subtitle": "Site Reliability Engineer with expertise in DevOps, observability, automation, and infrastructure. I specialize in building robust, scalable systems and streamlining development workflows with a strong background in Security and Identity management.",
   "skills": [
     {
       "title": "DevOps",
@@ -15,7 +15,7 @@
       "description": "Managing and optimizing cloud and on-premise infrastructure solutions."
     },
     {
-      "title": "Monitoring",
+      "title": "Monitoring/Observability",
       "description": "Implementing observability solutions for real-time insights into system performance."
     },
     {

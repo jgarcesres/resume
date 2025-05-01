@@ -47,7 +47,7 @@
       "description": "Managing a personal k3s cluster for running various services and experimenting with cloud-native technologies."
     },
     {
-      "title": "Selhosted AI models",
+      "title": "Selfhosted AI models",
       "description": "Exploring the world of AI by self-hosting models like Stable Diffusion and llama, experimenting with their capabilities."
     }
   ]

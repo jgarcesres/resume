@@ -8,7 +8,7 @@
       "role": "Site Reliability Engineer (SRE)",
       "location": "Remote (California/Florida)",
       "dates": "October 2021 \u2013 Present",
-      "summary": "Focused on building and maintaining robust infrastructure and CI/CD pipelines. Improved observability for the fleet and automated config managment.",
+      "summary": "Focused on building and maintaining robust infrastructure and CI/CD pipelines. Improved observability for the fleet and automated config management.",
       "responsibilities": [
         "Managed application clusters in AWS and Azure for enterprise clients within their environments (Microsoft, Salesforce, Asana).",
         "Built custom monitoring/metrics systems using open-source tools (AWS EKS, Grafana stack).",

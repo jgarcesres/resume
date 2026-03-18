@@ -156,6 +156,7 @@ jobs:
           [[routes]]
           pattern = "${CUSTOM_DOMAIN}"
           custom_domain = true
+          override_existing_dns_record = true
           EOF
 
       - name: Deploy to Cloudflare Workers (Production)

@@ -6,20 +6,7 @@ import Home from './pages/Home';
 import Projects from './pages/Projects';
 import Hobbies from './pages/Hobbies';
 import Resume from './pages/Resume';
-import PageTransition from './components/PageTransition';
-import PixelPanel from './components/ui/PixelPanel';
-
-function HomelabPlaceholder() {
-  return (
-    <PageTransition>
-      <PixelPanel glow="cyan" className="text-center py-12">
-        <span className="text-2xl mb-4 block">🏰</span>
-        <h1 className="font-pixel text-lg text-rpg-text-bright mb-3">The Server Room</h1>
-        <p className="font-pixel text-[9px] text-rpg-text-dim">Coming soon — homelab topology, status page, and more.</p>
-      </PixelPanel>
-    </PageTransition>
-  );
-}
+import Homelab from './pages/Homelab';
 
 function App() {
   return (
@@ -35,7 +22,7 @@ function App() {
               <Route path="/projects" element={<Projects />} />
               <Route path="/hobbies" element={<Hobbies />} />
               <Route path="/resume" element={<Resume />} />
-              <Route path="/homelab" element={<HomelabPlaceholder />} />
+              <Route path="/homelab" element={<Homelab />} />
             </Routes>
           </AnimatePresence>
         </main>

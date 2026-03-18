@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PageTransition from '../components/PageTransition';
 import { Github, ExternalLink, Briefcase, Code } from 'lucide-react';
-import projectsContent from '../../resources/projects_content.json';
+import projectsContent from '@resources/projects_content.json';
 
 interface Project {
   title: string;

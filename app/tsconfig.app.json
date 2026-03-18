@@ -9,6 +9,8 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true, // Added to allow importing JSON files
+    "esModuleInterop": true, // Added for better compatibility with modules
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
@@ -18,7 +20,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vitest/globals"],
+    "paths": {
+      "@resources/*": ["../resources/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../resources"]
 }

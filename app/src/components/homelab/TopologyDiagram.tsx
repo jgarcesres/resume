@@ -36,6 +36,8 @@ const nodeIcons: Record<string, string> = {
   storage: '💾',
 };
 
+const fallbackIcon = '📦';
+
 const nodePositions: Record<string, { x: number; y: number }> = {
   'pve': { x: 120, y: 60 },
   'truenas': { x: 40, y: 180 },
@@ -49,7 +51,14 @@ const nodePositions: Record<string, { x: number; y: number }> = {
 function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
   const [selected, setSelected] = useState<NodeData | null>(null);
 
-  const getPos = (id: string) => nodePositions[id] || { x: 0, y: 0 };
+  const getPos = (id: string) => nodePositions[id] ?? null;
+
+  const handleNodeKey = (e: React.KeyboardEvent, node: NodeData) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setSelected(selected?.id === node.id ? null : node);
+    }
+  };
 
   return (
     <div className="relative">
@@ -57,6 +66,8 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
         viewBox="0 0 560 400"
         className="w-full h-auto"
         style={{ maxHeight: '500px' }}
+        role="img"
+        aria-label="Homelab network topology diagram"
       >
         {/* Site backgrounds */}
         <rect x="5" y="10" width="290" height="370" rx="4"
@@ -77,15 +88,16 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
         })}
 
         {/* Connections */}
-        {connections.map((conn, i) => {
+        {connections.map((conn) => {
           const from = getPos(conn.from);
           const to = getPos(conn.to);
+          if (!from || !to) return null;
           const midX = (from.x + to.x) / 2;
           const midY = (from.y + to.y) / 2;
           const isCross = conn.crossSite;
 
           return (
-            <g key={i}>
+            <g key={`${conn.from}-${conn.to}-${conn.label}`}>
               <line
                 x1={from.x + 30} y1={from.y + 20}
                 x2={to.x + 30} y2={to.y + 20}
@@ -93,7 +105,6 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                 strokeWidth={isCross ? 2 : 1}
                 strokeDasharray={isCross ? '6 3' : 'none'}
               />
-              {/* Animated data pulse */}
               <circle r="2" fill={isCross ? '#ffd700' : '#00e5ff'} opacity="0.8">
                 <animateMotion
                   dur={isCross ? '4s' : '3s'}
@@ -101,7 +112,6 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                   path={`M${from.x + 30},${from.y + 20} L${to.x + 30},${to.y + 20}`}
                 />
               </circle>
-              {/* Connection label */}
               <text x={midX + 30} y={midY + 16}
                 fontSize="6" fill="rgba(200,214,229,0.4)" textAnchor="middle"
                 className="font-body"
@@ -124,9 +134,12 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
             <g
               key={node.id}
               className="cursor-pointer"
+              role="button"
+              tabIndex={0}
+              aria-label={`${node.label}: ${node.description}`}
               onClick={() => setSelected(isSelected ? null : node)}
+              onKeyDown={(e) => handleNodeKey(e, node)}
             >
-              {/* Node box */}
               <rect
                 x={pos.x} y={pos.y}
                 width="60" height="40" rx="2"
@@ -134,17 +147,14 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                 stroke={isSelected ? '#00e5ff' : isKube ? 'rgba(0,229,255,0.35)' : 'rgba(42,58,92,0.6)'}
                 strokeWidth={isSelected ? 2 : 1}
               />
-              {/* Control plane indicator */}
               {isControl && (
                 <rect x={pos.x} y={pos.y} width="60" height="3" rx="1"
                   fill="rgba(0,229,255,0.5)"
                 />
               )}
-              {/* Icon */}
               <text x={pos.x + 30} y={pos.y + 18} textAnchor="middle" fontSize="12">
-                {nodeIcons[node.type] || '📦'}
+                {nodeIcons[node.type] || fallbackIcon}
               </text>
-              {/* Label */}
               <text
                 x={pos.x + 30} y={pos.y + 33}
                 textAnchor="middle" fontSize="6"
@@ -169,10 +179,12 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{nodeIcons[selected.type]}</span>
+                <span className="text-lg">{nodeIcons[selected.type] || fallbackIcon}</span>
                 <h3 className="font-pixel text-[10px] text-neon-cyan uppercase">{selected.label}</h3>
               </div>
               <button
+                type="button"
+                aria-label="Close node details"
                 onClick={() => setSelected(null)}
                 className="font-pixel text-[8px] text-rpg-text-dim hover:text-rpg-text"
               >

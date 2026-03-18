@@ -11,13 +11,13 @@ interface ServiceStatusProps {
   services: Service[];
 }
 
-const categoryColors: Record<string, string> = {
-  media: 'neon-magenta',
-  monitoring: 'neon-gold',
-  infra: 'neon-cyan',
-  storage: 'neon-green',
-  family: 'neon-magenta',
-  apps: 'neon-cyan',
+const categoryClasses: Record<string, string> = {
+  media: 'text-neon-magenta',
+  monitoring: 'text-neon-gold',
+  infra: 'text-neon-cyan',
+  storage: 'text-neon-green',
+  family: 'text-neon-magenta',
+  apps: 'text-neon-cyan',
 };
 
 const statusIndicator: Record<string, { color: string; label: string }> = {
@@ -33,11 +33,11 @@ function ServiceStatus({ services }: ServiceStatusProps) {
     <div className="space-y-6">
       {categories.map((cat) => {
         const catServices = services.filter((s) => s.category === cat);
-        const accentColor = categoryColors[cat] || 'neon-cyan';
+        const colorClass = categoryClasses[cat] || 'text-neon-cyan';
 
         return (
           <div key={cat}>
-            <h3 className={`font-pixel text-[9px] uppercase mb-3 text-${accentColor}`}>
+            <h3 className={`font-pixel text-[9px] uppercase mb-3 ${colorClass}`}>
               {cat}
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">

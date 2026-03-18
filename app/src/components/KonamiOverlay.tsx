@@ -1,18 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  color: string;
-  size: number;
-  targetY: number;
-  rotation: number;
-  duration: number;
-  delay: number;
-}
+import { useZeldaSecret } from '../hooks/useZeldaSecret';
 
 interface KonamiOverlayProps {
   visible: boolean;
@@ -21,29 +10,13 @@ interface KonamiOverlayProps {
 
 function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
   const navigate = useNavigate();
-  const [particles, setParticles] = useState<Particle[]>([]);
+  const playZeldaSound = useZeldaSecret();
 
   useEffect(() => {
-    if (!visible) {
-      setParticles([]);
-      return;
+    if (visible) {
+      playZeldaSound();
     }
-
-    const colors = ['#00e5ff', '#ff2daa', '#ffd700', '#39ff14', '#4d8cff'];
-    setParticles(
-      Array.from({ length: 40 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        size: 4 + Math.random() * 8,
-        targetY: -100 - Math.random() * 200,
-        rotation: Math.random() * 720,
-        duration: 2 + Math.random(),
-        delay: Math.random() * 0.5,
-      })),
-    );
-  }, [visible]);
+  }, [visible, playZeldaSound]);
 
   const handleSecret = () => {
     onDismiss();
@@ -61,6 +34,7 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
           className="fixed inset-0 flex items-center justify-center"
           style={{ zIndex: 'var(--z-konami)' }}
           role="dialog"
@@ -69,54 +43,184 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           onKeyDown={handleKeyDown}
           onClick={onDismiss}
         >
-          <div className="absolute inset-0 bg-black/80" />
+          {/* Dark void that closes in */}
+          <motion.div
+            className="absolute inset-0 bg-black"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+          />
 
-          {particles.map((p) => (
+          {/* Zelda-style spotlight — expanding diamond of light */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+          >
+            {/* Radial light burst */}
             <motion.div
-              key={p.id}
               className="absolute"
               style={{
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                width: p.size,
-                height: p.size,
-                backgroundColor: p.color,
-                imageRendering: 'pixelated',
+                width: 600,
+                height: 600,
+                background: 'radial-gradient(circle, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.05) 30%, transparent 60%)',
               }}
-              initial={{ opacity: 0, scale: 0, y: 0 }}
-              animate={{
-                opacity: [0, 1, 1, 0],
-                scale: [0, 1.5, 1, 0.5],
-                y: [0, p.targetY],
-                rotate: p.rotation,
-              }}
-              transition={{
-                duration: p.duration,
-                delay: p.delay,
-                ease: 'easeOut',
-              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: [0, 1.5, 1.2], opacity: [0, 0.8, 0.5] }}
+              transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
             />
-          ))}
 
+            {/* Spinning diamond sparkles */}
+            {[...Array(8)].map((_, i) => {
+              const angle = (i / 8) * Math.PI * 2;
+              const radius = 80;
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute"
+                  style={{
+                    width: 4,
+                    height: 4,
+                    backgroundColor: '#ffd700',
+                    imageRendering: 'pixelated',
+                    boxShadow: '0 0 6px #ffd700, 0 0 12px rgba(255,215,0,0.4)',
+                  }}
+                  initial={{
+                    x: 0,
+                    y: 0,
+                    opacity: 0,
+                    scale: 0,
+                  }}
+                  animate={{
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius,
+                    opacity: [0, 1, 0.6],
+                    scale: [0, 2, 1],
+                  }}
+                  transition={{
+                    delay: 0.4 + i * 0.05,
+                    duration: 0.6,
+                    ease: 'easeOut',
+                  }}
+                />
+              );
+            })}
+
+            {/* Vertical light pillar */}
+            <motion.div
+              className="absolute"
+              style={{
+                width: 2,
+                background: 'linear-gradient(180deg, transparent, rgba(255,215,0,0.6), rgba(255,215,0,0.8), rgba(255,215,0,0.6), transparent)',
+              }}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 300, opacity: 1 }}
+              transition={{ delay: 0.25, duration: 0.4, ease: 'easeOut' }}
+            />
+
+            {/* Horizontal light bar */}
+            <motion.div
+              className="absolute"
+              style={{
+                height: 2,
+                background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.6), rgba(255,215,0,0.8), rgba(255,215,0,0.6), transparent)',
+              }}
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 300, opacity: 1 }}
+              transition={{ delay: 0.25, duration: 0.4, ease: 'easeOut' }}
+            />
+          </motion.div>
+
+          {/* Pixel sparkle particles */}
+          {[...Array(12)].map((_, i) => {
+            const angle = (i / 12) * Math.PI * 2;
+            const dist = 120 + Math.random() * 80;
+            return (
+              <motion.div
+                key={`sparkle-${i}`}
+                className="absolute"
+                style={{
+                  width: 3,
+                  height: 3,
+                  backgroundColor: i % 3 === 0 ? '#ffd700' : i % 3 === 1 ? '#00e5ff' : '#e8f0ff',
+                  imageRendering: 'pixelated',
+                }}
+                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0, 1.5, 0],
+                  x: Math.cos(angle) * dist,
+                  y: Math.sin(angle) * dist,
+                }}
+                transition={{
+                  delay: 0.6 + i * 0.04,
+                  duration: 0.8,
+                  ease: 'easeOut',
+                }}
+              />
+            );
+          })}
+
+          {/* Achievement modal */}
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.2 }}
+            initial={{ scale: 0, opacity: 0, rotateX: 90 }}
+            animate={{ scale: 1, opacity: 1, rotateX: 0 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{
+              delay: 0.7,
+              type: 'spring',
+              stiffness: 200,
+              damping: 18,
+            }}
             className="relative rpg-border rpg-border-glow-gold p-8 text-center max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-4xl mb-4">🎮</div>
-            <h2 className="font-pixel text-sm text-neon-gold mb-3">
-              ACHIEVEMENT UNLOCKED
-            </h2>
-            <p className="font-pixel text-[8px] text-rpg-text-dim mb-2">
+            {/* Pixel Triforce icon */}
+            <motion.div
+              className="flex justify-center mb-4"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1, type: 'spring', stiffness: 300, damping: 15 }}
+            >
+              <svg viewBox="0 0 32 28" width="40" height="35" style={{ imageRendering: 'pixelated' }}>
+                <polygon points="16,0 24,14 8,14" fill="#ffd700" />
+                <polygon points="8,14 16,28 0,28" fill="#ffd700" />
+                <polygon points="24,14 32,28 16,28" fill="#ffd700" />
+                <polygon points="16,14 20,21 12,21" fill="#0a0e1a" />
+              </svg>
+            </motion.div>
+
+            <motion.h2
+              className="font-pixel text-sm text-neon-gold mb-3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.3 }}
+            >
+              SECRET DISCOVERED
+            </motion.h2>
+            <motion.p
+              className="font-pixel text-[8px] text-rpg-text-dim mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+            >
               ↑ ↑ ↓ ↓ ← → ← → B A
-            </p>
-            <p className="font-body text-sm text-rpg-text mb-6">
+            </motion.p>
+            <motion.p
+              className="font-body text-sm text-rpg-text mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.3 }}
+            >
               You found the secret! Not many adventurers make it this far.
-            </p>
-            <div className="flex gap-3 justify-center">
+            </motion.p>
+            <motion.div
+              className="flex gap-3 justify-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4, duration: 0.3 }}
+            >
               <button
                 onClick={handleSecret}
                 className="font-pixel text-[9px] uppercase px-4 py-2 border-2 border-neon-gold/60 bg-neon-gold/10 text-neon-gold hover:bg-neon-gold/20 shadow-[3px_3px_0_rgba(255,215,0,0.3)] active:shadow-[1px_1px_0_rgba(255,215,0,0.3)] active:translate-x-[2px] active:translate-y-[2px] transition-all"
@@ -129,7 +233,7 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
               >
                 Close
               </button>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       )}

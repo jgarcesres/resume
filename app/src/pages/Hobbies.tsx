@@ -1,12 +1,24 @@
 import type { ComponentType, CSSProperties } from 'react';
 import PageTransition from '../components/PageTransition';
-import { Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import hobbiesContent from '@resources/hobbies_content.json';
 import PixelPanel from '../components/ui/PixelPanel';
+import {
+  TriforceIcon,
+  PixelPotIcon,
+  PixelServerIcon,
+  PixelCompassIcon,
+  PixelCoffeeIcon,
+  PixelBookIcon,
+} from '../components/ui/PixelIcons';
 
 const iconMap: Record<string, ComponentType<{ className?: string; style?: CSSProperties }>> = {
-  Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen,
+  Gamepad2: TriforceIcon,
+  ChefHat: PixelPotIcon,
+  Server: PixelServerIcon,
+  Plane: PixelCompassIcon,
+  Coffee: PixelCoffeeIcon,
+  BookOpen: PixelBookIcon,
 };
 
 const colorMap: Record<string, string> = {
@@ -16,6 +28,7 @@ const colorMap: Record<string, string> = {
   'text-blue-500': '#4d8cff',
   'text-yellow-500': '#ffd700',
   'text-amber-700': '#d97706',
+  'text-gray-400': '#9ca3af',
 };
 
 function Hobbies() {

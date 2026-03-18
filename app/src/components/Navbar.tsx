@@ -19,8 +19,9 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
+    <>
     <nav
-      className="fixed top-0 left-0 right-0 z-50 bg-rpg-deep/95 backdrop-blur-sm border-b-2 border-rpg-border shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+      className={`fixed top-0 left-0 right-0 bg-rpg-deep/95 backdrop-blur-sm border-b-2 border-rpg-border shadow-[0_4px_20px_rgba(0,0,0,0.5)] ${isMenuOpen ? 'z-[10002]' : 'z-50'}`}
     >
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
@@ -105,7 +106,9 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile Menu — RPG Inventory Style */}
+    </nav>
+
+      {/* Mobile Menu — RPG Inventory Style (outside nav to escape its stacking context) */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -122,8 +125,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 w-64 h-full md:hidden z-[10001] border-l-2 border-rpg-border"
-              style={{ backgroundColor: '#0f1628' }}
+              className="fixed top-0 right-0 w-64 h-full md:hidden z-[10001] border-l-2 border-rpg-border bg-[#0f1628]"
             >
               <div className="pt-20 px-4">
                 <div className="font-pixel text-[9px] text-neon-cyan mb-4 pb-2 border-b border-rpg-border uppercase">
@@ -179,7 +181,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
           </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }
 

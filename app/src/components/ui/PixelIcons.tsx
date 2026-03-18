@@ -109,7 +109,7 @@ export function PixelServerIcon({ className, style }: PixelIconProps) {
 }
 
 /** Pixel art airplane for Traveling — clearer than compass */
-export function PixelCompassIcon({ className, style }: PixelIconProps) {
+export function PixelPlaneIcon({ className, style }: PixelIconProps) {
   return (
     <motion.svg
       viewBox="0 0 32 32"

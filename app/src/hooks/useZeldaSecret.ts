@@ -11,6 +11,9 @@ export function useZeldaSecret() {
   const play = useCallback(() => {
     const ctx = ctxRef.current ?? new AudioContext();
     ctxRef.current = ctx;
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
 
     // Classic "secret discovered" notes (frequencies in Hz)
     // Approximation of the Zelda secret jingle: ascending arpeggio

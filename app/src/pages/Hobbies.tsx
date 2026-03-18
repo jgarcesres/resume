@@ -7,7 +7,7 @@ import {
   TriforceIcon,
   PixelPotIcon,
   PixelServerIcon,
-  PixelCompassIcon,
+  PixelPlaneIcon,
   PixelCoffeeIcon,
   PixelBookIcon,
 } from '../components/ui/PixelIcons';
@@ -16,7 +16,7 @@ const iconMap: Record<string, ComponentType<{ className?: string; style?: CSSPro
   Gamepad2: TriforceIcon,
   ChefHat: PixelPotIcon,
   Server: PixelServerIcon,
-  Plane: PixelCompassIcon,
+  Plane: PixelPlaneIcon,
   Coffee: PixelCoffeeIcon,
   BookOpen: PixelBookIcon,
 };

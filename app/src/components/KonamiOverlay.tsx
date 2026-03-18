@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useZeldaSecret } from '../hooks/useZeldaSecret';
@@ -22,6 +22,11 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
     onDismiss();
     navigate('/credits');
   };
+
+  const sparkleDistances = useMemo(
+    () => Array.from({ length: 12 }, () => 120 + Math.random() * 80),
+    []
+  );
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') onDismiss();
@@ -135,7 +140,7 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           {/* Pixel sparkle particles */}
           {[...Array(12)].map((_, i) => {
             const angle = (i / 12) * Math.PI * 2;
-            const dist = 120 + Math.random() * 80;
+            const dist = sparkleDistances[i];
             return (
               <motion.div
                 key={`sparkle-${i}`}

@@ -2,11 +2,16 @@
 FROM node:20-alpine as build
 
 WORKDIR /build
+
+COPY app/package.json app/package-lock.json ./app/
+WORKDIR /build/app
+RUN npm ci
+
+WORKDIR /build
 COPY app/ ./app/
 COPY resources/ ./resources/
 
 WORKDIR /build/app
-RUN npm install
 RUN npm run build
 
 # Production stage

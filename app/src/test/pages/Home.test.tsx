@@ -1,9 +1,10 @@
+import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import Home from '../../pages/Home';
 
-const renderWithRouter = (component: React.ReactNode) => {
+const renderWithRouter = (component: ReactNode) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 

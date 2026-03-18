@@ -30,12 +30,13 @@ interface PrometheusResponse {
   };
 }
 
-// IMPORTANT: Replace these placeholders with your actual API endpoints and query
-const UPTIME_KUMA_API_URL = 'YOUR_UPTIME_KUMA_API_URL_HERE';
-const PROMETHEUS_API_URL = 'YOUR_PROMETHEUS_API_URL_HERE'; // e.g., https://your-prometheus.com/api/v1/query
-const PROMQL_QUERY_VISITORS = 'YOUR_PROMQL_QUERY_FOR_VISITORS_HERE'; // e.g., sum(increase(traefik_service_requests_total{service="your-service@docker"}[24h]))
+const UPTIME_KUMA_API_URL = import.meta.env.VITE_UPTIME_KUMA_API_URL ?? '';
+const PROMETHEUS_API_URL = import.meta.env.VITE_PROMETHEUS_API_URL ?? '';
+const PROMQL_QUERY_VISITORS = import.meta.env.VITE_PROMQL_QUERY_VISITORS ?? '';
 
 function SiteStats() {
+  const isConfigured = !!(UPTIME_KUMA_API_URL || PROMETHEUS_API_URL);
+
   const [uptimeData, setUptimeData] = useState<string | null>(null);
   const [visitorCount, setVisitorCount] = useState<string | null>(null);
   const [uptimeError, setUptimeError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ function SiteStats() {
 
   useEffect(() => {
     const fetchUptime = async () => {
-      if (!UPTIME_KUMA_API_URL || UPTIME_KUMA_API_URL === 'YOUR_UPTIME_KUMA_API_URL_HERE') {
+      if (!UPTIME_KUMA_API_URL) {
         setUptimeError("Uptime Kuma API URL not configured.");
         setIsLoadingUptime(false);
         return;
@@ -89,8 +90,7 @@ function SiteStats() {
     };
 
     const fetchVisitors = async () => {
-      if (!PROMETHEUS_API_URL || PROMETHEUS_API_URL === 'YOUR_PROMETHEUS_API_URL_HERE' ||
-          !PROMQL_QUERY_VISITORS || PROMQL_QUERY_VISITORS === 'YOUR_PROMQL_QUERY_FOR_VISITORS_HERE') {
+      if (!PROMETHEUS_API_URL || !PROMQL_QUERY_VISITORS) {
         setVisitorsError("Prometheus API or query not configured.");
         setIsLoadingVisitors(false);
         return;
@@ -119,6 +119,8 @@ function SiteStats() {
     fetchUptime();
     fetchVisitors();
   }, []);
+
+  if (!isConfigured) return null;
 
   return (
     <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">

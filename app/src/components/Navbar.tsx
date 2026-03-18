@@ -28,95 +28,102 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
     return () => { document.body.style.overflow = ''; };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = () => { if (mq.matches) setIsMenuOpen(false); };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
   return (
     <>
-    <nav
-      className={`fixed top-0 left-0 right-0 bg-rpg-deep/95 backdrop-blur-sm border-b-2 border-rpg-border shadow-[0_4px_20px_rgba(0,0,0,0.5)] ${isMenuOpen ? 'z-[10002]' : 'z-50'}`}
-    >
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
-          {/* Logo / Home */}
-          <NavLink
-            to="/"
-            className="flex items-center gap-2 relative z-50 group"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <span className="text-lg">⚡</span>
-            <span className="font-pixel text-[11px] text-neon-cyan group-hover:text-neon-gold transition-colors">
-              JUAN.EXE
-            </span>
-          </NavLink>
+      <nav
+        className="fixed top-0 left-0 right-0 bg-rpg-deep/95 backdrop-blur-sm border-b-2 border-rpg-border shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+        style={{ zIndex: isMenuOpen ? 'var(--z-nav-open)' : 'var(--z-nav)' }}
+      >
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
+            {/* Logo / Home */}
+            <NavLink
+              to="/"
+              className="flex items-center gap-2 relative z-50 group"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              <span className="text-lg">⚡</span>
+              <span className="font-pixel text-[11px] text-neon-cyan group-hover:text-neon-gold transition-colors">
+                JUAN.EXE
+              </span>
+            </NavLink>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `
-                  relative flex items-center gap-2 px-4 py-2 font-pixel text-[9px] uppercase tracking-wider
-                  transition-all duration-150
-                  ${isActive
-                    ? 'text-neon-gold bg-neon-gold/5'
-                    : 'text-rpg-text-dim hover:text-rpg-text-bright'
-                  }
-                `}
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-arrow"
-                        className="text-neon-gold text-[8px] animate-arrow-bounce"
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                      >
-                        ▶
-                      </motion.span>
-                    )}
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-
-            {/* Party Members indicator */}
-            <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
-                <div className="flex gap-0.5">
-                  <span className="text-[10px]">👤</span>
-                  <span className="text-[10px]">👤</span>
-                  <span className="text-[8px]">👶</span>
-                </div>
-              </div>
-              {onToggleCrt && (
-                <button
-                  onClick={onToggleCrt}
-                  className="font-pixel text-[7px] text-rpg-text-dim hover:text-rpg-text transition-colors"
-                  title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
-                  aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => `
+                    relative flex items-center gap-2 px-4 py-2 font-pixel text-[9px] uppercase tracking-wider
+                    transition-all duration-150
+                    ${isActive
+                      ? 'text-neon-gold bg-neon-gold/5'
+                      : 'text-rpg-text-dim hover:text-rpg-text-bright'
+                    }
+                  `}
                 >
-                  {crtEnabled ? '📺' : '🖥️'}
-                </button>
-              )}
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <motion.span
+                          layoutId="nav-arrow"
+                          className="text-neon-gold text-[8px] animate-arrow-bounce"
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        >
+                          ▶
+                        </motion.span>
+                      )}
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+
+              {/* Party Members indicator */}
+              <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
+                  <div className="flex gap-0.5">
+                    <span className="text-[10px]">👤</span>
+                    <span className="text-[10px]">👤</span>
+                    <span className="text-[8px]">👶</span>
+                  </div>
+                </div>
+                {onToggleCrt && (
+                  <button
+                    onClick={onToggleCrt}
+                    className="font-pixel text-[7px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                    title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                    aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                  >
+                    {crtEnabled ? '📺' : '🖥️'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden relative z-50">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 text-rpg-text hover:text-neon-cyan transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden relative z-50">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-rpg-text hover:text-neon-cyan transition-colors"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
         </div>
-      </div>
-
-    </nav>
+      </nav>
 
       {/* Mobile Menu — RPG Inventory Style (outside nav to escape its stacking context) */}
       <AnimatePresence>
@@ -126,7 +133,8 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.7 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black md:hidden z-[10000]"
+              className="fixed inset-0 bg-black md:hidden"
+              style={{ zIndex: 'var(--z-menu-backdrop)' }}
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -135,7 +143,8 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 w-64 h-full md:hidden z-[10001] border-l-2 border-rpg-border bg-[#0f1628]"
+              className="fixed top-0 right-0 w-64 h-full md:hidden border-l-2 border-rpg-border bg-[#0f1628]"
+              style={{ zIndex: 'var(--z-menu-drawer)' }}
             >
               <div className="pt-20 px-4">
                 <div className="font-pixel text-[9px] text-neon-cyan mb-4 pb-2 border-b border-rpg-border uppercase">

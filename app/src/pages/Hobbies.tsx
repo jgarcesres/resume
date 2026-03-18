@@ -46,7 +46,13 @@ function Hobbies() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {hobbiesContent.hobbies.map((hobby, index) => {
             const IconComponent = iconMap[hobby.icon];
+            if (import.meta.env.DEV && !IconComponent) {
+              console.warn(`Hobbies: No icon mapped for "${hobby.icon}". Available: ${Object.keys(iconMap).join(', ')}`);
+            }
             const color = colorMap[hobby.iconColor] || '#c8d6e5';
+            if (import.meta.env.DEV && !colorMap[hobby.iconColor]) {
+              console.warn(`Hobbies: No color mapped for "${hobby.iconColor}". Available: ${Object.keys(colorMap).join(', ')}`);
+            }
 
             return (
               <motion.div

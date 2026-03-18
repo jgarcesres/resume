@@ -10,7 +10,12 @@ const navItems = [
   { to: '/homelab', label: 'Base', icon: '🏰' },
 ];
 
-function Navbar() {
+interface NavbarProps {
+  onToggleCrt?: () => void;
+  crtEnabled?: boolean;
+}
+
+function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -65,13 +70,25 @@ function Navbar() {
             ))}
 
             {/* Party Members indicator */}
-            <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-2">
-              <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
-              <div className="flex gap-0.5">
-                <span className="text-[10px]">👤</span>
-                <span className="text-[10px]">👤</span>
-                <span className="text-[8px]">👶</span>
+            <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
+                <div className="flex gap-0.5">
+                  <span className="text-[10px]">👤</span>
+                  <span className="text-[10px]">👤</span>
+                  <span className="text-[8px]">👶</span>
+                </div>
               </div>
+              {onToggleCrt && (
+                <button
+                  onClick={onToggleCrt}
+                  className="font-pixel text-[7px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                  title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                  aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                >
+                  {crtEnabled ? '📺' : '🖥️'}
+                </button>
+              )}
             </div>
           </div>
 

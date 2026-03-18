@@ -34,6 +34,7 @@ export function useKonamiCode() {
           reset();
         }
       } else {
+        clearTimeout(timerRef.current);
         reset();
       }
     };

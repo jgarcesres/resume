@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +50,10 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
     navigate('/credits');
   };
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') onDismiss();
+  }, [onDismiss]);
+
   return (
     <AnimatePresence>
       {visible && (
@@ -58,6 +62,10 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[9998] flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Achievement unlocked"
+          onKeyDown={handleKeyDown}
           onClick={onDismiss}
         >
           <div className="absolute inset-0 bg-black/80" />

@@ -2,7 +2,7 @@ import React from 'react';
 import PageTransition from '../components/PageTransition';
 import { Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
-import hobbiesContent from '../../resources/hobbies_content.json';
+import hobbiesContent from '@resources/hobbies_content.json';
 
 function Hobbies() {
   // Function to convert Tailwind color class to CSS color value

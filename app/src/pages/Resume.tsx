@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import PageTransition from '../components/PageTransition';
 import { Download, Briefcase, GraduationCap, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
-import structuredResume from '../../resources/structured_resume.json';
+import structuredResume from '@resources/structured_resume.json';
 import jsPDF from 'jspdf';
 
 function Resume() {

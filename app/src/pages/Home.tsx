@@ -1,8 +1,25 @@
-import React from 'react';
 import PageTransition from '../components/PageTransition';
 import { Github, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
-import homeContent from '../../resources/home_content.json';
+import homeContentData from '@resources/home_content.json'; 
+import SiteStats from '../components/SiteStats'; // Import the new component
+
+interface Skill {
+  title: string;
+  description: string;
+}
+
+interface HomeContent {
+  title: string;
+  subtitle: string;
+  skills: Skill[];
+  socials: {
+    linkedin: string;
+    github: string;
+  };
+}
+
+const homeContent: HomeContent = homeContentData;
 
 function Home() {
   return (
@@ -42,7 +59,7 @@ function Home() {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            {homeContent.skills.map((skill, index) => (
+            {homeContent.skills.map((skill: Skill, index: number) => (
               <div key={index} className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <h3 className="font-semibold mb-2">{skill.title}</h3>
                 <p className="text-sm">{skill.description}</p>
@@ -50,6 +67,9 @@ function Home() {
             ))}
           </div>
         </div>
+        
+        {/* Add the SiteStats component here */}
+        <SiteStats />
       </div>
     </PageTransition>
   );

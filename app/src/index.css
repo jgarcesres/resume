@@ -5,6 +5,19 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════
+   Z-INDEX SCALE
+   ═══════════════════════════════════════ */
+
+:root {
+  --z-nav: 50;
+  --z-konami: 9998;
+  --z-crt: 9999;
+  --z-menu-backdrop: 10000;
+  --z-menu-drawer: 10001;
+  --z-nav-open: 10002;
+}
+
+/* ═══════════════════════════════════════
    BASE STYLES — RPG VOID THEME
    ═══════════════════════════════════════ */
 
@@ -42,7 +55,7 @@
   pointer-events: none;
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-crt);
   background:
     repeating-linear-gradient(
       0deg,

@@ -1,0 +1,161 @@
+{
+  "title": "The Server Room",
+  "subtitle": "A geo-distributed k3s homelab spanning two countries, connected via Tailscale VPN",
+  "sites": [
+    {
+      "id": "florida",
+      "label": "Homestead, FL",
+      "flag": "🇺🇸"
+    },
+    {
+      "id": "colombia",
+      "label": "Medellín, CO",
+      "flag": "🇨🇴"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "pve",
+      "label": "pve",
+      "type": "hypervisor",
+      "site": "florida",
+      "description": "Lenovo P520 · Xeon W-2245 · 128GB ECC · RTX 4000",
+      "details": {
+        "cpu": "Intel Xeon W-2245 (8C/16T)",
+        "ram": "128GB DDR4 ECC",
+        "gpu": "NVIDIA Quadro RTX 4000",
+        "storage": "6×22TB HDD (ZFS RAIDZ1) + 4×2TB NVMe + 2×1TB NVMe",
+        "os": "Proxmox VE 8.x"
+      }
+    },
+    {
+      "id": "truenas",
+      "label": "TrueNAS",
+      "type": "storage",
+      "site": "florida",
+      "description": "VM on pve · 48GB RAM · ZFS storage pools",
+      "details": {
+        "ram": "48GB",
+        "storage": "~100TB usable (RAIDZ1)",
+        "services": "NFS, iSCSI"
+      }
+    },
+    {
+      "id": "synology",
+      "label": "Synology DS1515+",
+      "type": "storage",
+      "site": "florida",
+      "description": "5×10TB HDD · ~40TB usable",
+      "details": {
+        "ram": "8GB",
+        "storage": "~40TB usable",
+        "services": "NFS (media, anime)"
+      }
+    },
+    {
+      "id": "k3s-pve",
+      "label": "k3s-pve",
+      "type": "kubernetes",
+      "site": "florida",
+      "role": "control-plane",
+      "description": "Control plane + worker · 10 cores · 32GB · GPU passthrough",
+      "details": {
+        "cpu": "10 cores",
+        "ram": "32GB",
+        "gpu": "RTX 4000 (time-sliced, 10 replicas)",
+        "k3s": "v1.34.3+k3s1",
+        "os": "Ubuntu 24.04"
+      }
+    },
+    {
+      "id": "k3s-home1",
+      "label": "k3s-home1",
+      "type": "kubernetes",
+      "site": "colombia",
+      "role": "worker",
+      "description": "Permanent remote worker · Ryzen 9 5950X · 32GB",
+      "details": {
+        "cpu": "AMD Ryzen 9 5950X (16C/32T)",
+        "ram": "32GB",
+        "k3s": "v1.34.3+k3s1",
+        "os": "Ubuntu 24.04",
+        "workloads": "Prometheus, Grafana, Loki, Garage"
+      }
+    },
+    {
+      "id": "pve-home1",
+      "label": "pve-home1",
+      "type": "hypervisor",
+      "site": "colombia",
+      "description": "Bare metal · Ryzen 9 5950X · 32GB · Proxmox host",
+      "details": {
+        "cpu": "AMD Ryzen 9 5950X (16C/32T)",
+        "ram": "32GB",
+        "storage": "1TB Samsung 970 EVO Plus",
+        "os": "Proxmox VE 9.1.1"
+      }
+    },
+    {
+      "id": "k3s-home2",
+      "label": "k3s-home2",
+      "type": "kubernetes",
+      "site": "colombia",
+      "role": "worker",
+      "description": "On-demand remote worker · VM on pve-home1 · 8 cores · 8GB",
+      "details": {
+        "cpu": "8 cores",
+        "ram": "8GB",
+        "k3s": "v1.34.3+k3s1",
+        "os": "Ubuntu 24.04",
+        "note": "On-demand — spun up as needed"
+      }
+    }
+  ],
+  "connections": [
+    { "from": "pve", "to": "k3s-pve", "label": "VM" },
+    { "from": "pve", "to": "truenas", "label": "VM" },
+    { "from": "truenas", "to": "k3s-pve", "label": "NFS/iSCSI" },
+    { "from": "synology", "to": "k3s-pve", "label": "NFS" },
+    { "from": "k3s-pve", "to": "k3s-home1", "label": "Tailscale VPN", "crossSite": true },
+    { "from": "k3s-pve", "to": "k3s-home2", "label": "Tailscale VPN", "crossSite": true },
+    { "from": "pve-home1", "to": "k3s-home2", "label": "VM" }
+  ],
+  "techStack": [
+    { "category": "Orchestration", "items": ["K3s", "ArgoCD", "Helm"] },
+    { "category": "Networking", "items": ["Tailscale", "Cilium", "Traefik", "CoreDNS"] },
+    { "category": "Monitoring", "items": ["Prometheus", "Grafana", "Loki", "AlertManager", "OpenTelemetry"] },
+    { "category": "Storage", "items": ["ZFS", "TrueNAS", "NFS CSI", "Democratic CSI", "Garage (S3)"] },
+    { "category": "Security", "items": ["1Password Operator", "cert-manager", "Pocket ID (OAuth)", "Tailscale ACLs"] },
+    { "category": "CI/CD", "items": ["GitHub Actions", "ARC Runners", "ArgoCD Image Updater"] }
+  ],
+  "services": [
+    { "name": "Plex", "category": "media", "status": "online", "icon": "🎬" },
+    { "name": "Sonarr", "category": "media", "status": "online", "icon": "📺" },
+    { "name": "Radarr", "category": "media", "status": "online", "icon": "🎥" },
+    { "name": "Sonarr-Anime", "category": "media", "status": "online", "icon": "🎌" },
+    { "name": "Prowlarr", "category": "media", "status": "online", "icon": "🔍" },
+    { "name": "Seerr", "category": "media", "status": "online", "icon": "📋" },
+    { "name": "Tautulli", "category": "media", "status": "online", "icon": "📊" },
+    { "name": "Immich", "category": "family", "status": "online", "icon": "📸" },
+    { "name": "Grafana", "category": "monitoring", "status": "online", "icon": "📈" },
+    { "name": "Prometheus", "category": "monitoring", "status": "online", "icon": "🔥" },
+    { "name": "Loki", "category": "monitoring", "status": "online", "icon": "📝" },
+    { "name": "AlertManager", "category": "monitoring", "status": "online", "icon": "🚨" },
+    { "name": "OpenTelemetry", "category": "monitoring", "status": "online", "icon": "🔭" },
+    { "name": "ArgoCD", "category": "infra", "status": "online", "icon": "🔄" },
+    { "name": "Traefik", "category": "infra", "status": "online", "icon": "🌐" },
+    { "name": "Pocket ID", "category": "infra", "status": "online", "icon": "🔑" },
+    { "name": "cert-manager", "category": "infra", "status": "online", "icon": "🔒" },
+    { "name": "Garage (S3)", "category": "storage", "status": "online", "icon": "🪣" },
+    { "name": "NMS", "category": "apps", "status": "online", "icon": "💰" },
+    { "name": "Home Assistant", "category": "apps", "status": "online", "icon": "🏠" }
+  ],
+  "specs": {
+    "totalCores": "34 cores / 56 threads",
+    "totalRam": "192GB",
+    "totalStorage": "~140TB raw",
+    "gpu": "NVIDIA Quadro RTX 4000",
+    "sites": "2 (FL, US + Medellín, CO)",
+    "vpn": "Tailscale (WireGuard)"
+  }
+}

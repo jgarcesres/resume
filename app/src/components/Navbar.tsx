@@ -10,7 +10,12 @@ const navItems = [
   { to: '/homelab', label: 'Base', icon: '🏰' },
 ];
 
-function Navbar() {
+interface NavbarProps {
+  onToggleCrt?: () => void;
+  crtEnabled?: boolean;
+}
+
+function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -65,13 +70,25 @@ function Navbar() {
             ))}
 
             {/* Party Members indicator */}
-            <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-2">
-              <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
-              <div className="flex gap-0.5">
-                <span className="text-[10px]">👤</span>
-                <span className="text-[10px]">👤</span>
-                <span className="text-[8px]">👶</span>
+            <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
+                <div className="flex gap-0.5">
+                  <span className="text-[10px]">👤</span>
+                  <span className="text-[10px]">👤</span>
+                  <span className="text-[8px]">👶</span>
+                </div>
               </div>
+              {onToggleCrt && (
+                <button
+                  onClick={onToggleCrt}
+                  className="font-pixel text-[7px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                  title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                  aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
+                >
+                  {crtEnabled ? '📺' : '🖥️'}
+                </button>
+              )}
             </div>
           </div>
 
@@ -137,13 +154,24 @@ function Navbar() {
                   ))}
                 </div>
 
-                {/* Party Members in mobile */}
-                <div className="mt-8 pt-4 border-t border-rpg-border">
-                  <div className="font-pixel text-[8px] text-rpg-text-dim mb-2">PARTY MEMBERS</div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span>👤</span><span>👤</span><span>👶</span>
-                    <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
+                {/* Party Members + CRT toggle in mobile */}
+                <div className="mt-8 pt-4 border-t border-rpg-border space-y-4">
+                  <div>
+                    <div className="font-pixel text-[8px] text-rpg-text-dim mb-2">PARTY MEMBERS</div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span>👤</span><span>👤</span><span>👶</span>
+                      <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
+                    </div>
                   </div>
+                  {onToggleCrt && (
+                    <button
+                      onClick={onToggleCrt}
+                      className="flex items-center gap-2 font-pixel text-[8px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                    >
+                      <span>{crtEnabled ? '📺' : '🖥️'}</span>
+                      <span>CRT {crtEnabled ? 'ON' : 'OFF'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

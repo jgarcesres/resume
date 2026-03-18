@@ -1,5 +1,7 @@
 import { useCallback, useRef } from 'react';
 
+const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+
 /**
  * Programmatically generates the classic Zelda "secret discovered" jingle
  * using the Web Audio API — no external audio files needed.
@@ -9,14 +11,15 @@ export function useZeldaSecret() {
   const ctxRef = useRef<AudioContext | null>(null);
 
   const play = useCallback(() => {
-    const ctx = ctxRef.current ?? new AudioContext();
+    if (!AudioCtx) return;
+
+    const ctx = ctxRef.current ?? new AudioCtx();
     ctxRef.current = ctx;
     if (ctx.state === 'suspended') {
       ctx.resume();
     }
 
     // Classic "secret discovered" notes (frequencies in Hz)
-    // Approximation of the Zelda secret jingle: ascending arpeggio
     const notes: [number, number, number][] = [
       // [frequency, startTime, duration]
       [587.33, 0.0, 0.12],    // D5
@@ -35,13 +38,14 @@ export function useZeldaSecret() {
     masterGain.gain.setValueAtTime(0.18, ctx.currentTime);
     masterGain.connect(ctx.destination);
 
+    const lastNote = notes[notes.length - 1];
+    const totalDuration = lastNote[1] + lastNote[2] + 0.1;
+
     notes.forEach(([freq, start, dur]) => {
-      // Square wave for that 8-bit chiptune character
       const osc = ctx.createOscillator();
       osc.type = 'square';
       osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
 
-      // Envelope for each note
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0, ctx.currentTime + start);
       gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + start + 0.01);
@@ -54,6 +58,11 @@ export function useZeldaSecret() {
       osc.start(ctx.currentTime + start);
       osc.stop(ctx.currentTime + start + dur + 0.05);
     });
+
+    // Disconnect master gain after playback to avoid building up the audio graph
+    setTimeout(() => {
+      masterGain.disconnect();
+    }, totalDuration * 1000 + 200);
   }, []);
 
   return play;

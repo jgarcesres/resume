@@ -1,7 +1,6 @@
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useZeldaSecret } from '../hooks/useZeldaSecret';
 
 interface KonamiOverlayProps {
   visible: boolean;
@@ -10,13 +9,14 @@ interface KonamiOverlayProps {
 
 function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
   const navigate = useNavigate();
-  const playZeldaSound = useZeldaSecret();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Auto-focus dialog when it opens so Escape key works
   useEffect(() => {
     if (visible) {
-      playZeldaSound();
+      dialogRef.current?.focus();
     }
-  }, [visible, playZeldaSound]);
+  }, [visible]);
 
   const handleSecret = () => {
     onDismiss();
@@ -40,7 +40,9 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 flex items-center justify-center"
+          ref={dialogRef}
+          tabIndex={-1}
+          className="fixed inset-0 flex items-center justify-center outline-none"
           style={{ zIndex: 'var(--z-konami)' }}
           role="dialog"
           aria-modal="true"

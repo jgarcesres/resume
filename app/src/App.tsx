@@ -11,9 +11,11 @@ import Homelab from './pages/Homelab';
 import Credits from './pages/Credits';
 import { useKonamiCode } from './hooks/useKonamiCode';
 import { useCrtEffect } from './hooks/useCrtEffect';
+import { useZeldaSecret } from './hooks/useZeldaSecret';
 
 function AppContent() {
-  const { activated, dismiss } = useKonamiCode();
+  const playZeldaSound = useZeldaSecret();
+  const { activated, dismiss } = useKonamiCode(playZeldaSound);
   const { crtEnabled, toggleCrt } = useCrtEffect();
 
   return (

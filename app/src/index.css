@@ -68,6 +68,26 @@
     4px 4px 0 rgba(0, 0, 0, 0.6);
 }
 
+.rpg-hover-cyan:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  outline-color: rgba(0, 229, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 229, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 229, 255, 0.08);
+}
+
+.rpg-hover-gold:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+  outline-color: rgba(255, 215, 0, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 215, 0, 0.08);
+}
+
 .rpg-border-glow-cyan {
   border-color: rgba(0, 229, 255, 0.4);
   outline-color: rgba(0, 229, 255, 0.15);

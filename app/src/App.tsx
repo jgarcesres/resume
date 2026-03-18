@@ -6,35 +6,28 @@ import Home from './pages/Home';
 import Projects from './pages/Projects';
 import Hobbies from './pages/Hobbies';
 import Resume from './pages/Resume';
-import { ThemeProvider } from './context/ThemeContext';
-import { NavProvider } from './context/NavContext';
 
 function App() {
   return (
-    <ThemeProvider>
-      <NavProvider>
-        <Router>
-          <div className="min-h-screen bg-rpg-void text-rpg-text grid-bg relative">
-            {/* CRT Scanline overlay */}
-            <div className="crt-overlay" />
+    <Router>
+      <div className="min-h-screen bg-rpg-void text-rpg-text grid-bg relative">
+        <div className="crt-overlay" />
 
-            <Navbar />
-            <main className="max-w-5xl mx-auto px-4 py-8 mt-14">
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/hobbies" element={<Hobbies />} />
-                  <Route path="/resume" element={<Resume />} />
-                </Routes>
-              </AnimatePresence>
-            </main>
+        <Navbar />
+        <main className="max-w-5xl mx-auto px-4 py-8 mt-14">
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/hobbies" element={<Hobbies />} />
+              <Route path="/resume" element={<Resume />} />
+            </Routes>
+          </AnimatePresence>
+        </main>
 
-            <PixelCat />
-          </div>
-        </Router>
-      </NavProvider>
-    </ThemeProvider>
+        <PixelCat />
+      </div>
+    </Router>
   );
 }
 

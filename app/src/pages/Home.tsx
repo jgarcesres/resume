@@ -76,9 +76,9 @@ function Home() {
         {/* Inventory — Social Links */}
         <div className="flex justify-center gap-4">
           {[
-            { href: homeContent.socials.github, Icon: Github, label: 'GitHub', glow: 'cyan' as const },
-            { href: homeContent.socials.linkedin, Icon: Linkedin, label: 'LinkedIn', glow: 'gold' as const },
-          ].map(({ href, Icon, label, glow }) => (
+            { href: homeContent.socials.github, Icon: Github, label: 'GitHub', color: 'cyan' },
+            { href: homeContent.socials.linkedin, Icon: Linkedin, label: 'LinkedIn', color: 'gold' },
+          ].map(({ href, Icon, label, color }) => (
             <motion.a
               key={label}
               href={href}
@@ -87,11 +87,11 @@ function Home() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className={`
-                rpg-border flex items-center gap-3 px-5 py-3
-                hover:rpg-border-glow-${glow} transition-all group
+                rpg-border flex items-center gap-3 px-5 py-3 transition-all group
+                ${color === 'cyan' ? 'rpg-hover-cyan' : 'rpg-hover-gold'}
               `}
             >
-              <Icon className={`w-5 h-5 ${glow === 'cyan' ? 'text-neon-cyan' : 'text-neon-gold'} group-hover:drop-shadow-lg`} />
+              <Icon className={`w-5 h-5 ${color === 'cyan' ? 'text-neon-cyan' : 'text-neon-gold'} group-hover:drop-shadow-lg`} />
               <span className="font-pixel text-[9px] text-rpg-text-dim group-hover:text-rpg-text-bright uppercase">
                 {label}
               </span>

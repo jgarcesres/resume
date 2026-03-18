@@ -1,10 +1,11 @@
+import type { ComponentType, CSSProperties } from 'react';
 import PageTransition from '../components/PageTransition';
 import { Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import hobbiesContent from '@resources/hobbies_content.json';
 import PixelPanel from '../components/ui/PixelPanel';
 
-const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+const iconMap: Record<string, ComponentType<{ className?: string; style?: CSSProperties }>> = {
   Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen,
 };
 

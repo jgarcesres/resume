@@ -24,8 +24,10 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
   }, [location.pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (!isMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
   }, [isMenuOpen]);
 
   useEffect(() => {
@@ -112,15 +114,13 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden relative z-50">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-rpg-text hover:text-neon-cyan transition-colors"
+                className="md:hidden relative z-50 p-2 text-rpg-text hover:text-neon-cyan transition-colors"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
-            </div>
           </div>
         </div>
       </nav>

@@ -50,6 +50,8 @@ const nodePositions: Record<string, { x: number; y: number }> = {
 
 function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
   const [selected, setSelected] = useState<NodeData | null>(null);
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const getPos = (id: string) => nodePositions[id] ?? null;
 
@@ -62,9 +64,10 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
 
   return (
     <div className="relative">
+      <div className="overflow-x-auto -mx-2 px-2">
       <svg
         viewBox="0 0 560 400"
-        className="w-full h-auto"
+        className="w-full h-auto min-w-[480px]"
         style={{ maxHeight: '500px' }}
         role="img"
         aria-label="Homelab network topology diagram"
@@ -105,13 +108,15 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                 strokeWidth={isCross ? 2 : 1}
                 strokeDasharray={isCross ? '6 3' : 'none'}
               />
-              <circle r="2" fill={isCross ? '#ffd700' : '#00e5ff'} opacity="0.8">
-                <animateMotion
-                  dur={isCross ? '4s' : '3s'}
-                  repeatCount="indefinite"
-                  path={`M${from.x + 30},${from.y + 20} L${to.x + 30},${to.y + 20}`}
-                />
-              </circle>
+              {!prefersReducedMotion && (
+                <circle r="2" fill={isCross ? '#ffd700' : '#00e5ff'} opacity="0.8">
+                  <animateMotion
+                    dur={isCross ? '4s' : '3s'}
+                    repeatCount="indefinite"
+                    path={`M${from.x + 30},${from.y + 20} L${to.x + 30},${to.y + 20}`}
+                  />
+                </circle>
+              )}
               <text x={midX + 30} y={midY + 16}
                 fontSize="6" fill="rgba(200,214,229,0.4)" textAnchor="middle"
                 className="font-body"
@@ -167,6 +172,7 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
           );
         })}
       </svg>
+      </div>
 
       {/* Node detail popover */}
       <AnimatePresence>

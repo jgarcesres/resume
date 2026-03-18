@@ -1,20 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from 'framer-motion';
 
 function PixelCat() {
   const [meow, setMeow] = useState(false);
   const [facingLeft, setFacingLeft] = useState(false);
+  const facingLeftRef = useRef(false);
+  const meowTimer = useRef<ReturnType<typeof setTimeout>>();
   const x = useMotionValue(-60);
 
-  const speed = 0.8; // pixels per frame (~48px/sec at 60fps)
+  const speed = 0.8;
 
   useAnimationFrame(() => {
     const current = x.get();
     const maxX = window.innerWidth + 60;
 
-    if (!facingLeft) {
+    if (!facingLeftRef.current) {
       const next = current + speed;
       if (next > maxX) {
+        facingLeftRef.current = true;
         setFacingLeft(true);
       } else {
         x.set(next);
@@ -22,6 +25,7 @@ function PixelCat() {
     } else {
       const next = current - speed;
       if (next < -60) {
+        facingLeftRef.current = false;
         setFacingLeft(false);
       } else {
         x.set(next);
@@ -29,9 +33,14 @@ function PixelCat() {
     }
   });
 
+  useEffect(() => {
+    return () => clearTimeout(meowTimer.current);
+  }, []);
+
   const handleClick = useCallback(() => {
     setMeow(true);
-    setTimeout(() => setMeow(false), 1500);
+    clearTimeout(meowTimer.current);
+    meowTimer.current = setTimeout(() => setMeow(false), 1500);
   }, []);
 
   return (
@@ -72,24 +81,17 @@ function PixelCat() {
             className="pixel-cat"
             style={{ imageRendering: 'pixelated' }}
           >
-            {/* Ears */}
             <rect x="4" y="0" width="3" height="3" fill="#6b7fa3" />
             <rect x="15" y="0" width="3" height="3" fill="#6b7fa3" />
-            {/* Head */}
             <rect x="3" y="3" width="16" height="8" fill="#8899b3" />
-            {/* Eyes */}
             <rect x="6" y="5" width="2" height="2" fill="#00e5ff" />
             <rect x="14" y="5" width="2" height="2" fill="#00e5ff" />
-            {/* Nose */}
             <rect x="10" y="7" width="2" height="1" fill="#ff9fba" />
-            {/* Body */}
             <rect x="2" y="11" width="18" height="6" fill="#8899b3" />
-            {/* Legs */}
             <rect x="3" y="17" width="3" height="3" fill="#6b7fa3" />
             <rect x="8" y="17" width="3" height="3" fill="#6b7fa3" />
             <rect x="13" y="17" width="3" height="3" fill="#6b7fa3" />
             <rect x="17" y="17" width="3" height="3" fill="#6b7fa3" />
-            {/* Tail */}
             <rect x="20" y="10" width="2" height="2" fill="#6b7fa3" />
             <rect x="22" y="8" width="2" height="2" fill="#6b7fa3" />
           </svg>

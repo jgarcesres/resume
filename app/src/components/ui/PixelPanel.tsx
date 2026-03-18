@@ -10,9 +10,9 @@ interface PixelPanelProps {
 }
 
 const glowClasses = {
-  cyan: 'rpg-border-glow-cyan',
-  magenta: 'rpg-border-glow-magenta',
-  gold: 'rpg-border-glow-gold',
+  cyan: 'rpg-border rpg-border-glow-cyan',
+  magenta: 'rpg-border rpg-border-glow-magenta',
+  gold: 'rpg-border rpg-border-glow-gold',
   none: 'rpg-border',
 };
 

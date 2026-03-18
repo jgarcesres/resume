@@ -31,6 +31,11 @@ function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: S
       <div
         className="h-4 relative border border-rpg-border overflow-hidden"
         style={{ backgroundColor: c.bg }}
+        role="progressbar"
+        aria-valuenow={level}
+        aria-valuemin={0}
+        aria-valuemax={maxLevel}
+        aria-label={label}
       >
         <motion.div
           initial={{ width: 0 }}

@@ -150,6 +150,16 @@ jobs:
           name: site-dist
           path: app/dist
 
+      - name: Configure custom domain
+        if: vars.CUSTOM_DOMAIN != ''
+        run: |
+          cat >> wrangler.toml <<EOF
+
+          [[routes]]
+          pattern = "${{ vars.CUSTOM_DOMAIN }}"
+          custom_domain = true
+          EOF
+
       - name: Deploy to Cloudflare Workers (Production)
         uses: cloudflare/wrangler-action@v3
         with:

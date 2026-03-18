@@ -122,7 +122,8 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 w-64 h-full md:hidden z-50 bg-rpg-deep border-l-2 border-rpg-border"
+              className="fixed top-0 right-0 w-64 h-full md:hidden z-50 border-l-2 border-rpg-border"
+              style={{ backgroundColor: '#0f1628' }}
             >
               <div className="pt-20 px-4">
                 <div className="font-pixel text-[9px] text-neon-cyan mb-4 pb-2 border-b border-rpg-border uppercase">

@@ -1,112 +1,97 @@
-import React from 'react';
 import PageTransition from '../components/PageTransition';
 import { Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import hobbiesContent from '@resources/hobbies_content.json';
+import PixelPanel from '../components/ui/PixelPanel';
+
+const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  Gamepad2, ChefHat, Server, Plane, Coffee, BookOpen,
+};
+
+const colorMap: Record<string, string> = {
+  'text-purple-500': '#c084fc',
+  'text-red-500': '#f87171',
+  'text-green-500': '#39ff14',
+  'text-blue-500': '#4d8cff',
+  'text-yellow-500': '#ffd700',
+  'text-amber-700': '#d97706',
+};
 
 function Hobbies() {
-  // Function to convert Tailwind color class to CSS color value
-  const getColorFromClass = (colorClass) => {
-    // Map Tailwind color classes to CSS color values
-    const colorMap = {
-      'text-purple-500': '#A855F7', // Purple-500 in Tailwind
-      'text-red-500': '#EF4444',    // Red-500 in Tailwind
-      'text-green-500': '#10B981',  // Green-500 in Tailwind
-      'text-blue-500': '#3B82F6',   // Blue-500 in Tailwind
-      'text-yellow-500': '#F59E42', // Yellow-500 in Tailwind
-      'text-amber-700': '#B45309',  // Amber-700 in Tailwind
-      // Add more color mappings as needed
-    };
-    
-    return colorMap[colorClass] || 'white'; // Default to white if not found
-  };
-
-  // This function returns the appropriate icon component based on the icon name in the JSON
-  const getIconComponent = (iconName, iconColor) => {
-    const color = getColorFromClass(iconColor);
-    
-    switch (iconName) {
-      case 'Gamepad2':
-        return <Gamepad2 className="w-12 h-12" color={color} />;
-      case 'ChefHat':
-        return <ChefHat className="w-12 h-12" color={color} />;
-      case 'Server':
-        return <Server className="w-12 h-12" color={color} />;
-      case 'Plane':
-        return <Plane className="w-12 h-12" color={color} />;
-      case 'Coffee':
-        return <Coffee className="w-12 h-12" color={color} />;
-      case 'BookOpen':
-        return <BookOpen className="w-12 h-12" color={color} />;
-      default:
-        return null;
-    }
-  };
-
-  // Animation variants for different icons
-  const animationVariants = {
-    Gamepad2: {
-      animate: { rotate: [0, -10, 10, -10, 0] },
-      transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
-    },
-    ChefHat: {
-      animate: { y: [0, -10, 0] },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" }
-    },
-    Server: {
-      animate: { scale: [1, 1.1, 1] },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" }
-    },
-    Plane: {
-      animate: { rotate: [0, 10, -10, 0] },
-      transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
-    },
-    Coffee: {
-      animate: { scale: [1, 1.1, 1] },
-      transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" }
-    },
-    BookOpen: {
-      animate: { rotate: [0, 10, -10, 0] },
-      transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
-    },
-  };
-
   return (
     <PageTransition>
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Hobbies & Interests</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {hobbiesContent.hobbies.map((hobby, index) => (
-            <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex items-baseline gap-4">
+          <h1 className="font-pixel text-lg text-rpg-text-bright">Passive Skills</h1>
+          <span className="font-pixel text-[8px] text-rpg-text-dim">
+            {hobbiesContent.hobbies.length} abilities equipped
+          </span>
+        </div>
+
+        {/* Hobby Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {hobbiesContent.hobbies.map((hobby, index) => {
+            const IconComponent = iconMap[hobby.icon];
+            const color = colorMap[hobby.iconColor] || '#c8d6e5';
+
+            return (
               <motion.div
-                className="flex justify-center mb-4"
-                animate={animationVariants[hobby.icon]?.animate || {}}
-                transition={animationVariants[hobby.icon]?.transition || {}}
+                key={index}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {getIconComponent(hobby.icon, hobby.iconColor)}
+                <PixelPanel className="h-full" delay={index * 0.08}>
+                  <div className="flex flex-col items-center text-center">
+                    <motion.div
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }}
+                      className="mb-3"
+                    >
+                      {IconComponent && (
+                        <IconComponent
+                          className="w-10 h-10"
+                          style={{ color, filter: `drop-shadow(0 0 6px ${color}40)` }}
+                        />
+                      )}
+                    </motion.div>
+                    <h2 className="font-pixel text-[10px] text-rpg-text-bright uppercase mb-2">
+                      {hobby.title}
+                    </h2>
+                    <p className="text-xs text-rpg-text font-body leading-relaxed">
+                      {hobby.description}
+                    </p>
+                  </div>
+                </PixelPanel>
               </motion.div>
-              <h2 className="text-xl font-semibold mb-3 text-center">{hobby.title}</h2>
-              <p className="text-sm text-center">
-                {hobby.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
-        
-        <div className="mt-12 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">Current Projects</h2>
-          <ul className="space-y-4">
+
+        {/* Active Side Quests */}
+        <PixelPanel title="Active Side Quests" glow="magenta">
+          <div className="space-y-4 pt-2">
             {hobbiesContent.projects.map((project, index) => (
-              <li key={index}>
-                <h3 className="font-semibold">{project.title}</h3>
-                <p className="text-sm">
-                  {project.description}
-                </p>
-              </li>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                className="flex items-start gap-3"
+              >
+                <span className="font-pixel text-[8px] text-neon-gold mt-1 shrink-0 animate-blink">▶</span>
+                <div>
+                  <h3 className="font-pixel text-[10px] text-rpg-text-bright uppercase">
+                    {project.title}
+                  </h3>
+                  <p className="text-xs text-rpg-text font-body mt-1 leading-relaxed">
+                    {project.description}
+                  </p>
+                </div>
+              </motion.div>
             ))}
-          </ul>
-        </div>
+          </div>
+        </PixelPanel>
       </div>
     </PageTransition>
   );

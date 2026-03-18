@@ -14,11 +14,11 @@ describe('Home Page', () => {
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
-  it('renders skill cards', () => {
+  it('renders skill stat bars', () => {
     renderWithRouter(<Home />);
-    // Should render at least one skill card
-    const skillHeadings = screen.getAllByRole('heading', { level: 3 });
-    expect(skillHeadings.length).toBeGreaterThan(0);
+    // Skills are now rendered as stat bars with labels
+    expect(screen.getByText('DevOps')).toBeInTheDocument();
+    expect(screen.getByText('Automation')).toBeInTheDocument();
   });
 
   it('renders social links', () => {

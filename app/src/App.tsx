@@ -1,33 +1,25 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
+import PixelCat from './components/PixelCat';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
 import Hobbies from './pages/Hobbies';
 import Resume from './pages/Resume';
 import { ThemeProvider } from './context/ThemeContext';
-import { NavProvider, useNav } from './context/NavContext';
-
-// Wrapper component to handle content padding based on navbar state
-const MainContent = ({ children }: { children: React.ReactNode }) => {
-  const { isScrolled } = useNav();
-  
-  return (
-    <main className={`container mx-auto px-4 py-8 transition-all duration-300 ${isScrolled ? 'mt-16' : ''}`}>
-      {children}
-    </main>
-  );
-};
+import { NavProvider } from './context/NavContext';
 
 function App() {
   return (
     <ThemeProvider>
       <NavProvider>
         <Router>
-          <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          <div className="min-h-screen bg-rpg-void text-rpg-text grid-bg relative">
+            {/* CRT Scanline overlay */}
+            <div className="crt-overlay" />
+
             <Navbar />
-            <MainContent>
+            <main className="max-w-5xl mx-auto px-4 py-8 mt-14">
               <AnimatePresence mode="wait">
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -36,7 +28,9 @@ function App() {
                   <Route path="/resume" element={<Resume />} />
                 </Routes>
               </AnimatePresence>
-            </MainContent>
+            </main>
+
+            <PixelCat />
           </div>
         </Router>
       </NavProvider>

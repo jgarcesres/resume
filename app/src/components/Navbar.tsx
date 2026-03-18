@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,18 +17,27 @@ interface NavbarProps {
 
 function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isExitAnimating, setIsExitAnimating] = useState(false);
+  const prevMenuOpen = useRef(false);
   const location = useLocation();
+
+  const isMenuVisible = isMenuOpen || isExitAnimating;
+
+  useEffect(() => {
+    if (prevMenuOpen.current && !isMenuOpen) setIsExitAnimating(true);
+    prevMenuOpen.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isMenuOpen) return;
+    if (!isMenuVisible) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
-  }, [isMenuOpen]);
+  }, [isMenuVisible]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
@@ -126,7 +135,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
       </nav>
 
       {/* Mobile Menu — RPG Inventory Style (outside nav to escape its stacking context) */}
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => setIsExitAnimating(false)}>
         {isMenuOpen && (
           <>
             <motion.div

@@ -113,7 +113,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.7 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black md:hidden z-40"
+              className="fixed inset-0 bg-black md:hidden z-[10000]"
               onClick={() => setIsMenuOpen(false)}
             />
 
@@ -122,7 +122,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed top-0 right-0 w-64 h-full md:hidden z-50 border-l-2 border-rpg-border"
+              className="fixed top-0 right-0 w-64 h-full md:hidden z-[10001] border-l-2 border-rpg-border"
               style={{ backgroundColor: '#0f1628' }}
             >
               <div className="pt-20 px-4">

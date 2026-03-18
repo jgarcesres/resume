@@ -1,29 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ═══════════════════════════════════════
+   BASE STYLES — RPG VOID THEME
+   ═══════════════════════════════════════ */
+
+@layer base {
+  html {
+    background-color: #0a0e1a;
+    color: #c8d6e5;
+    image-rendering: pixelated;
+  }
+
+  body {
+    font-family: 'Silkscreen', monospace;
+    background-color: #0a0e1a;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(0, 229, 255, 0.3);
+    color: #e8f0ff;
+  }
+}
 
 #root {
   overflow-x: hidden;
   width: 100%;
   position: relative;
+  min-height: 100vh;
 }
+
+/* ═══════════════════════════════════════
+   CRT SCANLINE OVERLAY
+   ═══════════════════════════════════════ */
+
+.crt-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* ═══════════════════════════════════════
+   PIXEL BORDER SYSTEM (RPG Panel Borders)
+   Double-border style like Final Fantasy menus
+   ═══════════════════════════════════════ */
+
+.rpg-border {
+  border: 3px solid #3d5a8a;
+  outline: 3px solid #2a3a5c;
+  outline-offset: -6px;
+  background: linear-gradient(180deg, #141c33 0%, #0f1628 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(61, 90, 138, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6);
+}
+
+.rpg-hover-cyan:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  outline-color: rgba(0, 229, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 229, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 229, 255, 0.08);
+}
+
+.rpg-hover-gold:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+  outline-color: rgba(255, 215, 0, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 215, 0, 0.08);
+}
+
+.rpg-border-glow-cyan {
+  border-color: rgba(0, 229, 255, 0.4);
+  outline-color: rgba(0, 229, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(0, 229, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 229, 255, 0.08);
+}
+
+.rpg-border-glow-gold {
+  border-color: rgba(255, 215, 0, 0.4);
+  outline-color: rgba(255, 215, 0, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 215, 0, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 215, 0, 0.08);
+}
+
+.rpg-border-glow-magenta {
+  border-color: rgba(255, 45, 170, 0.4);
+  outline-color: rgba(255, 45, 170, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 45, 170, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(255, 45, 170, 0.08);
+}
+
+/* ═══════════════════════════════════════
+   CUSTOM SCROLLBAR
+   ═══════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0e1a;
+  border-left: 2px solid #2a3a5c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a3a5c;
+  border: 2px solid #0a0e1a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d5a8a;
+}
+
+/* ═══════════════════════════════════════
+   RPG ARROW CURSOR
+   ═══════════════════════════════════════ */
+
+.rpg-arrow::before {
+  content: '▶';
+  position: absolute;
+  left: -20px;
+  color: #ffd700;
+  font-size: 10px;
+  animation: arrowBounce 0.6s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════
+   PIXEL ART CAT SPRITE (CSS-only)
+   ═══════════════════════════════════════ */
+
+.pixel-cat {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ═══════════════════════════════════════
+   BACKGROUND GRID PATTERN
+   ═══════════════════════════════════════ */
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(42, 58, 92, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 58, 92, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ═══════════════════════════════════════
+   STAT BAR SHIMMER
+   ═══════════════════════════════════════ */
+
+.stat-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* ═══════════════════════════════════════
+   PRINT STYLES (keep professional)
+   ═══════════════════════════════════════ */
 
 @media print {
   body, body * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     background-color: white !important;
+    color: black !important;
     box-shadow: none !important;
   }
-  
+
   .no-print {
     display: none !important;
   }
-  
+
   .page-break {
     page-break-after: always;
   }
-  
+
   section, .job-item {
     break-inside: avoid;
     background-color: white !important;

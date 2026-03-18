@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: ["main"]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   lint:
     name: Lint
@@ -152,11 +148,13 @@ jobs:
 
       - name: Configure custom domain
         if: vars.CUSTOM_DOMAIN != ''
+        env:
+          CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
         run: |
           cat >> wrangler.toml <<EOF
 
           [[routes]]
-          pattern = "${{ vars.CUSTOM_DOMAIN }}"
+          pattern = "${CUSTOM_DOMAIN}"
           custom_domain = true
           EOF
 
@@ -172,6 +170,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
     permissions:
       contents: read
       packages: write

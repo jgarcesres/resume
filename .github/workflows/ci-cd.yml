@@ -86,7 +86,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      deployments: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -97,28 +96,26 @@ jobs:
           name: site-dist
           path: app/dist
 
-      - name: Deploy to Cloudflare Pages (Preview)
+      - name: Deploy to Cloudflare Workers (Preview)
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy app/dist --project-name=juan-garces-portfolio --branch=pr-${{ github.event.pull_request.number }}
+          command: versions upload
 
-      - name: Comment preview URL on PR
+      - name: Comment preview info on PR
         uses: actions/github-script@v7
         with:
           script: |
-            const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
-            const body = `🚀 **Preview deployment ready!**\n\n🔗 ${deploymentUrl}\n\n_Deployed from commit ${context.sha.substring(0, 7)}_`;
+            const body = `🚀 **Worker version uploaded!**\n\nA new version has been uploaded for \`juan-garces-portfolio\`.\n\n_From commit ${context.sha.substring(0, 7)}_`;
 
-            // Find existing bot comment to update
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            const botComment = comments.find(c => c.body.includes('Preview deployment ready'));
+            const botComment = comments.find(c => c.body.includes('Worker version uploaded'));
 
             if (botComment) {
               await github.rest.issues.updateComment({
@@ -143,7 +140,6 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: read
-      deployments: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -154,12 +150,12 @@ jobs:
           name: site-dist
           path: app/dist
 
-      - name: Deploy to Cloudflare Pages (Production)
+      - name: Deploy to Cloudflare Workers (Production)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy app/dist --project-name=juan-garces-portfolio --branch=main
+          command: deploy
 
   docker-build:
     name: Docker Build & Publish

@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface StatBarProps {
   label: string;
@@ -9,28 +10,44 @@ interface StatBarProps {
 }
 
 const colorMap = {
-  green: { fill: '#39ff14', bg: '#0a2e06', glow: 'rgba(57,255,20,0.2)' },
-  blue: { fill: '#4d8cff', bg: '#0a1a3e', glow: 'rgba(77,140,255,0.2)' },
-  gold: { fill: '#ffd700', bg: '#2e2a06', glow: 'rgba(255,215,0,0.2)' },
-  magenta: { fill: '#ff2daa', bg: '#2e0620', glow: 'rgba(255,45,170,0.2)' },
-  cyan: { fill: '#00e5ff', bg: '#062e33', glow: 'rgba(0,229,255,0.2)' },
+  green: { fill: '#39ff14', bg: '#0a2e06', glow: 'rgba(57,255,20,0.2)', glowStrong: 'rgba(57,255,20,0.4)' },
+  blue: { fill: '#4d8cff', bg: '#0a1a3e', glow: 'rgba(77,140,255,0.2)', glowStrong: 'rgba(77,140,255,0.4)' },
+  gold: { fill: '#ffd700', bg: '#2e2a06', glow: 'rgba(255,215,0,0.2)', glowStrong: 'rgba(255,215,0,0.4)' },
+  magenta: { fill: '#ff2daa', bg: '#2e0620', glow: 'rgba(255,45,170,0.2)', glowStrong: 'rgba(255,45,170,0.4)' },
+  cyan: { fill: '#00e5ff', bg: '#062e33', glow: 'rgba(0,229,255,0.2)', glowStrong: 'rgba(0,229,255,0.4)' },
 };
 
 function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: StatBarProps) {
   const c = colorMap[color];
   const pct = Math.min((level / maxLevel) * 100, 100);
+  const [hovered, setHovered] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   return (
-    <div className="space-y-1">
+    <div
+      className="space-y-1 group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <div className="flex items-baseline justify-between">
         <span className="font-body text-sm text-rpg-text">{label}</span>
-        <span className="font-pixel text-[9px] text-rpg-text-dim">
+        <motion.span
+          className="font-pixel text-[9px]"
+          animate={{
+            color: hovered ? c.fill : '#6b7fa3',
+            textShadow: hovered ? `0 0 8px ${c.glow}` : '0 0 0px transparent',
+          }}
+          transition={{ duration: 0.2 }}
+        >
           Lv.{level}
-        </span>
+        </motion.span>
       </div>
       <div
-        className="h-4 relative border border-rpg-border overflow-hidden"
-        style={{ backgroundColor: c.bg }}
+        className="h-4 relative border border-rpg-border overflow-hidden transition-all duration-200"
+        style={{
+          backgroundColor: c.bg,
+          boxShadow: hovered ? `0 0 12px ${c.glowStrong}, inset 0 0 8px ${c.glow}` : 'none',
+        }}
         role="progressbar"
         aria-valuenow={level}
         aria-valuemin={0}
@@ -38,8 +55,9 @@ function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: S
         aria-label={label}
       >
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
+          initial={reducedMotion ? { width: `${pct}%` } : { width: 0 }}
+          whileInView={{ width: `${pct}%` }}
+          viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 1, delay, ease: 'easeOut' }}
           className="h-full stat-shimmer relative"
           style={{
@@ -54,6 +72,21 @@ function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: S
             backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.3) 3px, rgba(0,0,0,0.3) 4px)',
           }}
         />
+        {/* Hover notch markers */}
+        {hovered && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[25, 50, 75].map((mark) => (
+              <motion.div
+                key={mark}
+                className="absolute top-0 h-full w-px"
+                style={{ left: `${mark}%`, backgroundColor: `${c.fill}33` }}
+                initial={{ opacity: 0, scaleY: 0 }}
+                animate={{ opacity: 1, scaleY: 1 }}
+                transition={{ duration: 0.15, delay: (mark / 100) * 0.1 }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

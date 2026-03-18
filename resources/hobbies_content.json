@@ -3,7 +3,7 @@
     {
       "title": "Homelabbing",
       "icon": "Server",
-      "iconColor": "text-green-500",
+      "iconColor": "text-gray-400",
       "description": "Running a personal homelab for experimenting with new technologies, self-hosting services, and learning about infrastructure management."
     },
     {

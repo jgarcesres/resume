@@ -8,10 +8,12 @@ const KONAMI_SEQUENCE = [
   'b', 'a',
 ];
 
-export function useKonamiCode() {
+export function useKonamiCode(onActivate?: () => void) {
   const [activated, setActivated] = useState(false);
   const indexRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const onActivateRef = useRef(onActivate);
+  onActivateRef.current = onActivate;
 
   const reset = useCallback(() => {
     indexRef.current = 0;
@@ -30,6 +32,8 @@ export function useKonamiCode() {
 
         if (indexRef.current === KONAMI_SEQUENCE.length) {
           clearTimeout(timerRef.current);
+          // Call synchronously within the keydown gesture for audio policy
+          onActivateRef.current?.();
           setActivated(true);
           reset();
         }

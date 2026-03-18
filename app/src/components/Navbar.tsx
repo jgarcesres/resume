@@ -154,13 +154,24 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                   ))}
                 </div>
 
-                {/* Party Members in mobile */}
-                <div className="mt-8 pt-4 border-t border-rpg-border">
-                  <div className="font-pixel text-[8px] text-rpg-text-dim mb-2">PARTY MEMBERS</div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span>👤</span><span>👤</span><span>👶</span>
-                    <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
+                {/* Party Members + CRT toggle in mobile */}
+                <div className="mt-8 pt-4 border-t border-rpg-border space-y-4">
+                  <div>
+                    <div className="font-pixel text-[8px] text-rpg-text-dim mb-2">PARTY MEMBERS</div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span>👤</span><span>👤</span><span>👶</span>
+                      <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
+                    </div>
                   </div>
+                  {onToggleCrt && (
+                    <button
+                      onClick={onToggleCrt}
+                      className="flex items-center gap-2 font-pixel text-[8px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                    >
+                      <span>{crtEnabled ? '📺' : '🖥️'}</span>
+                      <span>CRT {crtEnabled ? 'ON' : 'OFF'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

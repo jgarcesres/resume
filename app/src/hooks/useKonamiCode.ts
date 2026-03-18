@@ -29,6 +29,7 @@ export function useKonamiCode() {
         timerRef.current = setTimeout(reset, 2000);
 
         if (indexRef.current === KONAMI_SEQUENCE.length) {
+          clearTimeout(timerRef.current);
           setActivated(true);
           reset();
         }

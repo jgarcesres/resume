@@ -2,6 +2,18 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+  size: number;
+  targetY: number;
+  rotation: number;
+  duration: number;
+  delay: number;
+}
+
 interface KonamiOverlayProps {
   visible: boolean;
   onDismiss: () => void;
@@ -9,20 +21,28 @@ interface KonamiOverlayProps {
 
 function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
   const navigate = useNavigate();
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; color: string; size: number }>>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      setParticles([]);
+      return;
+    }
 
     const colors = ['#00e5ff', '#ff2daa', '#ffd700', '#39ff14', '#4d8cff'];
-    const newParticles = Array.from({ length: 40 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      size: 4 + Math.random() * 8,
-    }));
-    setParticles(newParticles);
+    setParticles(
+      Array.from({ length: 40 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 4 + Math.random() * 8,
+        targetY: -100 - Math.random() * 200,
+        rotation: Math.random() * 720,
+        duration: 2 + Math.random(),
+        delay: Math.random() * 0.5,
+      })),
+    );
   }, [visible]);
 
   const handleSecret = () => {
@@ -40,10 +60,8 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
           className="fixed inset-0 z-[9998] flex items-center justify-center"
           onClick={onDismiss}
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/80" />
 
-          {/* Pixel confetti */}
           {particles.map((p) => (
             <motion.div
               key={p.id}
@@ -60,18 +78,17 @@ function KonamiOverlay({ visible, onDismiss }: KonamiOverlayProps) {
               animate={{
                 opacity: [0, 1, 1, 0],
                 scale: [0, 1.5, 1, 0.5],
-                y: [0, -100 - Math.random() * 200],
-                rotate: Math.random() * 720,
+                y: [0, p.targetY],
+                rotate: p.rotation,
               }}
               transition={{
-                duration: 2 + Math.random(),
-                delay: Math.random() * 0.5,
+                duration: p.duration,
+                delay: p.delay,
                 ease: 'easeOut',
               }}
             />
           ))}
 
-          {/* Message */}
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

@@ -2,13 +2,33 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  CrossedSwordsIcon,
+  SkillTreeIcon,
+  SparklesIcon,
+  ScrollIcon,
+  CastleIcon,
+  PartyMemberIcon,
+  BabyMemberIcon,
+  CrtOnIcon,
+  CrtOffIcon,
+  JuanExeLogo,
+} from './ui/PixelIcons';
+import type { ComponentType, CSSProperties } from 'react';
 
-const navItems = [
-  { to: '/projects', label: 'Quests', icon: '⚔️' },
-  { to: '/skill-tree', label: 'Talents', icon: '🌳', desktopOnly: true },
-  { to: '/hobbies', label: 'Skills', icon: '✨' },
-  { to: '/resume', label: 'Stats', icon: '📜' },
-  { to: '/homelab', label: 'Base', icon: '🏰' },
+interface NavItem {
+  to: string;
+  label: string;
+  Icon: ComponentType<{ className?: string; style?: CSSProperties }>;
+  desktopOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { to: '/projects', label: 'Quests', Icon: CrossedSwordsIcon },
+  { to: '/skill-tree', label: 'Talents', Icon: SkillTreeIcon, desktopOnly: true },
+  { to: '/hobbies', label: 'Skills', Icon: SparklesIcon },
+  { to: '/resume', label: 'Stats', Icon: ScrollIcon },
+  { to: '/homelab', label: 'Base', Icon: CastleIcon },
 ];
 
 interface NavbarProps {
@@ -61,10 +81,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               className="flex items-center gap-2 relative z-50 group"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <span className="text-lg">⚡</span>
-              <span className="font-pixel text-[11px] text-neon-cyan group-hover:text-neon-gold transition-colors">
-                JUAN.EXE
-              </span>
+              <JuanExeLogo className="group-hover:[&>span]:!text-neon-gold" />
             </NavLink>
 
             {/* Desktop Nav */}
@@ -93,7 +110,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                           ▶
                         </motion.span>
                       )}
-                      <span>{item.icon}</span>
+                      <item.Icon className="w-4 h-4" />
                       <span>{item.label}</span>
                     </>
                   )}
@@ -104,20 +121,23 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
               <div className="ml-4 pl-4 border-l border-rpg-border flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <span className="font-pixel text-[8px] text-rpg-text-dim">PARTY</span>
-                  <div className="flex gap-0.5">
-                    <span className="text-[10px]">👤</span>
-                    <span className="text-[10px]">👤</span>
-                    <span className="text-[8px]">👶</span>
+                  <div className="flex gap-0.5 items-end">
+                    <PartyMemberIcon className="w-[10px] h-[14px] text-rpg-text" />
+                    <PartyMemberIcon className="w-[10px] h-[14px] text-rpg-text" />
+                    <BabyMemberIcon className="w-[8px] h-[10px] text-rpg-text" />
                   </div>
                 </div>
                 {onToggleCrt && (
                   <button
                     onClick={onToggleCrt}
-                    className="font-pixel text-[7px] text-rpg-text-dim hover:text-rpg-text transition-colors"
+                    className="text-rpg-text-dim hover:text-rpg-text transition-colors"
                     title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
                     aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
                   >
-                    {crtEnabled ? '📺' : '🖥️'}
+                    {crtEnabled
+                      ? <CrtOnIcon className="w-4 h-4" />
+                      : <CrtOffIcon className="w-4 h-4" />
+                    }
                   </button>
                 )}
               </div>
@@ -178,7 +198,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                       {({ isActive }) => (
                         <>
                           {isActive && <span className="text-neon-gold text-[8px]">▶</span>}
-                          <span>{item.icon}</span>
+                          <item.Icon className="w-4 h-4" />
                           <span>{item.label}</span>
                         </>
                       )}
@@ -190,8 +210,10 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                 <div className="mt-8 pt-4 border-t border-rpg-border space-y-4">
                   <div>
                     <div className="font-pixel text-[8px] text-rpg-text-dim mb-2">PARTY MEMBERS</div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span>👤</span><span>👤</span><span>👶</span>
+                    <div className="flex items-end gap-2">
+                      <PartyMemberIcon className="w-3 h-[18px] text-rpg-text" />
+                      <PartyMemberIcon className="w-3 h-[18px] text-rpg-text" />
+                      <BabyMemberIcon className="w-2.5 h-[14px] text-rpg-text" />
                       <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
                     </div>
                   </div>
@@ -200,7 +222,10 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                       onClick={onToggleCrt}
                       className="flex items-center gap-2 font-pixel text-[8px] text-rpg-text-dim hover:text-rpg-text transition-colors"
                     >
-                      <span>{crtEnabled ? '📺' : '🖥️'}</span>
+                      {crtEnabled
+                        ? <CrtOnIcon className="w-4 h-4" />
+                        : <CrtOffIcon className="w-4 h-4" />
+                      }
                       <span>CRT {crtEnabled ? 'ON' : 'OFF'}</span>
                     </button>
                   )}

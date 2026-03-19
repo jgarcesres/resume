@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import PixelPanel from '../components/ui/PixelPanel';
+import { TrophyIcon, PixelCoffeeIcon, PartyMemberIcon, BabyMemberIcon } from '../components/ui/PixelIcons';
 
 const credits = [
   {
@@ -17,7 +18,8 @@ const credits = [
   },
   {
     section: 'Powered By',
-    entries: ['Colombian coffee ☕', 'Late night debugging sessions', 'An unhealthy amount of anime'],
+    entries: ['Colombian coffee', 'Late night debugging sessions', 'An unhealthy amount of anime'],
+    specialIcons: { 0: 'coffee' },
   },
   {
     section: 'Infrastructure',
@@ -29,7 +31,8 @@ const credits = [
   },
   {
     section: 'Party Members',
-    entries: ['👤 Juan — Lead Adventurer', '👤 Wife — Support Healer', '👶 Kid — Chaos Agent'],
+    entries: ['Juan — Lead Adventurer', 'Wife — Support Healer', 'Kid — Chaos Agent'],
+    partyIcons: true,
   },
   {
     section: 'Easter Egg Found By',
@@ -42,7 +45,9 @@ function Credits() {
     <PageTransition>
       <div className="max-w-2xl mx-auto space-y-2 pb-20">
         <PixelPanel glow="gold" className="text-center py-8 mb-8">
-          <span className="text-3xl block mb-3">🏆</span>
+          <span className="flex justify-center mb-3">
+            <TrophyIcon className="w-10 h-10 text-neon-gold" style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.4))' }} />
+          </span>
           <h1 className="font-pixel text-lg text-neon-gold mb-2">Credits</h1>
           <p className="font-pixel text-[8px] text-rpg-text-dim">
             — THE END? —
@@ -60,11 +65,28 @@ function Credits() {
             <h2 className="font-pixel text-[10px] text-neon-cyan uppercase mb-3">
               {block.section}
             </h2>
-            {block.entries.map((entry, j) => (
-              <p key={j} className="font-body text-sm text-rpg-text leading-relaxed">
-                {entry}
-              </p>
-            ))}
+            {block.partyIcons ? (
+              <div className="space-y-1">
+                {block.entries.map((entry, j) => (
+                  <p key={j} className="font-body text-sm text-rpg-text leading-relaxed inline-flex items-center justify-center gap-2 w-full">
+                    {j < 2
+                      ? <PartyMemberIcon className="w-3 h-[14px] text-rpg-text" />
+                      : <BabyMemberIcon className="w-2.5 h-[10px] text-rpg-text" />
+                    }
+                    {entry}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              block.entries.map((entry, j) => (
+                <p key={j} className="font-body text-sm text-rpg-text leading-relaxed inline-flex items-center justify-center gap-1.5 w-full">
+                  {block.specialIcons && block.specialIcons[j as keyof typeof block.specialIcons] === 'coffee' && (
+                    <PixelCoffeeIcon className="w-4 h-4 text-neon-gold" />
+                  )}
+                  {entry}
+                </p>
+              ))
+            )}
           </motion.div>
         ))}
 

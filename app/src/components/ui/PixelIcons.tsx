@@ -1070,7 +1070,6 @@ export function JuanExeLogo({ className }: { className?: string }) {
   const holdEnd = holdStart + 12;
   const drainStart = holdEnd + 2;
   const drainDur = 15;
-  const drainEnd = drainStart + (n - 1) * stagger + drainDur; // ~92%
 
   // Generate per-character keyframes
   const keyframes = juanExeChars.map((_, i) => {

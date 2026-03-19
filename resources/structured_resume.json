@@ -4,10 +4,25 @@
   "intro": "Site Reliability Engineer with expertise in DevOps, observability, automation, and infrastructure. I specialize in building robust, scalable systems and streamlining development workflows with a strong background in Security and Identity management.",
   "experience": [
     {
+      "company": "OpenSpace",
+      "role": "Cloud Infrastructure Engineer",
+      "location": "Remote",
+      "dates": "November 2025 \u2013 Present",
+      "summary": "Managing multi-cloud infrastructure across AWS and GCP, supporting Kubernetes clusters spanning multiple global regions.",
+      "responsibilities": [
+        "Manage cloud infrastructure across AWS and GCP with Kubernetes clusters deployed in US, Canada, UK, EU, KSA, Singapore, and Japan.",
+        "Maintain and develop Terraform configurations for infrastructure-as-code across multi-region deployments.",
+        "Handle CI/CD pipeline maintenance and operational PRs for ongoing infrastructure upkeep.",
+        "Participate in on-call rotations and incident response for production systems.",
+        "Contribute to observability efforts using Datadog and Grafana for monitoring and alerting.",
+        "Manage Tailscale-based networking across distributed cloud environments."
+      ]
+    },
+    {
       "company": "Scuba Analytics",
       "role": "Site Reliability Engineer (SRE)",
       "location": "Remote (California/Florida)",
-      "dates": "October 2021 \u2013 Present",
+      "dates": "October 2021 \u2013 April 2025",
       "summary": "Focused on building and maintaining robust infrastructure and CI/CD pipelines. Improved observability for the fleet and automated config management.",
       "responsibilities": [
         "Managed application clusters in AWS and Azure for enterprise clients within their environments (Microsoft, Salesforce, Asana).",
@@ -77,6 +92,7 @@
   "skills_and_technologies": {
     "cloud/devops": [
       "AWS",
+      "GCP",
       "Azure",
       "Terraform",
       "Kubernetes",
@@ -89,6 +105,7 @@
       "argoCD"
     ],
     "observability": [
+      "Datadog",
       "Grafana",
       "Prometheus",
       "Mimir",

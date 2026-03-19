@@ -65,6 +65,9 @@ function Homelab() {
             { label: 'VPN', value: specs.vpn },
           ].map((spec, i) => {
             const SpecIcon = specIcons[spec.label];
+            if (!SpecIcon && import.meta.env.DEV) {
+              console.warn(`[Homelab] No icon in specIcons for label "${spec.label}". Available: ${Object.keys(specIcons).join(', ')}`);
+            }
             return (
             <motion.div
               key={spec.label}

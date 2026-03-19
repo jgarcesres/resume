@@ -45,6 +45,11 @@ function ServiceStatus({ services }: ServiceStatusProps) {
               {catServices.map((service, i) => {
                 const st = statusIndicator[service.status] || statusIndicator.offline;
                 const IconComponent = serviceIconMap[service.icon];
+                if (!IconComponent && import.meta.env.DEV) {
+                  console.warn(
+                    `[ServiceStatus] No icon in serviceIconMap for "${service.icon}" (service: ${service.name}). Available: ${Object.keys(serviceIconMap).join(', ')}`
+                  );
+                }
                 return (
                   <motion.div
                     key={service.name}

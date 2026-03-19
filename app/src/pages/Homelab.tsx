@@ -43,9 +43,9 @@ function Homelab() {
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <PixelPanel glow="cyan" className="text-center py-6">
-          <span className="block mb-3 flex justify-center">
+          <div className="mb-3 flex justify-center">
             <CastleIcon className="w-8 h-8 text-neon-cyan" />
-          </span>
+          </div>
           <h1 className="font-pixel text-lg text-rpg-text-bright mb-2">
             <TypewriterText text={homelabContent.title} speed={40} />
           </h1>

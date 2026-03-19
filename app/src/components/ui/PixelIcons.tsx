@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ComponentType } from 'react';
 
 export interface PixelIconProps {
   className?: string;
@@ -18,6 +18,7 @@ export function TriforceIcon({ className, style }: PixelIconProps) {
       viewBox="0 0 48 44"
       className={className}
       style={{ ...style, color: gold, filter: `drop-shadow(0 0 6px ${gold}40)`, ...px }}
+      aria-hidden="true"
       animate={{ rotateY: [0, 360] }}
       transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
     >
@@ -32,7 +33,7 @@ export function TriforceIcon({ className, style }: PixelIconProps) {
 /** Pixel art cooking pan with flame for Cooking */
 export function PixelPotIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 32 32" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 32 32" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <motion.g
         animate={{ x: [0, 0.5, -0.5, 0.3, 0], y: [0, -0.5, 0, -0.3, 0] }}
         transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut' }}
@@ -66,7 +67,7 @@ export function PixelPotIcon({ className, style }: PixelIconProps) {
 /** Pixel art server rack with blinking LEDs for Homelabbing */
 export function PixelServerIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 24 24" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <rect x="4" y="2" width="16" height="20" fill="currentColor" opacity="0.8" />
       <rect x="6" y="4" width="12" height="3" fill="#0a0e1a" />
       <rect x="6" y="9" width="12" height="3" fill="#0a0e1a" />
@@ -90,6 +91,7 @@ export function PixelPlaneIcon({ className, style }: PixelIconProps) {
     <motion.svg
       viewBox="0 0 32 32" className={className}
       style={{ ...style, ...px }}
+      aria-hidden="true"
       animate={{ y: [0, -3, 0], rotate: [0, 2, -2, 0] }}
       transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
     >
@@ -112,7 +114,7 @@ export function PixelPlaneIcon({ className, style }: PixelIconProps) {
 /** Pixel art coffee cup with steam for Coffee */
 export function PixelCoffeeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 28 28" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 28 28" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <motion.g
         animate={{ y: [0, -2, 0], opacity: [0.3, 0.7, 0.3] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -136,7 +138,7 @@ export function PixelCoffeeIcon({ className, style }: PixelIconProps) {
 /** Pixel art open book for Reading */
 export function PixelBookIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 28 24" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 28 24" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <rect x="1" y="3" width="12" height="17" fill="currentColor" />
       <rect x="15" y="3" width="12" height="17" fill="currentColor" />
       <rect x="13" y="2" width="2" height="19" fill="currentColor" opacity="0.6" />
@@ -162,7 +164,7 @@ export function PixelBookIcon({ className, style }: PixelIconProps) {
 /** Crossed swords for Quests/Projects */
 export function CrossedSwordsIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Left sword blade */}
       <rect x="2" y="2" width="2" height="2" fill="currentColor" />
       <rect x="4" y="4" width="2" height="2" fill="currentColor" />
@@ -190,7 +192,7 @@ export function CrossedSwordsIcon({ className, style }: PixelIconProps) {
 /** Pixel tree for Talents/Skill Tree */
 export function SkillTreeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Canopy layers */}
       <rect x="6" y="1" width="4" height="2" fill="currentColor" />
       <rect x="4" y="3" width="8" height="2" fill="currentColor" />
@@ -214,7 +216,7 @@ export function SkillTreeIcon({ className, style }: PixelIconProps) {
 /** Sparkle stars for Skills/Hobbies */
 export function SparklesIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Large star center */}
       <rect x="7" y="2" width="2" height="2" fill="currentColor" />
       <rect x="5" y="4" width="6" height="2" fill="currentColor" />
@@ -241,7 +243,7 @@ export function SparklesIcon({ className, style }: PixelIconProps) {
 /** Pixel scroll for Stats/Resume */
 export function ScrollIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Top roll */}
       <rect x="3" y="1" width="10" height="3" fill="currentColor" />
       <rect x="2" y="2" width="1" height="2" fill="currentColor" opacity="0.7" />
@@ -264,7 +266,7 @@ export function ScrollIcon({ className, style }: PixelIconProps) {
 /** Pixel castle for Base/Homelab */
 export function CastleIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Turret crenellations */}
       <rect x="1" y="1" width="2" height="3" fill="currentColor" />
       <rect x="5" y="1" width="2" height="3" fill="currentColor" />
@@ -293,7 +295,7 @@ export function CastleIcon({ className, style }: PixelIconProps) {
 /** Pixel party member silhouette */
 export function PartyMemberIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 10 14" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 10 14" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Head */}
       <rect x="3" y="0" width="4" height="4" fill="currentColor" />
       {/* Neck */}
@@ -313,7 +315,7 @@ export function PartyMemberIcon({ className, style }: PixelIconProps) {
 /** Pixel baby/small party member */
 export function BabyMemberIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 10 10" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 10 10" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Head — bigger proportionally */}
       <rect x="2" y="0" width="6" height="4" fill="currentColor" />
       {/* Body */}
@@ -331,7 +333,7 @@ export function BabyMemberIcon({ className, style }: PixelIconProps) {
 /** CRT monitor ON (scanlines visible) */
 export function CrtOnIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Monitor body */}
       <rect x="1" y="1" width="14" height="10" fill="currentColor" />
       {/* Screen */}
@@ -352,7 +354,7 @@ export function CrtOnIcon({ className, style }: PixelIconProps) {
 /** CRT monitor OFF (flat screen) */
 export function CrtOffIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Monitor body — flatter */}
       <rect x="1" y="2" width="14" height="9" fill="currentColor" />
       {/* Screen */}
@@ -372,7 +374,7 @@ export function CrtOffIcon({ className, style }: PixelIconProps) {
 /** Lightning bolt for Compute */
 export function LightningIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <rect x="8" y="0" width="4" height="2" fill="currentColor" />
       <rect x="6" y="2" width="4" height="2" fill="currentColor" />
       <rect x="4" y="4" width="4" height="2" fill="currentColor" />
@@ -388,7 +390,7 @@ export function LightningIcon({ className, style }: PixelIconProps) {
 /** Brain icon for Memory */
 export function BrainIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Brain outline */}
       <rect x="4" y="1" width="8" height="2" fill="currentColor" />
       <rect x="2" y="3" width="12" height="2" fill="currentColor" />
@@ -410,7 +412,7 @@ export function BrainIcon({ className, style }: PixelIconProps) {
 /** Floppy disk for Storage / Save */
 export function FloppyDiskIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Disk body */}
       <rect x="1" y="1" width="14" height="14" fill="currentColor" />
       {/* Metal slider */}
@@ -429,7 +431,7 @@ export function FloppyDiskIcon({ className, style }: PixelIconProps) {
 /** Gamepad for GPU */
 export function GamepadIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Controller body */}
       <rect x="3" y="4" width="10" height="6" fill="currentColor" />
       <rect x="1" y="6" width="3" height="4" fill="currentColor" opacity="0.9" />
@@ -451,7 +453,7 @@ export function GamepadIcon({ className, style }: PixelIconProps) {
 /** Globe for Sites */
 export function GlobeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Globe circle */}
       <rect x="4" y="1" width="8" height="2" fill="currentColor" />
       <rect x="2" y="3" width="12" height="2" fill="currentColor" />
@@ -474,7 +476,7 @@ export function GlobeIcon({ className, style }: PixelIconProps) {
 /** Padlock for VPN/Security */
 export function LockIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Shackle */}
       <rect x="5" y="1" width="6" height="2" fill="currentColor" opacity="0.8" />
       <rect x="4" y="3" width="2" height="4" fill="currentColor" opacity="0.8" />
@@ -493,7 +495,7 @@ export function LockIcon({ className, style }: PixelIconProps) {
 /** Hourglass for loading/saving state */
 export function HourglassIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Top frame */}
       <rect x="2" y="1" width="12" height="2" fill="currentColor" />
       {/* Top chamber */}
@@ -522,7 +524,7 @@ export function HourglassIcon({ className, style }: PixelIconProps) {
 /** Office building for Company */
 export function OfficeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Building body */}
       <rect x="3" y="1" width="10" height="14" fill="currentColor" />
       {/* Windows row 1 */}
@@ -548,7 +550,7 @@ export function OfficeIcon({ className, style }: PixelIconProps) {
 /** Graduation cap for Education */
 export function GradCapIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Cap top — diamond shape */}
       <rect x="7" y="1" width="2" height="2" fill="currentColor" />
       <rect x="5" y="3" width="6" height="2" fill="currentColor" />
@@ -569,7 +571,7 @@ export function GradCapIcon({ className, style }: PixelIconProps) {
 /** Trophy for Achievements */
 export function TrophyIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Cup rim */}
       <rect x="2" y="1" width="12" height="2" fill="currentColor" />
       {/* Cup body */}
@@ -597,7 +599,7 @@ export function TrophyIcon({ className, style }: PixelIconProps) {
 /** Film/clapperboard for Plex */
 export function FilmIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <rect x="1" y="2" width="14" height="12" fill="currentColor" />
       {/* Film perforations left */}
       <rect x="2" y="3" width="2" height="2" fill="#0a0e1a" opacity="0.5" />
@@ -618,7 +620,7 @@ export function FilmIcon({ className, style }: PixelIconProps) {
 /** TV for Sonarr */
 export function TvIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Antenna */}
       <rect x="4" y="0" width="2" height="3" fill="currentColor" opacity="0.7" />
       <rect x="10" y="0" width="2" height="3" fill="currentColor" opacity="0.7" />
@@ -639,7 +641,7 @@ export function TvIcon({ className, style }: PixelIconProps) {
 /** Movie camera for Radarr */
 export function MovieCameraIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Camera body */}
       <rect x="1" y="4" width="10" height="8" fill="currentColor" />
       {/* Lens/viewfinder */}
@@ -662,7 +664,7 @@ export function MovieCameraIcon({ className, style }: PixelIconProps) {
 /** Torii gate / anime flag for Sonarr-Anime */
 export function AnimeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Torii top beam */}
       <rect x="0" y="2" width="16" height="2" fill="currentColor" />
       <rect x="1" y="1" width="14" height="1" fill="currentColor" opacity="0.7" />
@@ -678,7 +680,7 @@ export function AnimeIcon({ className, style }: PixelIconProps) {
 /** Magnifying glass for Prowlarr */
 export function SearchIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Lens circle */}
       <rect x="3" y="1" width="6" height="2" fill="currentColor" />
       <rect x="1" y="3" width="10" height="2" fill="currentColor" />
@@ -699,7 +701,7 @@ export function SearchIcon({ className, style }: PixelIconProps) {
 /** Clipboard for Seerr */
 export function ClipboardIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Clip */}
       <rect x="5" y="0" width="6" height="3" fill="currentColor" opacity="0.8" />
       {/* Board */}
@@ -721,7 +723,7 @@ export function ClipboardIcon({ className, style }: PixelIconProps) {
 /** Bar chart for Tautulli */
 export function ChartBarIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Bars */}
       <rect x="2" y="8" width="3" height="6" fill="currentColor" opacity="0.7" />
       <rect x="6" y="4" width="3" height="10" fill="currentColor" opacity="0.85" />
@@ -735,7 +737,7 @@ export function ChartBarIcon({ className, style }: PixelIconProps) {
 /** Camera for Immich */
 export function CameraIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Flash */}
       <rect x="3" y="1" width="4" height="3" fill="currentColor" opacity="0.7" />
       {/* Camera body */}
@@ -756,7 +758,7 @@ export function CameraIcon({ className, style }: PixelIconProps) {
 /** Chart line going up for Grafana */
 export function ChartUpIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Line chart path */}
       <rect x="1" y="11" width="2" height="2" fill="currentColor" />
       <rect x="3" y="9" width="2" height="2" fill="currentColor" />
@@ -778,7 +780,7 @@ export function ChartUpIcon({ className, style }: PixelIconProps) {
 /** Fire/flame for Prometheus */
 export function FireIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       <motion.g animate={{ y: [0, -0.5, 0] }} transition={{ duration: 0.8, repeat: Infinity }}>
         {/* Outer flame */}
         <rect x="6" y="0" width="2" height="2" fill="currentColor" opacity="0.7" />
@@ -801,7 +803,7 @@ export function FireIcon({ className, style }: PixelIconProps) {
 /** Notepad/memo for Loki */
 export function NoteIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Page */}
       <rect x="2" y="1" width="11" height="14" fill="currentColor" />
       {/* Folded corner */}
@@ -821,7 +823,7 @@ export function NoteIcon({ className, style }: PixelIconProps) {
 /** Alarm/siren for AlertManager */
 export function AlarmIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Light dome */}
       <rect x="5" y="1" width="6" height="2" fill="currentColor" />
       <rect x="4" y="3" width="8" height="4" fill="currentColor" />
@@ -845,7 +847,7 @@ export function AlarmIcon({ className, style }: PixelIconProps) {
 /** Telescope for OpenTelemetry */
 export function TelescopeIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Eyepiece */}
       <rect x="1" y="1" width="3" height="2" fill="currentColor" opacity="0.8" />
       {/* Tube */}
@@ -871,7 +873,7 @@ export function TelescopeIcon({ className, style }: PixelIconProps) {
 export function SyncIcon({ className, style }: PixelIconProps) {
   return (
     <motion.svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}
-      animate={{ rotate: [0, 360] }} transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}>
+      aria-hidden="true" animate={{ rotate: [0, 360] }} transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}>
       {/* Top arc */}
       <rect x="5" y="1" width="6" height="2" fill="currentColor" />
       <rect x="10" y="3" width="3" height="2" fill="currentColor" />
@@ -895,7 +897,7 @@ export function SyncIcon({ className, style }: PixelIconProps) {
 /** Web/network globe for Traefik */
 export function WebIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Outer ring */}
       <rect x="4" y="0" width="8" height="1" fill="currentColor" />
       <rect x="2" y="1" width="12" height="1" fill="currentColor" />
@@ -927,7 +929,7 @@ export function WebIcon({ className, style }: PixelIconProps) {
 /** Key for Pocket ID */
 export function KeyIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Key head ring */}
       <rect x="2" y="2" width="6" height="2" fill="currentColor" />
       <rect x="1" y="4" width="2" height="4" fill="currentColor" />
@@ -948,7 +950,7 @@ export function KeyIcon({ className, style }: PixelIconProps) {
 /** Bucket for Garage S3 */
 export function BucketIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Handle */}
       <rect x="4" y="0" width="8" height="1" fill="currentColor" opacity="0.6" />
       <rect x="3" y="1" width="2" height="3" fill="currentColor" opacity="0.6" />
@@ -970,7 +972,7 @@ export function BucketIcon({ className, style }: PixelIconProps) {
 /** Coin/money for NMS */
 export function CoinIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Coin circle */}
       <rect x="4" y="1" width="8" height="2" fill="currentColor" />
       <rect x="2" y="3" width="12" height="2" fill="currentColor" />
@@ -996,7 +998,7 @@ export function CoinIcon({ className, style }: PixelIconProps) {
 /** House for Home Assistant */
 export function HouseIcon({ className, style }: PixelIconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }}>
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
       {/* Roof peak */}
       <rect x="7" y="1" width="2" height="2" fill="currentColor" />
       <rect x="5" y="3" width="6" height="2" fill="currentColor" />
@@ -1020,7 +1022,7 @@ export function HouseIcon({ className, style }: PixelIconProps) {
 // ─── SERVICE ICON LOOKUP ─────────────────────────────────────────────────────
 
 /** Map from service icon identifier to component */
-export const serviceIconMap: Record<string, React.ComponentType<PixelIconProps>> = {
+export const serviceIconMap: Record<string, ComponentType<PixelIconProps>> = {
   film: FilmIcon,
   tv: TvIcon,
   'movie-camera': MovieCameraIcon,
@@ -1047,36 +1049,61 @@ export const serviceIconMap: Record<string, React.ComponentType<PixelIconProps>>
 
 const juanExeChars = 'JUAN.EXE'.split('');
 
+/**
+ * Animated JUAN.EXE logo — letters stay still while a "charging" fill
+ * sweeps up through each character from bottom to top with staggered delays,
+ * like a battery indicator filling up.
+ */
 export function JuanExeLogo({ className }: { className?: string }) {
+  const totalDuration = 3;
+  const charDelay = 0.25;
+
   return (
     <span className={`inline-flex items-center ${className ?? ''}`}>
       {juanExeChars.map((char, i) => (
-        <motion.span
+        <span
           key={i}
-          className="font-pixel text-[11px] text-neon-cyan inline-block"
-          style={{
-            textShadow: '0 0 8px rgba(0,229,255,0.6), 0 0 16px rgba(0,229,255,0.2)',
-          }}
-          animate={{
-            y: [0, -2, 0],
-            opacity: [0.7, 1, 0.7],
-            textShadow: [
-              '0 0 4px rgba(0,229,255,0.3), 0 0 8px rgba(0,229,255,0.1)',
-              '0 0 12px rgba(0,229,255,0.8), 0 0 24px rgba(0,229,255,0.4), 0 0 2px rgba(255,215,0,0.3)',
-              '0 0 4px rgba(0,229,255,0.3), 0 0 8px rgba(0,229,255,0.1)',
-            ],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: i * 0.15,
-          }}
+          className="font-pixel text-[11px] inline-block relative"
+          style={{ color: 'transparent', WebkitTextStroke: '0.5px rgba(0,229,255,0.35)' }}
         >
+          {/* Empty outline layer (always visible) */}
           {char}
-        </motion.span>
+          {/* Filled layer — clips upward like a charging battery */}
+          <motion.span
+            className="absolute inset-0 font-pixel text-[11px]"
+            style={{
+              color: '#00e5ff',
+              WebkitTextStroke: '0',
+              clipPath: 'inset(100% 0 0 0)',
+              textShadow: '0 0 8px rgba(0,229,255,0.5), 0 0 16px rgba(0,229,255,0.2)',
+            }}
+            animate={{
+              clipPath: [
+                'inset(100% 0 0 0)',
+                'inset(0% 0 0 0)',
+                'inset(0% 0 0 0)',
+              ],
+              textShadow: [
+                '0 0 4px rgba(0,229,255,0.2), 0 0 8px rgba(0,229,255,0.1)',
+                '0 0 12px rgba(0,229,255,0.8), 0 0 24px rgba(0,229,255,0.3)',
+                '0 0 6px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.2)',
+              ],
+              color: ['#00e5ff', '#00e5ff', '#ffd700'],
+            }}
+            transition={{
+              duration: totalDuration,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * charDelay,
+              times: [0, 0.5, 1],
+            }}
+            aria-hidden="true"
+          >
+            {char}
+          </motion.span>
+        </span>
       ))}
-      {/* Blinking cursor after the text */}
+      {/* Blinking cursor */}
       <motion.span
         className="font-pixel text-[11px] text-neon-cyan inline-block ml-[1px]"
         animate={{ opacity: [1, 0, 1] }}

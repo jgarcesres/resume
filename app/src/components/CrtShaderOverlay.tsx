@@ -84,7 +84,8 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   // Clamp alpha
   alpha = clamp(alpha, 0.0, 0.6);
 
-  return vec4f(color, alpha);
+  // Premultiply RGB by alpha (required by premultiplied alphaMode)
+  return vec4f(color * alpha, alpha);
 }
 `;
 
@@ -161,6 +162,7 @@ function CrtShaderOverlay({ enabled }: CrtShaderOverlayProps) {
     if (!canvas) return;
 
     let cancelled = false;
+    let resizeHandler: (() => void) | null = null;
 
     (async () => {
       if (!gpuRef.current) {
@@ -171,6 +173,13 @@ function CrtShaderOverlay({ enabled }: CrtShaderOverlayProps) {
           return;
         }
         gpuRef.current = gpu;
+
+        // Handle device loss — fall back to CSS overlay
+        gpu.device.lost.then((info) => {
+          console.warn('WebGPU device lost:', info.message);
+          gpuRef.current = null;
+          setFallback(true);
+        });
       }
 
       const gpu = gpuRef.current;
@@ -180,9 +189,16 @@ function CrtShaderOverlay({ enabled }: CrtShaderOverlayProps) {
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
+        // Re-configure context after canvas size change
+        gpu.context!.configure({
+          device: gpu.device,
+          format: gpu.format,
+          alphaMode: 'premultiplied',
+        });
       };
       resize();
       window.addEventListener('resize', resize);
+      resizeHandler = resize;
 
       const uniformData = new Float32Array(4);
 
@@ -218,15 +234,16 @@ function CrtShaderOverlay({ enabled }: CrtShaderOverlayProps) {
       };
 
       rafRef.current = requestAnimationFrame(frame);
-
-      return () => {
-        window.removeEventListener('resize', resize);
-      };
     })();
 
     return () => {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (resizeHandler) window.removeEventListener('resize', resizeHandler);
+      if (gpuRef.current) {
+        gpuRef.current.device.destroy();
+        gpuRef.current = null;
+      }
     };
   }, [enabled]);
 

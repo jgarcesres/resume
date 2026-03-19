@@ -252,16 +252,22 @@ function SkillTree({ className = '' }: SkillTreeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const nodesRef = useRef<SimNode[]>([]);
+  const hoveredIdRef = useRef<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<SimNode | null>(null);
-  const [settled, setSettled] = useState(false);
   const rafRef = useRef<number>(0);
-  const frameRef = useRef(0);
+  const sizeRef = useRef({ width: 800, height: 600 });
+  const simulationSettled = useRef(false);
 
   const getCanvasSize = useCallback(() => {
     const el = containerRef.current;
     if (!el) return { width: 800, height: 600 };
     return { width: el.clientWidth, height: Math.min(el.clientWidth * 0.75, 600) };
   }, []);
+
+  // Keep hoveredId ref in sync without triggering effect re-runs
+  useEffect(() => {
+    hoveredIdRef.current = hoveredNode?.id ?? null;
+  }, [hoveredNode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -275,6 +281,7 @@ function SkillTree({ className = '' }: SkillTreeProps) {
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
+    sizeRef.current = { width, height };
 
     const nodes = initPositions(skillTreeData.nodes as SkillNode[], width, height);
     nodesRef.current = nodes;
@@ -283,27 +290,53 @@ function SkillTree({ className = '' }: SkillTreeProps) {
     for (let i = 0; i < 200; i++) {
       simulate(nodes, skillTreeData.edges, width, height);
     }
-    setSettled(true);
+    simulationSettled.current = true;
+
+    let frameCount = 0;
 
     const frame = (time: number) => {
-      frameRef.current++;
-      // Light simulation to allow gentle drift
-      if (frameRef.current % 3 === 0) {
-        simulate(nodes, skillTreeData.edges, width, height);
+      const { width: w, height: h } = sizeRef.current;
+      frameCount++;
+
+      // Run simulation until settled, then stop
+      if (!simulationSettled.current && frameCount % 3 === 0) {
+        simulate(nodes, skillTreeData.edges, w, h);
+        // Check if kinetic energy is low enough to stop
+        let energy = 0;
+        for (const node of nodes) {
+          energy += node.vx * node.vx + node.vy * node.vy;
+        }
+        if (energy < 0.01) {
+          simulationSettled.current = true;
+        }
       }
-      drawTree(ctx, nodes, skillTreeData.edges, hoveredNode?.id ?? null, width, height, time, dpr);
+
+      drawTree(ctx, nodes, skillTreeData.edges, hoveredIdRef.current, w, h, time, dpr);
       rafRef.current = requestAnimationFrame(frame);
     };
 
     rafRef.current = requestAnimationFrame(frame);
 
     const handleResize = () => {
+      const oldW = sizeRef.current.width;
+      const oldH = sizeRef.current.height;
       const { width: w, height: h } = getCanvasSize();
       const d = window.devicePixelRatio || 1;
       canvas.width = w * d;
       canvas.height = h * d;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
+
+      // Scale node positions proportionally
+      if (oldW > 0 && oldH > 0) {
+        const sx = w / oldW;
+        const sy = h / oldH;
+        for (const node of nodes) {
+          node.x *= sx;
+          node.y *= sy;
+        }
+      }
+      sizeRef.current = { width: w, height: h };
     };
     window.addEventListener('resize', handleResize);
 
@@ -311,7 +344,7 @@ function SkillTree({ className = '' }: SkillTreeProps) {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', handleResize);
     };
-  }, [getCanvasSize, hoveredNode]);
+  }, [getCanvasSize]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -335,6 +368,26 @@ function SkillTree({ className = '' }: SkillTreeProps) {
 
   const handlePointerLeave = useCallback(() => setHoveredNode(null), []);
 
+  // Compute tooltip position with vertical clamping
+  const tooltipStyle = hoveredNode ? (() => {
+    const containerW = containerRef.current?.clientWidth ?? 800;
+    const containerH = containerRef.current?.clientHeight ?? 600;
+    const tooltipH = 100; // approximate tooltip height
+    const left = Math.min(hoveredNode.x, containerW - 240);
+    let top = hoveredNode.y + hoveredNode.radius + 20;
+    // Flip above node if it would overflow bottom
+    if (top + tooltipH > containerH) {
+      top = hoveredNode.y - hoveredNode.radius - tooltipH - 10;
+    }
+    return { left, top: Math.max(0, top) };
+  })() : null;
+
+  // Build accessible skill summary for screen readers
+  const skillSummary = (skillTreeData.nodes as SkillNode[])
+    .filter(n => n.id !== 'root')
+    .map(n => `${n.label} (Lv.${n.level})`)
+    .join(', ');
+
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       <canvas
@@ -342,16 +395,18 @@ function SkillTree({ className = '' }: SkillTreeProps) {
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
         className="w-full cursor-crosshair"
+        role="img"
+        aria-label="Interactive skill tree showing technical skills organized by category with proficiency levels"
         style={{ imageRendering: 'auto' }}
-      />
+      >
+        {/* Fallback for screen readers */}
+        <p>Skill tree: {skillSummary}</p>
+      </canvas>
       {/* Tooltip */}
-      {hoveredNode && settled && (
+      {hoveredNode && tooltipStyle && (
         <div
           className="absolute pointer-events-none rpg-border p-3 max-w-[220px] z-10"
-          style={{
-            left: Math.min(hoveredNode.x, (containerRef.current?.clientWidth ?? 800) - 240),
-            top: hoveredNode.y + hoveredNode.radius + 20,
-          }}
+          style={tooltipStyle}
         >
           <div className="font-pixel text-[8px] uppercase tracking-wider mb-1"
             style={{ color: getCategoryColor(hoveredNode.category) }}>

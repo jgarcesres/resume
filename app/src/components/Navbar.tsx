@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { to: '/projects', label: 'Quests', icon: '⚔️' },
+  { to: '/skill-tree', label: 'Talents', icon: '🌳', desktopOnly: true },
   { to: '/hobbies', label: 'Skills', icon: '✨' },
   { to: '/resume', label: 'Stats', icon: '📜' },
   { to: '/homelab', label: 'Base', icon: '🏰' },
@@ -160,7 +161,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                   ═══ Menu ═══
                 </div>
                 <div className="space-y-1">
-                  {navItems.map((item) => (
+                  {navItems.filter((item) => !item.desktopOnly).map((item) => (
                     <NavLink
                       key={item.to}
                       to={item.to}

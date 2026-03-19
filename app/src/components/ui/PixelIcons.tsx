@@ -1051,93 +1051,90 @@ const juanExeChars = 'JUAN.EXE'.split('');
 
 /**
  * Animated JUAN.EXE logo — letters stay still while a fill wave sweeps
- * left-to-right across the name, holds, then drains right-to-left.
- * Each character is staggered so the fill appears to travel through the word.
+ * left-to-right across the name, holds turning gold, then drains right-to-left.
+ * Each character gets unique CSS keyframes with per-char fill/drain timing.
  */
 export function JuanExeLogo({ className }: { className?: string }) {
-  const totalChars = juanExeChars.length;
-  const charStagger = 0.4;
-  const fillTime = 1.2;
-  const holdTime = 1.5;
-  const drainTime = 1.2;
-  const pauseTime = 1.0;
-  // Total cycle = stagger across all chars + fill + hold + drain + pause
-  const cycleDuration = (totalChars - 1) * charStagger + fillTime + holdTime + drainTime + pauseTime;
+  const n = juanExeChars.length; // 8
+  const stagger = 3;  // % of cycle between each char's fill/drain start
+
+  // Phase boundaries (% of total cycle)
+  // Fill:  chars fill L→R, char 0 starts at fillStart, char n-1 at fillStart + (n-1)*stagger
+  // Hold:  all chars fully lit, transitions to gold
+  // Drain: chars drain R→L, char n-1 starts first, char 0 starts last
+  // Pause: all empty before loop
+  const fillStart = 2;
+  const fillDur = 15;   // each char takes this % to fill
+  const fillEnd = fillStart + (n - 1) * stagger + fillDur; // ~40%
+  const holdStart = fillEnd + 2;
+  const holdEnd = holdStart + 12;
+  const drainStart = holdEnd + 2;
+  const drainDur = 15;
+  const drainEnd = drainStart + (n - 1) * stagger + drainDur; // ~92%
+
+  // Generate per-character keyframes
+  const keyframes = juanExeChars.map((_, i) => {
+    const fStart = fillStart + i * stagger;
+    const fEnd = fStart + fillDur;
+    const dStart = drainStart + (n - 1 - i) * stagger; // reverse order
+    const dEnd = dStart + drainDur;
+
+    return `
+      @keyframes juanChar${i} {
+        0%, ${fStart}% {
+          clip-path: inset(0 100% 0 0);
+          color: #00e5ff;
+          text-shadow: 0 0 4px rgba(0,229,255,0.2);
+        }
+        ${fEnd}% {
+          clip-path: inset(0 0% 0 0);
+          color: #00e5ff;
+          text-shadow: 0 0 10px rgba(0,229,255,0.7), 0 0 20px rgba(0,229,255,0.3);
+        }
+        ${holdStart}%, ${holdEnd}% {
+          clip-path: inset(0 0% 0 0);
+          color: #ffd700;
+          text-shadow: 0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.2);
+        }
+        ${dStart}% {
+          clip-path: inset(0 0% 0 0);
+          color: #ffd700;
+          text-shadow: 0 0 6px rgba(255,215,0,0.3);
+        }
+        ${dEnd}%, 100% {
+          clip-path: inset(0 0% 0 100%);
+          color: #00e5ff;
+          text-shadow: 0 0 4px rgba(0,229,255,0.2);
+        }
+      }`;
+  }).join('\n');
 
   return (
     <span className={`inline-flex items-center ${className ?? ''}`}>
-      {juanExeChars.map((char, i) => {
-        const charOffset = i * charStagger;
-        // Normalized keyframe times for this character within the cycle
-        const t1 = charOffset / cycleDuration; // start filling
-        const t2 = (charOffset + fillTime) / cycleDuration; // fully filled
-        const t3 = (charOffset + fillTime + holdTime) / cycleDuration; // start draining (reverse order)
-        const drainOffset = (totalChars - 1 - i) * charStagger;
-        const drainStart = (totalChars - 1) * charStagger + fillTime + holdTime + drainOffset;
-        const t4 = drainStart / cycleDuration; // start draining this char
-        const t5 = Math.min((drainStart + drainTime) / cycleDuration, 1); // fully drained
-
-        return (
+      <style dangerouslySetInnerHTML={{ __html: keyframes }} />
+      {juanExeChars.map((char, i) => (
+        <span
+          key={i}
+          className="font-pixel text-[11px] inline-block relative"
+          style={{ color: 'transparent', WebkitTextStroke: '0.5px rgba(0,229,255,0.35)' }}
+        >
+          {char}
           <span
-            key={i}
-            className="font-pixel text-[11px] inline-block relative"
-            style={{ color: 'transparent', WebkitTextStroke: '0.5px rgba(0,229,255,0.35)' }}
+            className="absolute inset-0 font-pixel text-[11px]"
+            style={{
+              animation: `juanChar${i} 10s ease-in-out infinite`,
+              clipPath: 'inset(0 100% 0 0)',
+            }}
+            aria-hidden="true"
           >
             {char}
-            <motion.span
-              className="absolute inset-0 font-pixel text-[11px]"
-              style={{
-                color: '#00e5ff',
-                WebkitTextStroke: '0',
-                clipPath: 'inset(0 100% 0 0)',
-                textShadow: '0 0 8px rgba(0,229,255,0.5), 0 0 16px rgba(0,229,255,0.2)',
-              }}
-              animate={{
-                clipPath: [
-                  'inset(0 100% 0 0)',   // empty
-                  'inset(0 100% 0 0)',   // still empty at fill start
-                  'inset(0 0% 0 0)',     // fully filled (left to right)
-                  'inset(0 0% 0 0)',     // hold
-                  'inset(0 0% 0 0)',     // still full at drain start
-                  'inset(0 0% 0 100%)', // drained (right to left)
-                  'inset(0 0% 0 100%)', // stay empty
-                ],
-                color: [
-                  '#00e5ff', '#00e5ff', '#00e5ff',
-                  '#ffd700',
-                  '#ffd700', '#00e5ff', '#00e5ff',
-                ],
-                textShadow: [
-                  '0 0 4px rgba(0,229,255,0.2), 0 0 8px rgba(0,229,255,0.1)',
-                  '0 0 4px rgba(0,229,255,0.2), 0 0 8px rgba(0,229,255,0.1)',
-                  '0 0 10px rgba(0,229,255,0.7), 0 0 20px rgba(0,229,255,0.3)',
-                  '0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.2)',
-                  '0 0 8px rgba(255,215,0,0.6), 0 0 16px rgba(255,215,0,0.2)',
-                  '0 0 4px rgba(0,229,255,0.2), 0 0 8px rgba(0,229,255,0.1)',
-                  '0 0 4px rgba(0,229,255,0.2), 0 0 8px rgba(0,229,255,0.1)',
-                ],
-              }}
-              transition={{
-                duration: cycleDuration,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                times: [0, t1, t2, t3, t4, t5, 1],
-              }}
-              aria-hidden="true"
-            >
-              {char}
-            </motion.span>
           </span>
-        );
-      })}
+        </span>
+      ))}
       {/* Blinking cursor */}
-      <motion.span
-        className="font-pixel text-[11px] text-neon-cyan inline-block ml-[1px]"
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: 'steps(2)' }}
-      >
+      <span className="font-pixel text-[11px] text-neon-cyan inline-block ml-[1px] animate-blink">
         _
-      </motion.span>
+      </span>
     </span>
   );
 }

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { serviceIconMap } from '../ui/PixelIcons';
 
 interface Service {
   name: string;
@@ -43,6 +44,12 @@ function ServiceStatus({ services }: ServiceStatusProps) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {catServices.map((service, i) => {
                 const st = statusIndicator[service.status] || statusIndicator.offline;
+                const IconComponent = serviceIconMap[service.icon];
+                if (!IconComponent && import.meta.env.DEV) {
+                  console.warn(
+                    `[ServiceStatus] No icon in serviceIconMap for "${service.icon}" (service: ${service.name}). Available: ${Object.keys(serviceIconMap).join(', ')}`
+                  );
+                }
                 return (
                   <motion.div
                     key={service.name}
@@ -51,7 +58,9 @@ function ServiceStatus({ services }: ServiceStatusProps) {
                     transition={{ delay: i * 0.04 }}
                     className="border border-rpg-border/50 bg-rpg-panel/50 p-2.5 flex items-center gap-2 group hover:border-rpg-border-light transition-colors"
                   >
-                    <span className="text-sm shrink-0">{service.icon}</span>
+                    <span className="shrink-0 w-4 h-4 text-rpg-text">
+                      {IconComponent ? <IconComponent className="w-4 h-4" /> : service.icon}
+                    </span>
                     <div className="min-w-0 flex-1">
                       <span className="font-body text-[11px] text-rpg-text block truncate">
                         {service.name}

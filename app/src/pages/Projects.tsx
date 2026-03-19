@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import projectsContent from '@resources/projects_content.json';
 import PixelPanel from '../components/ui/PixelPanel';
 import PixelBadge from '../components/ui/PixelBadge';
+import { CrossedSwordsIcon, CastleIcon } from '../components/ui/PixelIcons';
+import type { ComponentType, CSSProperties } from 'react';
 
 interface Project {
   title: string;
@@ -32,9 +34,9 @@ function Projects() {
   const [activeTab, setActiveTab] = useState<'public' | 'work'>('public');
   const typedContent = projectsContent as ProjectsContent;
 
-  const tabs = [
-    { key: 'public' as const, label: 'Side Quests', icon: '⚔️' },
-    { key: 'work' as const, label: 'Main Quests', icon: '🏰' },
+  const tabs: { key: 'public' | 'work'; label: string; Icon: ComponentType<{ className?: string; style?: CSSProperties }> }[] = [
+    { key: 'public', label: 'Side Quests', Icon: CrossedSwordsIcon },
+    { key: 'work', label: 'Main Quests', Icon: CastleIcon },
   ];
 
   const projects = activeTab === 'public'
@@ -65,7 +67,7 @@ function Projects() {
                 }
               `}
             >
-              <span className="mr-2">{tab.icon}</span>
+              <tab.Icon className="w-4 h-4 mr-2 inline-block" />
               {tab.label}
             </button>
           ))}

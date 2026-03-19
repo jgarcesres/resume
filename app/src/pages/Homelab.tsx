@@ -6,6 +6,16 @@ import TypewriterText from '../components/ui/TypewriterText';
 import TopologyDiagram from '../components/homelab/TopologyDiagram';
 import ServiceStatus from '../components/homelab/ServiceStatus';
 import homelabContent from '@resources/homelab_content.json';
+import {
+  CastleIcon,
+  LightningIcon,
+  BrainIcon,
+  FloppyDiskIcon,
+  GamepadIcon,
+  GlobeIcon,
+  LockIcon,
+} from '../components/ui/PixelIcons';
+import type { ComponentType, CSSProperties } from 'react';
 
 const badgeColors: Record<string, 'cyan' | 'magenta' | 'gold' | 'green' | 'default'> = {
   'K3s': 'cyan', 'ArgoCD': 'cyan', 'Helm': 'cyan',
@@ -16,6 +26,15 @@ const badgeColors: Record<string, 'cyan' | 'magenta' | 'gold' | 'green' | 'defau
   'GitHub Actions': 'cyan', 'ARC Runners': 'cyan', 'ArgoCD Image Updater': 'cyan',
 };
 
+const specIcons: Record<string, ComponentType<{ className?: string; style?: CSSProperties }>> = {
+  Compute: LightningIcon,
+  Memory: BrainIcon,
+  Storage: FloppyDiskIcon,
+  GPU: GamepadIcon,
+  Sites: GlobeIcon,
+  VPN: LockIcon,
+};
+
 function Homelab() {
   const specs = homelabContent.specs;
 
@@ -24,7 +43,9 @@ function Homelab() {
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <PixelPanel glow="cyan" className="text-center py-6">
-          <span className="text-2xl block mb-3">🏰</span>
+          <div className="mb-3 flex justify-center">
+            <CastleIcon className="w-8 h-8 text-neon-cyan" />
+          </div>
           <h1 className="font-pixel text-lg text-rpg-text-bright mb-2">
             <TypewriterText text={homelabContent.title} speed={40} />
           </h1>
@@ -36,13 +57,18 @@ function Homelab() {
         {/* Hardware Specs HUD */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
           {[
-            { label: 'Compute', value: specs.totalCores, icon: '⚡' },
-            { label: 'Memory', value: specs.totalRam, icon: '🧠' },
-            { label: 'Storage', value: specs.totalStorage, icon: '💾' },
-            { label: 'GPU', value: specs.gpu, icon: '🎮' },
-            { label: 'Sites', value: specs.sites, icon: '🌎' },
-            { label: 'VPN', value: specs.vpn, icon: '🔒' },
-          ].map((spec, i) => (
+            { label: 'Compute', value: specs.totalCores },
+            { label: 'Memory', value: specs.totalRam },
+            { label: 'Storage', value: specs.totalStorage },
+            { label: 'GPU', value: specs.gpu },
+            { label: 'Sites', value: specs.sites },
+            { label: 'VPN', value: specs.vpn },
+          ].map((spec, i) => {
+            const SpecIcon = specIcons[spec.label];
+            if (!SpecIcon && import.meta.env.DEV) {
+              console.warn(`[Homelab] No icon in specIcons for label "${spec.label}". Available: ${Object.keys(specIcons).join(', ')}`);
+            }
+            return (
             <motion.div
               key={spec.label}
               initial={{ opacity: 0, y: 8 }}
@@ -50,11 +76,14 @@ function Homelab() {
               transition={{ delay: 0.2 + i * 0.05 }}
               className="border border-rpg-border/50 bg-rpg-panel/50 p-2.5 text-center"
             >
-              <span className="text-sm block">{spec.icon}</span>
+              <span className="flex justify-center">
+                {SpecIcon && <SpecIcon className="w-4 h-4 text-rpg-text" />}
+              </span>
               <span className="font-pixel text-[7px] text-rpg-text-dim uppercase block mt-1">{spec.label}</span>
               <span className="font-body text-[10px] text-rpg-text block mt-0.5">{spec.value}</span>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Topology Diagram */}

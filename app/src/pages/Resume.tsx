@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import PixelPanel from '../components/ui/PixelPanel';
 import PixelButton from '../components/ui/PixelButton';
 import PixelBadge from '../components/ui/PixelBadge';
+import { FloppyDiskIcon, HourglassIcon, OfficeIcon, GradCapIcon, TrophyIcon } from '../components/ui/PixelIcons';
 
 function Resume() {
   const resumeRef = useRef<HTMLDivElement>(null);
@@ -171,8 +172,8 @@ function Resume() {
     setIsGenerating(false);
   };
 
-  const sectionIcon = (icon: string) => (
-    <span className="text-sm mr-2">{icon}</span>
+  const SectionIcon = ({ Icon }: { Icon: React.ComponentType<{ className?: string }> }) => (
+    <span className="inline-flex mr-2 align-middle"><Icon className="w-4 h-4" /></span>
   );
 
   return (
@@ -195,7 +196,12 @@ function Resume() {
         {/* Save Game Button */}
         <div className="flex justify-end no-print">
           <PixelButton onClick={generatePDF} disabled={isGenerating} variant="gold">
-            {isGenerating ? '⏳ Saving...' : '💾 Save Game (PDF)'}
+            <span className="inline-flex items-center gap-2">
+              {isGenerating
+                ? <><HourglassIcon className="w-4 h-4" /> Saving...</>
+                : <><FloppyDiskIcon className="w-4 h-4" /> Save Game (PDF)</>
+              }
+            </span>
           </PixelButton>
         </div>
 
@@ -213,7 +219,7 @@ function Resume() {
                 <div className="absolute -left-[5px] top-1 w-2 h-2 bg-neon-cyan border border-neon-cyan/50" />
                 <h3 className="font-pixel text-[10px] text-rpg-text-bright uppercase">{job.role}</h3>
                 <p className="font-pixel text-[8px] text-rpg-text-dim mt-1">
-                  {sectionIcon('🏢')} {job.company} · {job.dates}
+                  <SectionIcon Icon={OfficeIcon} /> {job.company} · {job.dates}
                 </p>
                 <p className="text-xs text-neon-cyan/70 font-body italic mt-2 border-l-2 border-neon-cyan/20 pl-3">
                   {job.summary}
@@ -235,7 +241,7 @@ function Resume() {
         <PixelPanel title="Training Grounds" glow="gold">
           <div className="pt-2">
             <h3 className="font-pixel text-[10px] text-rpg-text-bright uppercase">
-              {sectionIcon('🎓')} {structuredResume.education.degree}
+              <SectionIcon Icon={GradCapIcon} /> {structuredResume.education.degree}
             </h3>
             <p className="font-pixel text-[8px] text-rpg-text-dim mt-1">
               {structuredResume.education.institution} · {structuredResume.education.graduation}
@@ -250,7 +256,7 @@ function Resume() {
             <div className="flex flex-wrap gap-2 pt-2">
               {structuredResume.certifications.map((cert, idx) => (
                 <div key={idx} className="flex items-center gap-2 rpg-border px-3 py-2">
-                  <span className="text-sm">🏆</span>
+                  <TrophyIcon className="w-4 h-4 text-neon-gold" />
                   <span className="font-pixel text-[9px] text-neon-gold">{cert}</span>
                 </div>
               ))}

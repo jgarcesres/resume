@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 WORKDIR /build
 
@@ -16,6 +16,9 @@ RUN npm run build
 
 # Production stage
 FROM nginx:alpine
+
+# Upgrade system packages to patch known vulnerabilities (zlib CVEs)
+RUN apk upgrade --no-cache
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf

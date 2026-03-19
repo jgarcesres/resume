@@ -9,6 +9,7 @@ import Hobbies from './pages/Hobbies';
 import Resume from './pages/Resume';
 import Homelab from './pages/Homelab';
 import Credits from './pages/Credits';
+import SkillTreePage from './pages/SkillTreePage';
 import { useKonamiCode } from './hooks/useKonamiCode';
 import { useCrtEffect } from './hooks/useCrtEffect';
 import { useZeldaSecret } from './hooks/useZeldaSecret';
@@ -31,6 +32,7 @@ function AppContent() {
             <Route path="/hobbies" element={<Hobbies />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="/homelab" element={<Homelab />} />
+            <Route path="/skill-tree" element={<SkillTreePage />} />
             <Route path="/credits" element={<Credits />} />
           </Routes>
         </AnimatePresence>

@@ -1,0 +1,82 @@
+{
+  "nodes": [
+    { "id": "root", "label": "SRE Mage", "category": "root", "level": 99, "description": "Site Reliability Engineer — master of all domains" },
+
+    { "id": "cloud", "label": "Cloud", "category": "cloud", "level": 92, "description": "Cloud infrastructure and platform engineering" },
+    { "id": "aws", "label": "AWS", "category": "cloud", "level": 95, "description": "EC2, EKS, Lambda, S3, RDS, IAM, CloudFormation" },
+    { "id": "azure", "label": "Azure", "category": "cloud", "level": 85, "description": "AKS, Azure AD, managed services" },
+    { "id": "terraform", "label": "Terraform", "category": "cloud", "level": 92, "description": "Infrastructure as Code across multi-cloud" },
+
+    { "id": "containers", "label": "Containers", "category": "devops", "level": 93, "description": "Container orchestration and runtime" },
+    { "id": "kubernetes", "label": "Kubernetes", "category": "devops", "level": 90, "description": "EKS, AKS, k3s — production cluster management" },
+    { "id": "docker", "label": "Docker", "category": "devops", "level": 95, "description": "Container images, multi-stage builds, Compose" },
+
+    { "id": "cicd", "label": "CI/CD", "category": "devops", "level": 90, "description": "Continuous Integration & Delivery pipelines" },
+    { "id": "gitlab", "label": "GitLab CI", "category": "devops", "level": 92, "description": "Pipeline design, runners, auto-deploy" },
+    { "id": "ghactions", "label": "GitHub Actions", "category": "devops", "level": 88, "description": "Workflows, reusable actions, matrix builds" },
+    { "id": "argocd", "label": "ArgoCD", "category": "devops", "level": 85, "description": "GitOps continuous delivery for Kubernetes" },
+
+    { "id": "observability", "label": "Observability", "category": "monitoring", "level": 88, "description": "Monitoring, alerting, and incident response" },
+    { "id": "grafana", "label": "Grafana", "category": "monitoring", "level": 92, "description": "Dashboards, alerting, Grafana stack" },
+    { "id": "prometheus", "label": "Prometheus", "category": "monitoring", "level": 90, "description": "Metrics collection, PromQL, recording rules" },
+    { "id": "mimir", "label": "Mimir", "category": "monitoring", "level": 82, "description": "Long-term metrics storage at scale" },
+    { "id": "pagerduty", "label": "PagerDuty", "category": "monitoring", "level": 88, "description": "On-call rotations, incident management" },
+
+    { "id": "security", "label": "Security", "category": "security", "level": 85, "description": "Identity, access control, and compliance" },
+    { "id": "okta", "label": "Okta", "category": "security", "level": 88, "description": "SSO, MFA, lifecycle management" },
+    { "id": "vault", "label": "Vault", "category": "security", "level": 80, "description": "Secrets management, dynamic credentials" },
+    { "id": "saml", "label": "SAML/OAuth", "category": "security", "level": 85, "description": "Federation protocols, OIDC integration" },
+    { "id": "ad", "label": "AD/LDAP", "category": "security", "level": 82, "description": "Active Directory, LDAP, group policies" },
+
+    { "id": "languages", "label": "Languages", "category": "languages", "level": 85, "description": "Programming and scripting" },
+    { "id": "python", "label": "Python", "category": "languages", "level": 90, "description": "Automation, tooling, data analysis" },
+    { "id": "bash", "label": "Bash", "category": "languages", "level": 92, "description": "Shell scripting, system automation" },
+    { "id": "powershell", "label": "PowerShell", "category": "languages", "level": 78, "description": "Windows automation, AD management" },
+
+    { "id": "databases", "label": "Databases", "category": "cloud", "level": 80, "description": "Data storage and management" },
+    { "id": "postgres", "label": "PostgreSQL", "category": "cloud", "level": 82, "description": "Relational database administration" },
+    { "id": "redis", "label": "Redis", "category": "cloud", "level": 78, "description": "In-memory caching and pub/sub" }
+  ],
+  "edges": [
+    { "from": "root", "to": "cloud" },
+    { "from": "root", "to": "containers" },
+    { "from": "root", "to": "cicd" },
+    { "from": "root", "to": "observability" },
+    { "from": "root", "to": "security" },
+    { "from": "root", "to": "languages" },
+
+    { "from": "cloud", "to": "aws" },
+    { "from": "cloud", "to": "azure" },
+    { "from": "cloud", "to": "terraform" },
+    { "from": "cloud", "to": "databases" },
+    { "from": "databases", "to": "postgres" },
+    { "from": "databases", "to": "redis" },
+
+    { "from": "containers", "to": "kubernetes" },
+    { "from": "containers", "to": "docker" },
+
+    { "from": "cicd", "to": "gitlab" },
+    { "from": "cicd", "to": "ghactions" },
+    { "from": "cicd", "to": "argocd" },
+
+    { "from": "observability", "to": "grafana" },
+    { "from": "observability", "to": "prometheus" },
+    { "from": "observability", "to": "mimir" },
+    { "from": "observability", "to": "pagerduty" },
+
+    { "from": "security", "to": "okta" },
+    { "from": "security", "to": "vault" },
+    { "from": "security", "to": "saml" },
+    { "from": "security", "to": "ad" },
+
+    { "from": "languages", "to": "python" },
+    { "from": "languages", "to": "bash" },
+    { "from": "languages", "to": "powershell" },
+
+    { "from": "kubernetes", "to": "argocd" },
+    { "from": "prometheus", "to": "grafana" },
+    { "from": "terraform", "to": "aws" },
+    { "from": "terraform", "to": "azure" },
+    { "from": "okta", "to": "saml" }
+  ]
+}

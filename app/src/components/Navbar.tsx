@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { to: '/projects', label: 'Quests', icon: '⚔️' },
+  { to: '/skill-tree', label: 'Talents', icon: '🌳' },
   { to: '/hobbies', label: 'Skills', icon: '✨' },
   { to: '/resume', label: 'Stats', icon: '📜' },
   { to: '/homelab', label: 'Base', icon: '🏰' },

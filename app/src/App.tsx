@@ -10,6 +10,7 @@ import Resume from './pages/Resume';
 import Homelab from './pages/Homelab';
 import Credits from './pages/Credits';
 import SkillTreePage from './pages/SkillTreePage';
+import CrtShaderOverlay from './components/CrtShaderOverlay';
 import { useKonamiCode } from './hooks/useKonamiCode';
 import { useCrtEffect } from './hooks/useCrtEffect';
 import { useZeldaSecret } from './hooks/useZeldaSecret';
@@ -21,7 +22,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-rpg-void text-rpg-text grid-bg relative">
-      {crtEnabled && <div className="crt-overlay" aria-hidden="true" />}
+      <CrtShaderOverlay enabled={crtEnabled} />
 
       <Navbar onToggleCrt={toggleCrt} crtEnabled={crtEnabled} />
       <main className="max-w-5xl mx-auto px-4 py-8 mt-14">

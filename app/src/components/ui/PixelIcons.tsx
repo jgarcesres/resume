@@ -1102,7 +1102,7 @@ export function JuanExeLogo({ className }: { className?: string }) {
           text-shadow: 0 0 6px rgba(255,215,0,0.3);
         }
         ${dEnd}%, 100% {
-          clip-path: inset(0 0% 0 100%);
+          clip-path: inset(0 100% 0 0);
           color: #00e5ff;
           text-shadow: 0 0 4px rgba(0,229,255,0.2);
         }

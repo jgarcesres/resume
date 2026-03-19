@@ -5,6 +5,10 @@ struct Uniforms {
   resolution: vec2f,
   time: f32,
   intensity: f32,
+  cssWidth: f32,
+  _pad1: f32,
+  _pad2: f32,
+  _pad3: f32,
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;
@@ -39,40 +43,44 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   var color = vec3f(0.0);
 
   // ── Scanlines ──
-  // Horizontal scanlines that slowly drift downward
-  let scanY = uv.y * u.resolution.y;
+  // Wider scanlines on mobile (fewer pixels = need thicker lines to be visible)
+  let scanScale = select(1.0, 2.0, u.cssWidth < 768.0);
+  let scanY = uv.y * u.resolution.y / scanScale;
   let scanPhase = scanY + t * 30.0;
   let scanline = sin(scanPhase * 3.14159 / 2.0);
-  let scanAlpha = scanline * scanline * 0.12 * intensity;
+  let scanAlpha = scanline * scanline * 0.15 * intensity;
   alpha += scanAlpha;
 
   // ── Phosphor dot pattern (RGB sub-pixel simulation) ──
-  let px = floor(uv * u.resolution / 3.0);
-  let subpx = (uv * u.resolution / 3.0 - px) * 3.0;
+  // Larger phosphor cells on mobile so they're visible
+  let phosphorScale = select(3.0, 5.0, u.cssWidth < 768.0);
+  let px = floor(uv * u.resolution / phosphorScale);
+  let subpx = (uv * u.resolution / phosphorScale - px) * phosphorScale;
   let col = i32(px.x) % 3;
   var phosphor = vec3f(0.0);
   if (col == 0) { phosphor = vec3f(1.0, 0.0, 0.0); }
   else if (col == 1) { phosphor = vec3f(0.0, 1.0, 0.0); }
   else { phosphor = vec3f(0.0, 0.0, 1.0); }
-  // Subtle phosphor tint
-  let phosphorMask = smoothstep(0.0, 1.0, length(subpx - vec2f(1.5)));
-  color += phosphor * phosphorMask * 0.04 * intensity;
-  alpha += phosphorMask * 0.02 * intensity;
+  let phosphorMask = smoothstep(0.0, 1.0, length(subpx - vec2f(phosphorScale * 0.5)));
+  color += phosphor * phosphorMask * 0.05 * intensity;
+  alpha += phosphorMask * 0.03 * intensity;
 
-  // ── Vignette ──
+  // ── Vignette ── (stronger on mobile for that small-screen CRT feel)
   let center = uv - 0.5;
   let dist = length(center);
-  let vignette = smoothstep(0.3, 0.85, dist) * 0.5 * intensity;
+  let vignetteStrength = select(0.5, 0.7, u.cssWidth < 768.0);
+  let vignette = smoothstep(0.3, 0.85, dist) * vignetteStrength * intensity;
   alpha += vignette;
 
   // ── Subtle flicker ──
-  let flicker = sin(t * 8.0) * sin(t * 13.7) * 0.008 * intensity;
+  let flicker = sin(t * 8.0) * sin(t * 13.7) * 0.012 * intensity;
   alpha += flicker;
 
   // ── Moving scan band (like a slow refresh line) ──
   let bandPos = fract(t * 0.05);
   let bandDist = abs(uv.y - bandPos);
-  let band = smoothstep(0.06, 0.0, bandDist) * 0.06 * intensity;
+  let bandStrength = select(0.06, 0.10, u.cssWidth < 768.0);
+  let band = smoothstep(0.06, 0.0, bandDist) * bandStrength * intensity;
   alpha += band;
 
   // ── Screen edge glow ──
@@ -82,7 +90,7 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   alpha += edgeGlow;
 
   // Clamp alpha
-  alpha = clamp(alpha, 0.0, 0.6);
+  alpha = clamp(alpha, 0.0, 0.65);
 
   // Premultiply RGB by alpha (required by premultiplied alphaMode)
   return vec4f(color * alpha, alpha);
@@ -109,7 +117,7 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
   const shaderModule = device.createShaderModule({ code: CRT_SHADER });
 
   const uniformBuffer = device.createBuffer({
-    size: 16, // vec2f resolution + f32 time + f32 intensity = 16 bytes
+    size: 32, // vec2f resolution + f32 time + f32 intensity + f32 cssWidth + 3x padding = 32 bytes
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
   });
 
@@ -200,16 +208,17 @@ function CrtShaderOverlay({ enabled }: CrtShaderOverlayProps) {
       window.addEventListener('resize', resize);
       resizeHandler = resize;
 
-      const uniformData = new Float32Array(4);
+      const uniformData = new Float32Array(8);
 
       const frame = () => {
         if (cancelled) return;
 
         const dpr = window.devicePixelRatio || 1;
-        uniformData[0] = window.innerWidth * dpr;
-        uniformData[1] = window.innerHeight * dpr;
+        uniformData[0] = window.innerWidth * dpr;  // physical resolution X
+        uniformData[1] = window.innerHeight * dpr;  // physical resolution Y
         uniformData[2] = (performance.now() - startTimeRef.current) / 1000;
-        uniformData[3] = 1.0; // intensity
+        uniformData[3] = 1.0;                       // intensity
+        uniformData[4] = window.innerWidth;          // CSS pixel width (for breakpoints)
 
         gpu.device.queue.writeBuffer(gpu.uniformBuffer, 0, uniformData);
 

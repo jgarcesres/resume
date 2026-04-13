@@ -95,22 +95,47 @@
       "GCP",
       "Azure",
       "Terraform",
+      "OpenTofu",
       "Kubernetes",
+      "K3s",
       "Docker",
-      "Ansible"
+      "Helm",
+      "Ansible",
+      "Proxmox"
+    ],
+    "networking": [
+      "Tailscale",
+      "Cilium",
+      "Gateway API",
+      "Cloudflare",
+      "external-dns",
+      "cert-manager",
+      "CoreDNS"
     ],
     "ci/cd": [
       "GitLab CI",
       "GitHub Actions",
-      "argoCD"
+      "ArgoCD"
     ],
     "observability": [
       "Datadog",
       "Grafana",
       "Prometheus",
+      "Loki",
       "Mimir",
+      "PromQL",
+      "LogQL",
       "Alertmanager",
       "PagerDuty"
+    ],
+    "storage": [
+      "TrueNAS",
+      "ZFS",
+      "NFS",
+      "iSCSI",
+      "Synology",
+      "NFS CSI",
+      "Democratic CSI"
     ],
     "operating_systems": [
       "Linux",
@@ -126,15 +151,19 @@
     "languages": [
       "Python",
       "Bash",
-      "PowerShell"
+      "PowerShell",
+      "HCL"
     ],
     "spoken_languages": [
       "Native English",
       "Native Spanish"
     ],
     "other": [
-      "AI Prompt Engineering",
+      "MCP (Model Context Protocol)",
+      "Ollama",
+      "AI-Assisted Infrastructure",
       "Hashicorp Vault",
+      "1Password Operator",
       "Git",
       "Data Analysis",
       "Data Visualization",
@@ -145,6 +174,7 @@
       "jamf",
       "SAML",
       "OAuth",
+      "OIDC",
       "RESTful APIs"
     ]
   }

@@ -6,6 +6,8 @@
     { "id": "aws", "label": "AWS", "category": "cloud", "level": 95, "description": "EC2, EKS, Lambda, S3, RDS, IAM, CloudFormation" },
     { "id": "azure", "label": "Azure", "category": "cloud", "level": 85, "description": "AKS, Azure AD, managed services" },
     { "id": "terraform", "label": "Terraform", "category": "cloud", "level": 92, "description": "Infrastructure as Code across multi-cloud" },
+    { "id": "opentofu", "label": "OpenTofu", "category": "cloud", "level": 90, "description": "Open-source Terraform fork, Proxmox VM management" },
+    { "id": "proxmox", "label": "Proxmox", "category": "cloud", "level": 85, "description": "Hypervisor clustering, VM lifecycle, ZFS storage" },
 
     { "id": "containers", "label": "Containers", "category": "devops", "level": 93, "description": "Container orchestration and runtime" },
     { "id": "kubernetes", "label": "Kubernetes", "category": "devops", "level": 90, "description": "EKS, AKS, k3s — production cluster management" },
@@ -21,6 +23,16 @@
     { "id": "prometheus", "label": "Prometheus", "category": "monitoring", "level": 90, "description": "Metrics collection, PromQL, recording rules" },
     { "id": "mimir", "label": "Mimir", "category": "monitoring", "level": 82, "description": "Long-term metrics storage at scale" },
     { "id": "pagerduty", "label": "PagerDuty", "category": "monitoring", "level": 88, "description": "On-call rotations, incident management" },
+    { "id": "loki", "label": "Loki", "category": "monitoring", "level": 85, "description": "Log aggregation, LogQL queries" },
+
+    { "id": "networking", "label": "Networking", "category": "networking", "level": 88, "description": "VPN, CNI, DNS, and certificate management" },
+    { "id": "tailscale", "label": "Tailscale", "category": "networking", "level": 90, "description": "Mesh VPN, ACL policy-as-code, site-to-site" },
+    { "id": "cilium", "label": "Cilium", "category": "networking", "level": 85, "description": "eBPF CNI, native routing, kube-proxy replacement" },
+    { "id": "cloudflare", "label": "Cloudflare", "category": "networking", "level": 85, "description": "DNS management, DDNS, proxy configuration" },
+
+    { "id": "ai", "label": "AI/LLM", "category": "ai", "level": 80, "description": "AI tooling, local models, and agent infrastructure" },
+    { "id": "mcp", "label": "MCP", "category": "ai", "level": 82, "description": "Model Context Protocol servers and gateways" },
+    { "id": "ollama", "label": "Ollama", "category": "ai", "level": 78, "description": "Local LLM hosting and inference" },
 
     { "id": "security", "label": "Security", "category": "security", "level": 85, "description": "Identity, access control, and compliance" },
     { "id": "okta", "label": "Okta", "category": "security", "level": 88, "description": "SSO, MFA, lifecycle management" },
@@ -42,12 +54,16 @@
     { "from": "root", "to": "containers" },
     { "from": "root", "to": "cicd" },
     { "from": "root", "to": "observability" },
+    { "from": "root", "to": "networking" },
+    { "from": "root", "to": "ai" },
     { "from": "root", "to": "security" },
     { "from": "root", "to": "languages" },
 
     { "from": "cloud", "to": "aws" },
     { "from": "cloud", "to": "azure" },
     { "from": "cloud", "to": "terraform" },
+    { "from": "cloud", "to": "opentofu" },
+    { "from": "cloud", "to": "proxmox" },
     { "from": "cloud", "to": "databases" },
     { "from": "databases", "to": "postgres" },
     { "from": "databases", "to": "redis" },
@@ -62,6 +78,7 @@
     { "from": "observability", "to": "grafana" },
     { "from": "observability", "to": "prometheus" },
     { "from": "observability", "to": "mimir" },
+    { "from": "observability", "to": "loki" },
     { "from": "observability", "to": "pagerduty" },
 
     { "from": "security", "to": "okta" },
@@ -73,10 +90,21 @@
     { "from": "languages", "to": "bash" },
     { "from": "languages", "to": "powershell" },
 
+    { "from": "networking", "to": "tailscale" },
+    { "from": "networking", "to": "cilium" },
+    { "from": "networking", "to": "cloudflare" },
+
+    { "from": "ai", "to": "mcp" },
+    { "from": "ai", "to": "ollama" },
+
     { "from": "kubernetes", "to": "argocd" },
+    { "from": "kubernetes", "to": "cilium" },
+    { "from": "kubernetes", "to": "tailscale" },
     { "from": "prometheus", "to": "grafana" },
+    { "from": "loki", "to": "grafana" },
     { "from": "terraform", "to": "aws" },
     { "from": "terraform", "to": "azure" },
+    { "from": "opentofu", "to": "proxmox" },
     { "from": "okta", "to": "saml" }
   ]
 }

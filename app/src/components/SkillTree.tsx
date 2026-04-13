@@ -35,6 +35,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   monitoring: '#39ff14',
   security: '#ff2daa',
   languages: '#ff8c00',
+  networking: '#e74cff',
+  ai: '#ff6b6b',
 };
 
 function getCategoryColor(category: string): string {

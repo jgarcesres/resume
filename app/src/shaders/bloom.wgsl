@@ -46,10 +46,10 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   let pulse = 0.85 + 0.15 * sin(t * 1.2);
   color *= pulse;
 
-  // Keep subtle — bloom is ambient, not overpowering
-  let strength = 0.28 * intensity;
+  // Ambient bloom — cranked up so it's clearly visible on bright displays.
+  let strength = 0.55 * intensity;
   let outColor = color * strength;
-  let alpha = clamp((outColor.r + outColor.g + outColor.b) * 0.5, 0.0, 0.45);
+  let alpha = clamp((outColor.r + outColor.g + outColor.b) * 0.6, 0.0, 0.7);
 
   return vec4f(outColor * alpha, alpha);
 }

@@ -41,16 +41,16 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   // Thick scanlines — every other ~4-pixel row is darker.
   let scanScale = select(4.0, 6.0, u.cssWidth < 768.0);
   let scanRow = i32(uv.y * u.resolution.y / scanScale) & 1;
-  let scanDark = select(0.0, 0.18, scanRow == 0);
+  let scanDark = select(0.0, 0.38, scanRow == 0);
 
   // Posterized alpha pattern: quantize the dither value so it looks stepped.
   let step = floor(dither * 4.0) / 4.0;
-  let ditherAlpha = step * 0.22;
+  let ditherAlpha = step * 0.38;
 
-  // Subtle green CRT tint on the dark pixels
-  let tint = vec3f(0.05, 0.18, 0.08);
+  // Green CRT tint on the dark pixels
+  let tint = vec3f(0.08, 0.28, 0.12);
 
-  let alpha = clamp((scanDark + ditherAlpha) * intensity, 0.0, 0.55);
+  let alpha = clamp((scanDark + ditherAlpha) * intensity, 0.0, 0.78);
   let color = tint;
 
   return vec4f(color * alpha, alpha);

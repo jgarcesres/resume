@@ -31,24 +31,25 @@ fn fs(in: VertexOutput) -> @location(0) vec4f {
   let nx = center.x;
   let ny = center.y;
 
-  let fringe = smoothstep(0.25, 0.75, dist);
+  // Fringes start earlier and reach full strength at the corners.
+  let fringe = smoothstep(0.15, 0.75, dist);
 
   // Red channel leans toward +x / -y; blue leans toward -x / +y.
-  let redMask = clamp(nx * 1.2 - ny * 1.2, 0.0, 1.0) * fringe;
-  let blueMask = clamp(-nx * 1.2 + ny * 1.2, 0.0, 1.0) * fringe;
-  let greenMask = fringe * 0.15;
+  let redMask = clamp(nx * 1.4 - ny * 1.4, 0.0, 1.0) * fringe;
+  let blueMask = clamp(-nx * 1.4 + ny * 1.4, 0.0, 1.0) * fringe;
+  let greenMask = fringe * 0.25;
 
   // Gentle shimmer so it doesn't look static
-  let shimmer = 0.9 + 0.1 * sin(t * 1.5 + dist * 6.0);
+  let shimmer = 0.85 + 0.15 * sin(t * 1.5 + dist * 6.0);
 
   var color = vec3f(0.0);
-  color.r = redMask * 0.55 * shimmer;
-  color.b = blueMask * 0.55 * shimmer;
-  color.g = greenMask * 0.25;
+  color.r = redMask * 0.95 * shimmer;
+  color.b = blueMask * 0.95 * shimmer;
+  color.g = greenMask * 0.35;
 
   let strength = intensity;
   let outColor = color * strength;
-  let alpha = clamp(fringe * 0.45 * strength, 0.0, 0.55);
+  let alpha = clamp(fringe * 0.75 * strength, 0.0, 0.75);
 
   return vec4f(outColor * alpha, alpha);
 }

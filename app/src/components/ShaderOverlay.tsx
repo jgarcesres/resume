@@ -201,7 +201,7 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
         uniformData[0] = canvas.width;
         uniformData[1] = canvas.height;
         uniformData[2] = (performance.now() - startTimeRef.current) / 1000;
-        uniformData[3] = 1.0;
+        uniformData[3] = 0.7;
         uniformData[4] = canvas.clientWidth || window.innerWidth;
 
         gpu.device.queue.writeBuffer(gpu.uniformBuffer, 0, uniformData);

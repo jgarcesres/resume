@@ -54,7 +54,7 @@ function Projects() {
           <div className="flex items-baseline gap-4">
             <h1 className="font-pixel text-lg text-rpg-text-bright">{L.questLog}</h1>
             <span className="font-pixel text-[8px] text-rpg-text-dim">
-              {projects.length} {activeTab === 'public' ? 'side' : 'main'} quests completed
+              {projects.length} {activeTab === 'public' ? L.questsCompletedSide : L.questsCompletedMain}
             </span>
           </div>
         ) : (

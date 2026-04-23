@@ -179,6 +179,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                     onClick={() => setTheme('professional')}
                     className="font-pixel text-[8px] text-rpg-text-dim hover:text-neon-cyan transition-colors ml-2"
                     title="Switch to professional mode"
+                    aria-label="Switch to professional mode"
                   >
                     [ pro ]
                   </button>
@@ -189,6 +190,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                     onClick={() => setTheme('rpg')}
                     className="font-mono text-[10px] uppercase tracking-[0.18em] text-pro-muted hover:text-pro-accent transition-colors"
                     title="Enter pixel mode"
+                    aria-label="Enter pixel mode"
                   >
                     ↳ pixel mode
                   </button>
@@ -316,6 +318,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                     <button
                       onClick={() => { setTheme('professional'); setIsMenuOpen(false); }}
                       className="font-pixel text-[8px] text-neon-cyan hover:text-neon-gold transition-colors"
+                      aria-label="Switch to professional mode"
                     >
                       [ exit to pro mode ]
                     </button>
@@ -325,6 +328,7 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                     <button
                       onClick={() => { setTheme('rpg'); setIsMenuOpen(false); }}
                       className="font-mono text-[11px] uppercase tracking-[0.18em] text-pro-muted hover:text-pro-accent transition-colors"
+                      aria-label="Enter pixel mode"
                     >
                       ↳ pixel mode
                     </button>

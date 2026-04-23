@@ -141,7 +141,7 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                 y="32"
                 fontSize={isRpg ? '7' : '9'}
                 fill={labelColor}
-                fontFamily={isRpg ? 'var(--font-pixel, monospace)' : '"JetBrains Mono", monospace'}
+                fontFamily={isRpg ? '"Press Start 2P", monospace' : '"JetBrains Mono", monospace'}
                 letterSpacing={isRpg ? 'normal' : '0.12em'}
               >
                 {site.flag} {isRpg ? site.label : site.label.toUpperCase()}
@@ -235,7 +235,7 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                   textAnchor="middle"
                   fontSize={isRpg ? '6' : '7'}
                   fill={isSelected ? p.nodeLabelSelected : p.nodeLabel}
-                  fontFamily={isRpg ? 'var(--font-pixel, monospace)' : '"JetBrains Mono", monospace'}
+                  fontFamily={isRpg ? '"Press Start 2P", monospace' : '"JetBrains Mono", monospace'}
                   letterSpacing={isRpg ? 'normal' : '0.04em'}
                 >
                   {node.label}

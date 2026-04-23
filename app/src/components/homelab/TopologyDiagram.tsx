@@ -50,6 +50,7 @@ const nodePositions: Record<string, { x: number; y: number }> = {
 };
 
 // Palette indirection — swap a single token object based on theme.
+// The `Palette` type lock guarantees proPalette has every key rpgPalette does.
 const rpgPalette = {
   siteFlAFill: 'rgba(0,229,255,0.03)',
   siteFlAStroke: 'rgba(0,229,255,0.15)',
@@ -70,23 +71,23 @@ const rpgPalette = {
   controlCap: 'rgba(0,229,255,0.5)',
   nodeLabel: '#c8d6e5',
   nodeLabelSelected: '#00e5ff',
-};
+} as const;
 
-const proPalette = {
-  // Site regions: charcoal tinted slightly warmer / cooler to distinguish sites.
+type Palette = typeof rpgPalette;
+
+const proPalette: Palette = {
   siteFlAFill: 'rgba(95,169,123,0.04)',
   siteFlAStroke: 'rgba(95,169,123,0.22)',
   siteFlBFill: 'rgba(232,179,57,0.03)',
   siteFlBStroke: 'rgba(232,179,57,0.18)',
   siteFlALabel: '#5FA97B',
   siteFlBLabel: '#E8B339',
-  // Links: muted green for local, amber dashed for cross-site VPN.
   localLine: 'rgba(95,169,123,0.35)',
   crossLine: 'rgba(232,179,57,0.55)',
   localPacket: '#3FD771',
   crossPacket: '#E8B339',
   connLabel: 'rgba(184,180,169,0.55)',
-  // Nodes sit on the page surface (not a darker color) so they don't punch out.
+  // Nodes sit on the page surface, not a darker color, so they don't punch out.
   nodeFill: '#171B17',
   nodeFillSelected: 'rgba(95,169,123,0.14)',
   nodeStroke: '#3A4036',
@@ -215,7 +216,6 @@ function TopologyDiagram({ nodes, connections, sites }: TopologyDiagramProps) {
                     fill={p.controlCap}
                   />
                 )}
-                {/* LED status dot (pro mode only) — small green pulse */}
                 {!isRpg && (
                   <circle
                     cx={pos.x + 54} cy={pos.y + 6} r="2"

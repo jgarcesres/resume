@@ -22,7 +22,7 @@ const rpgCategoryClass: Record<string, string> = {
   apps: 'text-neon-cyan',
 };
 
-// Authentic server-rack LED colors — kept identical across themes.
+// Status-LED colors are theme-agnostic — green/amber/red read the same across themes.
 const statusIndicator: Record<string, { color: string; label: string }> = {
   online: { color: '#3FD771', label: 'ONLINE' },
   offline: { color: '#E5484D', label: 'OFFLINE' },

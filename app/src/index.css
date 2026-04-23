@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ═══════════════════════════════════════
-   Z-INDEX SCALE
-   ═══════════════════════════════════════ */
-
 :root {
   --z-nav: 50;
   --z-konami: 9998;
@@ -16,10 +12,6 @@
   --z-menu-drawer: 10001;
   --z-nav-open: 10002;
 }
-
-/* ═══════════════════════════════════════
-   BASE — PROFESSIONAL THEME (DEFAULT)
-   ═══════════════════════════════════════ */
 
 @layer base {
   html {
@@ -42,10 +34,6 @@
     color: #E8E4DA;
   }
 }
-
-/* ═══════════════════════════════════════
-   BASE — RPG VOID THEME (opt-in)
-   ═══════════════════════════════════════ */
 
 html[data-theme="rpg"] {
   background-color: #0a0e1a;
@@ -71,10 +59,6 @@ html[data-theme="rpg"] ::selection {
   min-height: 100vh;
 }
 
-/* ═══════════════════════════════════════
-   THEME TRANSITION (brief flicker on switch)
-   ═══════════════════════════════════════ */
-
 .theme-flicker {
   pointer-events: none;
   position: fixed;
@@ -95,10 +79,7 @@ html[data-theme="rpg"] ::selection {
   100% { opacity: 0; transform: translateY(0); }
 }
 
-/* ═══════════════════════════════════════
-   CRT SCANLINE OVERLAY (RPG only)
-   ═══════════════════════════════════════ */
-
+/* CRT scanline overlay — RPG only (gated in App.tsx). */
 .crt-overlay {
   pointer-events: none;
   position: fixed;
@@ -119,10 +100,7 @@ html[data-theme="rpg"] ::selection {
     );
 }
 
-/* ═══════════════════════════════════════
-   RPG PANEL BORDERS (FF-style double)
-   ═══════════════════════════════════════ */
-
+/* RPG panel borders — FF-style double (outer outline + inner border). */
 .rpg-border {
   border: 3px solid #3d5a8a;
   outline: 3px solid #2a3a5c;
@@ -184,11 +162,9 @@ html[data-theme="rpg"] ::selection {
     0 0 30px rgba(255, 45, 170, 0.08);
 }
 
-/* ═══════════════════════════════════════
-   TOKEN REMAPPING — so legacy RPG class names
-   render as editorial in professional mode
-   (keeps pages from needing per-class rewrites)
-   ═══════════════════════════════════════ */
+/* Token remapping — legacy RPG class names (text-rpg-*, text-neon-*, bg-rpg-*,
+   rpg-border, font-pixel) render as editorial in professional mode, so pages
+   don't need per-class rewrites. */
 
 html[data-theme="professional"] .text-rpg-text,
 html[data-theme="professional"] .text-rpg-text-bright {
@@ -199,13 +175,13 @@ html[data-theme="professional"] .text-rpg-text-dim {
   color: #7A7D72;
 }
 
-/* Neon classes map to muted fern green — the one editorial accent. */
 html[data-theme="professional"] .text-neon-cyan,
 html[data-theme="professional"] .text-neon-blue {
   color: #5FA97B;
 }
 
-/* Keep the classic LED hues where they signal status — server-room feel. */
+/* Classic LED hues preserved where they signal status — green/amber/red
+   read the same way across themes. */
 html[data-theme="professional"] .text-neon-green {
   color: #3FD771;
 }
@@ -222,6 +198,44 @@ html[data-theme="professional"] .text-neon-red {
 html[data-theme="professional"] [class*="border-rpg-border"],
 html[data-theme="professional"] [class*="border-neon-"] {
   border-color: #22261F !important;
+}
+
+/* Catch slash-opacity text variants (text-neon-cyan/70 etc) that the bare
+   class selectors above miss. Each color gets its own rule so intent survives. */
+html[data-theme="professional"] [class*="text-neon-cyan"] {
+  color: #5FA97B;
+}
+
+html[data-theme="professional"] [class*="text-neon-gold"] {
+  color: #E8B339;
+}
+
+html[data-theme="professional"] [class*="text-neon-magenta"],
+html[data-theme="professional"] [class*="text-neon-red"] {
+  color: #E5484D;
+}
+
+html[data-theme="professional"] [class*="text-neon-green"] {
+  color: #3FD771;
+}
+
+/* Solid neon fills (the small dots on resume bullets, etc.) — map to accent. */
+html[data-theme="professional"] .bg-neon-cyan,
+html[data-theme="professional"] .bg-neon-blue {
+  background-color: #5FA97B !important;
+}
+
+html[data-theme="professional"] .bg-neon-gold {
+  background-color: #E8B339 !important;
+}
+
+html[data-theme="professional"] .bg-neon-magenta,
+html[data-theme="professional"] .bg-neon-red {
+  background-color: #E5484D !important;
+}
+
+html[data-theme="professional"] .bg-neon-green {
+  background-color: #3FD771 !important;
 }
 
 /* Surface fills: dark panels pick up pro-surface tones instead of the RPG blue. */
@@ -245,8 +259,7 @@ html[data-theme="professional"] .bg-neon-gold\/5 {
   background-color: transparent !important;
 }
 
-/* Font-pixel retargets to mono in pro mode — keeps the feel of small-caps
-   UI labels without the retro pixel face that kills the editorial tone. */
+/* font-pixel → mono in pro mode: keep small-caps UI rhythm without the retro face. */
 html[data-theme="professional"] .font-pixel {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-weight: 500;
@@ -257,13 +270,12 @@ html[data-theme="professional"] .font-body {
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Silence RPG-only motion in pro mode */
 html[data-theme="professional"] .animate-blink,
 html[data-theme="professional"] .animate-arrow-bounce {
   animation: none !important;
 }
 
-/* Neutralize RPG panel double-border when user-agent CSS applies it inside pro components */
+/* Flatten .rpg-border when earlier rules leak into pro-themed subtrees. */
 html[data-theme="professional"] .rpg-border {
   border: 1px solid #22261F;
   outline: none;
@@ -286,10 +298,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   box-shadow: none;
   background: #111411;
 }
-
-/* ═══════════════════════════════════════
-   EDITORIAL FURNITURE — professional theme
-   ═══════════════════════════════════════ */
 
 .pro-rule {
   height: 1px;
@@ -332,7 +340,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   border-bottom: 1px solid #22261F;
 }
 
-/* Hairline divider with a tick on the left — editorial touch */
 .pro-section-head::before {
   content: "";
   display: inline-block;
@@ -344,7 +351,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   transform: translateY(-3px);
 }
 
-/* Number prefix utility (01 — heading) */
 .pro-numeral {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
@@ -355,7 +361,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   vertical-align: 0.12em;
 }
 
-/* LED dot utility — small glowing indicator for server-rack status */
 .pro-led {
   display: inline-block;
   width: 6px;
@@ -364,11 +369,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   box-shadow: 0 0 6px currentColor;
 }
 
-/* ═══════════════════════════════════════
-   SCROLLBARS
-   ═══════════════════════════════════════ */
-
-/* Professional (default) */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -388,7 +388,6 @@ html[data-theme="professional"] .rpg-border-glow-magenta {
   background: #3E7555;
 }
 
-/* RPG override */
 html[data-theme="rpg"] ::-webkit-scrollbar-track {
   background: #0a0e1a;
   border-left: 2px solid #2a3a5c;
@@ -404,10 +403,6 @@ html[data-theme="rpg"] ::-webkit-scrollbar-thumb:hover {
   background: #3d5a8a;
 }
 
-/* ═══════════════════════════════════════
-   RPG ARROW CURSOR
-   ═══════════════════════════════════════ */
-
 .rpg-arrow::before {
   content: '▶';
   position: absolute;
@@ -417,16 +412,11 @@ html[data-theme="rpg"] ::-webkit-scrollbar-thumb:hover {
   animation: arrowBounce 0.6s ease-in-out infinite;
 }
 
-/* ═══════════════════════════════════════
-   PIXEL CAT SPRITE
-   ═══════════════════════════════════════ */
-
 .pixel-cat {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
 
-/* Subtle green-tinted cat in professional mode — server-room ambient */
 html[data-theme="professional"] .pixel-cat {
   filter: grayscale(0.85) opacity(0.55) brightness(1.2) hue-rotate(85deg);
   transition: filter 0.3s ease;
@@ -436,11 +426,6 @@ html[data-theme="professional"] .pixel-cat:hover {
   filter: grayscale(0) opacity(1) brightness(1) hue-rotate(0);
 }
 
-/* ═══════════════════════════════════════
-   BACKGROUND PATTERNS
-   ═══════════════════════════════════════ */
-
-/* RPG: visible blue grid */
 html[data-theme="rpg"] .grid-bg {
   background-image:
     linear-gradient(rgba(42, 58, 92, 0.08) 1px, transparent 1px),
@@ -448,16 +433,11 @@ html[data-theme="rpg"] .grid-bg {
   background-size: 32px 32px;
 }
 
-/* Professional: very faint green-tinted dot grid — server rack vent vibe */
 html[data-theme="professional"] .grid-bg {
   background-image: radial-gradient(circle, rgba(95, 169, 123, 0.07) 1px, transparent 1px);
   background-size: 22px 22px;
   background-position: 0 0;
 }
-
-/* ═══════════════════════════════════════
-   STAT BAR SHIMMER
-   ═══════════════════════════════════════ */
 
 .stat-shimmer {
   position: relative;
@@ -489,10 +469,6 @@ html[data-theme="professional"] .grid-bg {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(4px); }
 }
-
-/* ═══════════════════════════════════════
-   PRINT STYLES
-   ═══════════════════════════════════════ */
 
 @media print {
   body, body * {

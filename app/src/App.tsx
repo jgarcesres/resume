@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from './components/Navbar';
 import PixelCat from './components/PixelCat';
 import KonamiOverlay from './components/KonamiOverlay';
@@ -19,15 +19,15 @@ import { useTheme } from './context/ThemeContext';
 
 function ThemeFlicker() {
   const { theme } = useTheme();
+  const prevRef = useRef(theme);
   const [flashKey, setFlashKey] = useState(0);
-  const [prev, setPrev] = useState(theme);
 
   useEffect(() => {
-    if (prev !== theme) {
+    if (prevRef.current !== theme) {
+      prevRef.current = theme;
       setFlashKey((k) => k + 1);
-      setPrev(theme);
     }
-  }, [theme, prev]);
+  }, [theme]);
 
   if (flashKey === 0) return null;
   return <div key={flashKey} className="theme-flicker" aria-hidden />;

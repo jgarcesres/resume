@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script>
-      // Apply stored theme before React mounts to avoid flash-of-RPG on first paint.
+      // Set data-theme from storage before React mounts — avoids flash of wrong theme on first paint.
       (function () {
         try {
           var t = localStorage.getItem('site-theme');

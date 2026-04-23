@@ -26,7 +26,6 @@ function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: S
   const reducedMotion = useReducedMotion();
 
   if (!isRpg) {
-    // Editorial row: label on left, LED dot + fill bar, tabular numerals right.
     return (
       <div className="group">
         <div className="flex items-baseline justify-between gap-3 mb-1.5">

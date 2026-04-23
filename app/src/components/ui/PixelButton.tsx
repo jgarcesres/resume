@@ -37,10 +37,8 @@ const rpgVariants = {
   },
 };
 
-// Professional variants map loosely from RPG intent:
-//   cyan   → primary (cream fill, dark ink)
-//   gold   → featured (fern-green accent)
-//   magenta→ ghost outline
+// Variant names are RPG-era; in pro mode:
+// cyan = primary, gold = featured accent, magenta = ghost outline.
 const proVariants = {
   cyan: 'bg-pro-ink text-pro-bg border-pro-ink hover:bg-pro-ink-soft',
   gold: 'bg-pro-accent text-pro-bg border-pro-accent hover:bg-pro-accent-soft',

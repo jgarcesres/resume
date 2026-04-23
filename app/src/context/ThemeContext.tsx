@@ -11,10 +11,21 @@ interface ThemeContextType {
   isProfessional: boolean;
 }
 
+// Writers fail loudly in dev when called outside a provider — silent no-ops in
+// prod let SSR/tests render without forcing every consumer to wrap.
+function warnMissingProvider(fn: string) {
+  if (import.meta.env.DEV) {
+    console.error(
+      `[ThemeContext] ${fn}() called outside <ThemeProvider>. ` +
+      'Theme change will not apply. Wrap this subtree in <ThemeProvider>.'
+    );
+  }
+}
+
 const defaultValue: ThemeContextType = {
   theme: 'professional',
-  setTheme: () => {},
-  toggleTheme: () => {},
+  setTheme: () => warnMissingProvider('setTheme'),
+  toggleTheme: () => warnMissingProvider('toggleTheme'),
   isRpg: false,
   isProfessional: true,
 };

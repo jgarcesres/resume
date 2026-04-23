@@ -56,8 +56,9 @@ function PixelCat() {
       className="fixed bottom-0 left-0 right-0 h-10 pointer-events-none z-40"
       style={{ contain: 'layout style' }}
     >
-      <motion.div
-        className="absolute bottom-1 pointer-events-auto cursor-pointer"
+      <motion.button
+        type="button"
+        className="absolute bottom-1 pointer-events-auto cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pro-accent focus-visible:outline-dashed"
         style={{
           x,
           scaleX: facingLeft ? -1 : 1,
@@ -105,7 +106,7 @@ function PixelCat() {
             <rect x="22" y="8" width="2" height="2" fill="#6b7fa3" />
           </svg>
         </div>
-      </motion.div>
+      </motion.button>
     </div>
   );
 }

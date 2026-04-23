@@ -169,8 +169,14 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
 
       const resize = () => {
         const dpr = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
+        // Drive the GPU-side buffer from the canvas's own rendered size, not
+        // window.innerHeight. On iOS the two diverge when the URL bar shows
+        // or hides, and using clientWidth/Height keeps the shader sharp and
+        // fully covers the 100lvh canvas instead of stretching or leaving a gap.
+        const w = canvas.clientWidth || window.innerWidth;
+        const h = canvas.clientHeight || window.innerHeight;
+        canvas.width = Math.max(1, Math.round(w * dpr));
+        canvas.height = Math.max(1, Math.round(h * dpr));
         gpu.context.configure({
           device: gpu.device,
           format: gpu.format,
@@ -179,6 +185,7 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
       };
       resize();
       window.addEventListener('resize', resize);
+      window.visualViewport?.addEventListener('resize', resize);
       resizeHandler = resize;
 
       const uniformData = new Float32Array(UNIFORM_BYTES / 4);
@@ -191,12 +198,11 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
           return;
         }
 
-        const dpr = window.devicePixelRatio || 1;
-        uniformData[0] = window.innerWidth * dpr;
-        uniformData[1] = window.innerHeight * dpr;
+        uniformData[0] = canvas.width;
+        uniformData[1] = canvas.height;
         uniformData[2] = (performance.now() - startTimeRef.current) / 1000;
         uniformData[3] = 1.0;
-        uniformData[4] = window.innerWidth;
+        uniformData[4] = canvas.clientWidth || window.innerWidth;
 
         gpu.device.queue.writeBuffer(gpu.uniformBuffer, 0, uniformData);
 
@@ -230,7 +236,10 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
     return () => {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (resizeHandler) window.removeEventListener('resize', resizeHandler);
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+        window.visualViewport?.removeEventListener('resize', resizeHandler);
+      }
     };
   }, [preset, unavailable]);
 
@@ -270,9 +279,13 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
           aria-hidden="true"
           style={{
             position: 'fixed',
-            inset: 0,
-            width: '100%',
-            height: '100%',
+            top: 0,
+            left: 0,
+            // 100lvh = large viewport height: covers the area behind mobile
+            // browser chrome, so the overlay doesn't expose a strip when
+            // iOS Safari's URL bar retracts.
+            width: '100vw',
+            height: '100lvh',
             pointerEvents: 'none',
             zIndex: 'var(--z-crt)' as unknown as number,
           }}

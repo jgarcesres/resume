@@ -21,7 +21,11 @@ function readInitial(): ShaderPreset {
 
   const legacy = localStorage.getItem(LEGACY_KEY);
   if (legacy !== null) {
-    const migrated: ShaderPreset = legacy === 'false' ? 'none' : 'crt';
+    // Only treat the two values the legacy hook ever wrote as migratable.
+    // Anything else falls through to the default rather than being silently
+    // mapped to an on/off state.
+    const migrated: ShaderPreset =
+      legacy === 'true' ? 'crt' : legacy === 'false' ? 'none' : DEFAULT_PRESET;
     localStorage.setItem(STORAGE_KEY, migrated);
     localStorage.removeItem(LEGACY_KEY);
     return migrated;

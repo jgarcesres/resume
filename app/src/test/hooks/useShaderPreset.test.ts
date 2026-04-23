@@ -47,6 +47,14 @@ describe('useShaderPreset', () => {
     expect(localStorage.getItem('crt-effect')).toBeNull();
   });
 
+  it('falls back to default for unexpected legacy values', () => {
+    localStorage.setItem('crt-effect', 'yes');
+    const { result } = renderHook(() => useShaderPreset());
+    expect(result.current.preset).toBe('crt');
+    expect(localStorage.getItem('shader-preset')).toBe('crt');
+    expect(localStorage.getItem('crt-effect')).toBeNull();
+  });
+
   it('prefers new key over legacy key when both exist', () => {
     localStorage.setItem('shader-preset', 'retro');
     localStorage.setItem('crt-effect', 'false');

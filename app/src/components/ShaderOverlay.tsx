@@ -125,7 +125,17 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    if (preset === 'none') return;
+    // 'none' unmounts the canvas, which invalidates any GPUCanvasContext we hold.
+    // Release the device here so the next non-'none' preset rebuilds cleanly
+    // against the freshly-mounted canvas.
+    if (preset === 'none') {
+      if (gpuRef.current) {
+        gpuRef.current.device.destroy();
+        gpuRef.current = null;
+      }
+      pipelineRef.current = null;
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -143,6 +153,9 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
         gpuRef.current = gpu;
 
         gpu.device.lost.then((info) => {
+          // reason='destroyed' fires from our own unmount cleanup — ignore it
+          // so we don't call setState on an unmounted component.
+          if (info.reason === 'destroyed') return;
           console.warn('WebGPU device lost:', info.message);
           gpuRef.current = null;
           setUnavailable(true);
@@ -208,7 +221,11 @@ function ShaderOverlay({ preset }: ShaderOverlayProps) {
       };
 
       rafRef.current = requestAnimationFrame(frame);
-    })();
+    })().catch((err) => {
+      if (cancelled) return;
+      console.error('[ShaderOverlay] init failed:', err);
+      setUnavailable(true);
+    });
 
     return () => {
       cancelled = true;

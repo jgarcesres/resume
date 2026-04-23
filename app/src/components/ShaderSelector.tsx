@@ -17,7 +17,7 @@ interface ShaderSelectorProps {
 }
 
 function ShaderSelector({ preset, onChange, variant = 'desktop' }: ShaderSelectorProps) {
-  const labelId = useId();
+  const selectId = useId();
 
   const baseSelectClass =
     'font-pixel uppercase tracking-wider bg-rpg-deep text-rpg-text border border-rpg-border ' +
@@ -31,18 +31,16 @@ function ShaderSelector({ preset, onChange, variant = 'desktop' }: ShaderSelecto
   return (
     <div className={variant === 'desktop' ? 'flex items-center gap-2' : 'flex flex-col gap-1'}>
       <label
-        id={labelId}
-        htmlFor={`${labelId}-select`}
+        htmlFor={selectId}
         className="font-pixel text-[8px] text-rpg-text-dim uppercase"
       >
-        Shader
+        Shader overlay
       </label>
       <select
-        id={`${labelId}-select`}
+        id={selectId}
         value={preset}
         onChange={(e) => onChange(e.target.value as ShaderPreset)}
         className={`${baseSelectClass} ${sizeClass}`}
-        aria-label="Shader overlay preset"
       >
         {SHADER_PRESETS.map((p) => (
           <option key={p} value={p}>{LABELS[p]}</option>

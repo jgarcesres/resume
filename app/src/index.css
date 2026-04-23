@@ -102,7 +102,10 @@ html[data-theme="rpg"] ::selection {
 .crt-overlay {
   pointer-events: none;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100lvh;
   z-index: var(--z-crt);
   background:
     repeating-linear-gradient(

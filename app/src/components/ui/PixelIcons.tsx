@@ -330,45 +330,6 @@ export function BabyMemberIcon({ className, style }: PixelIconProps) {
   );
 }
 
-/** CRT monitor ON (scanlines visible) */
-export function CrtOnIcon({ className, style }: PixelIconProps) {
-  return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
-      {/* Monitor body */}
-      <rect x="1" y="1" width="14" height="10" fill="currentColor" />
-      {/* Screen */}
-      <rect x="2" y="2" width="12" height="8" fill="#0a0e1a" />
-      {/* Scanlines */}
-      <motion.g animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 2, repeat: Infinity }}>
-        <rect x="2" y="3" width="12" height="1" fill="#39ff14" opacity="0.3" />
-        <rect x="2" y="5" width="12" height="1" fill="#39ff14" opacity="0.2" />
-        <rect x="2" y="7" width="12" height="1" fill="#39ff14" opacity="0.3" />
-      </motion.g>
-      {/* Stand */}
-      <rect x="5" y="11" width="6" height="2" fill="currentColor" opacity="0.8" />
-      <rect x="4" y="13" width="8" height="2" fill="currentColor" opacity="0.6" />
-    </svg>
-  );
-}
-
-/** CRT monitor OFF (flat screen) */
-export function CrtOffIcon({ className, style }: PixelIconProps) {
-  return (
-    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
-      {/* Monitor body — flatter */}
-      <rect x="1" y="2" width="14" height="9" fill="currentColor" />
-      {/* Screen */}
-      <rect x="2" y="3" width="12" height="7" fill="#0a0e1a" />
-      {/* Screen content hint */}
-      <rect x="4" y="5" width="3" height="1" fill="currentColor" opacity="0.2" />
-      <rect x="4" y="7" width="5" height="1" fill="currentColor" opacity="0.15" />
-      {/* Stand */}
-      <rect x="6" y="11" width="4" height="2" fill="currentColor" opacity="0.8" />
-      <rect x="4" y="13" width="8" height="2" fill="currentColor" opacity="0.6" />
-    </svg>
-  );
-}
-
 // ─── HOMELAB SPEC ICONS ──────────────────────────────────────────────────────
 
 /** Lightning bolt for Compute */

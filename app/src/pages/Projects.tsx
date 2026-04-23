@@ -7,6 +7,8 @@ import PixelPanel from '../components/ui/PixelPanel';
 import PixelBadge from '../components/ui/PixelBadge';
 import { CrossedSwordsIcon, CastleIcon } from '../components/ui/PixelIcons';
 import type { ComponentType, CSSProperties } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { useLabels } from '../lib/labels';
 
 interface Project {
   title: string;
@@ -33,10 +35,12 @@ const badgeColors: Record<string, 'cyan' | 'magenta' | 'gold' | 'green' | 'defau
 function Projects() {
   const [activeTab, setActiveTab] = useState<'public' | 'work'>('public');
   const typedContent = projectsContent as ProjectsContent;
+  const { isRpg } = useTheme();
+  const L = useLabels();
 
   const tabs: { key: 'public' | 'work'; label: string; Icon: ComponentType<{ className?: string; style?: CSSProperties }> }[] = [
-    { key: 'public', label: 'Side Quests', Icon: CrossedSwordsIcon },
-    { key: 'work', label: 'Main Quests', Icon: CastleIcon },
+    { key: 'public', label: L.sideQuests, Icon: CrossedSwordsIcon },
+    { key: 'work', label: L.mainQuests, Icon: CastleIcon },
   ];
 
   const projects = activeTab === 'public'
@@ -46,12 +50,27 @@ function Projects() {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-baseline gap-4">
-          <h1 className="font-pixel text-lg text-rpg-text-bright">Quest Log</h1>
-          <span className="font-pixel text-[8px] text-rpg-text-dim">
-            {projects.length} {activeTab === 'public' ? 'side' : 'main'} quests completed
-          </span>
-        </div>
+        {isRpg ? (
+          <div className="flex items-baseline gap-4">
+            <h1 className="font-pixel text-lg text-rpg-text-bright">{L.questLog}</h1>
+            <span className="font-pixel text-[8px] text-rpg-text-dim">
+              {projects.length} {activeTab === 'public' ? 'side' : 'main'} quests completed
+            </span>
+          </div>
+        ) : (
+          <div className="pt-4 space-y-2">
+            <div className="flex items-baseline gap-3">
+              <span className="pro-label">02 / {L.questLog}</span>
+              <span className="flex-1 h-px bg-pro-rule" aria-hidden />
+            </div>
+            <h1 className="pro-display text-[40px] leading-none tracking-tight text-pro-ink">
+              {L.questLog}
+            </h1>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-pro-muted pro-tabular">
+              {String(projects.length).padStart(2, '0')} · {activeTab === 'public' ? L.questsCompletedSide : L.questsCompletedMain}
+            </p>
+          </div>
+        )}
 
         {/* Tab Switcher */}
         <div className="flex gap-2">
@@ -59,15 +78,21 @@ function Projects() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`
-                font-pixel text-[9px] uppercase px-4 py-2 border-2 transition-all
-                ${activeTab === tab.key
-                  ? 'border-neon-gold/60 bg-neon-gold/10 text-neon-gold shadow-[3px_3px_0_rgba(255,215,0,0.2)]'
-                  : 'border-rpg-border bg-rpg-panel text-rpg-text-dim hover:text-rpg-text hover:border-rpg-border-light'
-                }
-              `}
+              className={
+                isRpg
+                  ? `font-pixel text-[9px] uppercase px-4 py-2 border-2 transition-all ${
+                      activeTab === tab.key
+                        ? 'border-neon-gold/60 bg-neon-gold/10 text-neon-gold shadow-[3px_3px_0_rgba(255,215,0,0.2)]'
+                        : 'border-rpg-border bg-rpg-panel text-rpg-text-dim hover:text-rpg-text hover:border-rpg-border-light'
+                    }`
+                  : `font-sans text-[13px] px-4 py-2 border transition-colors ${
+                      activeTab === tab.key
+                        ? 'border-pro-ink bg-pro-ink text-pro-bg'
+                        : 'border-pro-rule text-pro-muted hover:text-pro-ink hover:border-pro-ink'
+                    }`
+              }
             >
-              <tab.Icon className="w-4 h-4 mr-2 inline-block" />
+              {isRpg && <tab.Icon className="w-4 h-4 mr-2 inline-block" />}
               {tab.label}
             </button>
           ))}
@@ -132,7 +157,7 @@ function Projects() {
                 {project.features.length > 0 && (
                   <div className="border-t border-rpg-border/50 pt-3">
                     <span className="font-pixel text-[8px] text-rpg-text-dim uppercase mb-2 block">
-                      Objectives Completed
+                      {L.objectivesCompleted}
                     </span>
                     <ul className="space-y-1">
                       {project.features.map((feature, idx) => (

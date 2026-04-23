@@ -11,6 +11,8 @@ import {
   PixelCoffeeIcon,
   PixelBookIcon,
 } from '../components/ui/PixelIcons';
+import { useTheme } from '../context/ThemeContext';
+import { useLabels } from '../lib/labels';
 
 const iconMap: Record<string, ComponentType<{ className?: string; style?: CSSProperties }>> = {
   Gamepad2: TriforceIcon,
@@ -32,15 +34,33 @@ const colorMap: Record<string, string> = {
 };
 
 function Hobbies() {
+  const { isRpg } = useTheme();
+  const L = useLabels();
+
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-baseline gap-4">
-          <h1 className="font-pixel text-lg text-rpg-text-bright">Passive Skills</h1>
-          <span className="font-pixel text-[8px] text-rpg-text-dim">
-            {hobbiesContent.hobbies.length} abilities equipped
-          </span>
-        </div>
+        {isRpg ? (
+          <div className="flex items-baseline gap-4">
+            <h1 className="font-pixel text-lg text-rpg-text-bright">{L.passiveSkills}</h1>
+            <span className="font-pixel text-[8px] text-rpg-text-dim">
+              {hobbiesContent.hobbies.length} {L.abilitiesEquipped}
+            </span>
+          </div>
+        ) : (
+          <div className="pt-4 space-y-2">
+            <div className="flex items-baseline gap-3">
+              <span className="pro-label">03 / {L.passiveSkills}</span>
+              <span className="flex-1 h-px bg-pro-rule" aria-hidden />
+            </div>
+            <h1 className="pro-display text-[40px] leading-none tracking-tight text-pro-ink">
+              {L.passiveSkills}
+            </h1>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-pro-muted pro-tabular">
+              {String(hobbiesContent.hobbies.length).padStart(2, '0')} · {L.abilitiesEquipped}
+            </p>
+          </div>
+        )}
 
         {/* Hobby Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -88,8 +108,8 @@ function Hobbies() {
           })}
         </div>
 
-        {/* Active Side Quests */}
-        <PixelPanel title="Active Side Quests" glow="magenta">
+        {/* Active Side Quests / Current Projects */}
+        <PixelPanel title={L.activeSideQuests} glow="magenta">
           <div className="space-y-4 pt-2">
             {hobbiesContent.projects.map((project, index) => (
               <motion.div

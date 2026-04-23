@@ -10,12 +10,12 @@ import {
   CastleIcon,
   PartyMemberIcon,
   BabyMemberIcon,
-  CrtOnIcon,
-  CrtOffIcon,
   JuanExeLogo,
 } from './ui/PixelIcons';
 import type { ComponentType, CSSProperties } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import ShaderSelector from './ShaderSelector';
+import type { ShaderPreset } from '../hooks/useShaderPreset';
 
 interface NavItem {
   to: string;
@@ -34,8 +34,8 @@ const navItems: NavItem[] = [
 ];
 
 interface NavbarProps {
-  onToggleCrt?: () => void;
-  crtEnabled?: boolean;
+  shaderPreset: ShaderPreset;
+  onShaderPresetChange: (next: ShaderPreset) => void;
 }
 
 function ProLogo() {
@@ -51,7 +51,7 @@ function ProLogo() {
   );
 }
 
-function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
+function Navbar({ shaderPreset, onShaderPresetChange }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExitAnimating, setIsExitAnimating] = useState(false);
   const prevMenuOpen = useRef(false);
@@ -162,19 +162,11 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                       <BabyMemberIcon className="w-[8px] h-[10px] text-rpg-text" />
                     </div>
                   </div>
-                  {onToggleCrt && (
-                    <button
-                      onClick={onToggleCrt}
-                      className="text-rpg-text-dim hover:text-rpg-text transition-colors"
-                      title={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
-                      aria-label={crtEnabled ? 'Disable CRT effect' : 'Enable CRT effect'}
-                    >
-                      {crtEnabled
-                        ? <CrtOnIcon className="w-4 h-4" />
-                        : <CrtOffIcon className="w-4 h-4" />
-                      }
-                    </button>
-                  )}
+                  <ShaderSelector
+                    preset={shaderPreset}
+                    onChange={onShaderPresetChange}
+                    variant="desktop"
+                  />
                   <button
                     onClick={() => setTheme('professional')}
                     className="font-pixel text-[8px] text-rpg-text-dim hover:text-neon-cyan transition-colors ml-2"
@@ -301,18 +293,11 @@ function Navbar({ onToggleCrt, crtEnabled }: NavbarProps) {
                         <span className="font-pixel text-[8px] text-rpg-text-dim ml-2">× 3</span>
                       </div>
                     </div>
-                    {onToggleCrt && (
-                      <button
-                        onClick={onToggleCrt}
-                        className="flex items-center gap-2 font-pixel text-[8px] text-rpg-text-dim hover:text-rpg-text transition-colors"
-                      >
-                        {crtEnabled
-                          ? <CrtOnIcon className="w-4 h-4" />
-                          : <CrtOffIcon className="w-4 h-4" />
-                        }
-                        <span>CRT {crtEnabled ? 'ON' : 'OFF'}</span>
-                      </button>
-                    )}
+                    <ShaderSelector
+                      preset={shaderPreset}
+                      onChange={onShaderPresetChange}
+                      variant="mobile"
+                    />
                     <button
                       onClick={() => { setTheme('professional'); setIsMenuOpen(false); }}
                       className="font-pixel text-[8px] text-neon-cyan hover:text-neon-gold transition-colors"

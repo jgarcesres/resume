@@ -11,9 +11,9 @@ import Resume from './pages/Resume';
 import Homelab from './pages/Homelab';
 import Credits from './pages/Credits';
 import SkillTreePage from './pages/SkillTreePage';
-import CrtShaderOverlay from './components/CrtShaderOverlay';
+import ShaderOverlay from './components/ShaderOverlay';
 import { useKonamiCode } from './hooks/useKonamiCode';
-import { useCrtEffect } from './hooks/useCrtEffect';
+import { useShaderPreset } from './hooks/useShaderPreset';
 import { useZeldaSecret } from './hooks/useZeldaSecret';
 import { useTheme } from './context/ThemeContext';
 
@@ -36,7 +36,7 @@ function ThemeFlicker() {
 function AppContent() {
   const playZeldaSound = useZeldaSecret();
   const { activated, dismiss } = useKonamiCode(playZeldaSound);
-  const { crtEnabled, toggleCrt } = useCrtEffect();
+  const { preset, setPreset } = useShaderPreset();
   const { isRpg } = useTheme();
 
   const rootClass = isRpg
@@ -45,10 +45,10 @@ function AppContent() {
 
   return (
     <div className={rootClass}>
-      {isRpg && <CrtShaderOverlay enabled={crtEnabled} />}
+      {isRpg && <ShaderOverlay preset={preset} />}
       <ThemeFlicker />
 
-      <Navbar onToggleCrt={toggleCrt} crtEnabled={crtEnabled} />
+      <Navbar shaderPreset={preset} onShaderPresetChange={setPreset} />
       <main className="max-w-5xl mx-auto px-4 py-8 mt-14">
         <AnimatePresence mode="wait">
           <Routes>

@@ -78,7 +78,19 @@ function computeDepths(nodes: SkillNode[], edges: SkillEdge[]): Map<string, numb
       }
     }
   }
-  for (const n of nodes) if (!depths.has(n.id)) depths.set(n.id, 99);
+  const orphans: string[] = [];
+  for (const n of nodes) {
+    if (!depths.has(n.id)) {
+      depths.set(n.id, 99);
+      orphans.push(n.id);
+    }
+  }
+  if (orphans.length > 0) {
+    console.warn(
+      `[SkillTree] ${orphans.length} orphan node(s) with no path from root — they will be revealed last:`,
+      orphans,
+    );
+  }
   return depths;
 }
 

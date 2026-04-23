@@ -65,13 +65,19 @@ function SkillTreeParticles({
       }
 
       const ctx = canvas.getContext('webgpu');
-      if (!ctx) return;
+      if (!ctx) {
+        // No WebGPU canvas context despite adapter+device — destroy the device
+        // we just acquired so it doesn't leak until the next GC sweep.
+        device.destroy();
+        device = null;
+        return;
+      }
       const format = navigator.gpu.getPreferredCanvasFormat();
       ctx.configure({ device, format, alphaMode: 'premultiplied' });
 
       device.lost.then((info) => {
         if (info.reason === 'destroyed') return;
-        console.warn('[SkillTreeParticles] device lost:', info.message);
+        console.error('[SkillTreeParticles] device lost:', info.message);
       });
 
       // Build id -> index map from the nodes array (stable order == array index).
@@ -81,15 +87,32 @@ function SkillTreeParticles({
       const nNodes = nodes.length;
 
       const edgePairs: [number, number][] = [];
+      const droppedEdges: EdgeLike[] = [];
       for (const e of edges) {
         const a = idToIdx.get(e.from);
         const b = idToIdx.get(e.to);
         if (a !== undefined && b !== undefined) edgePairs.push([a, b]);
+        else droppedEdges.push(e);
+      }
+      if (droppedEdges.length > 0) {
+        console.warn(
+          `[SkillTreeParticles] dropped ${droppedEdges.length} edge(s) with unknown endpoints:`,
+          droppedEdges,
+        );
       }
       const nEdges = edgePairs.length;
-      if (nNodes === 0 || nEdges === 0) return;
+      if (nNodes === 0 || nEdges === 0) {
+        device.destroy();
+        device = null;
+        return;
+      }
 
-      const { width, height } = sizeRef.current;
+      // Child effects run before parent effects, so sizeRef may still hold the
+      // default until SkillTree's effect sets it. Measure the parent element
+      // directly so particles seed inside the real viewport.
+      const parentEl = canvas.parentElement;
+      const width = parentEl?.clientWidth || sizeRef.current.width;
+      const height = parentEl?.clientHeight || sizeRef.current.height;
 
       const particleBuf = device.createBuffer({
         size: PARTICLE_STRIDE * particleCount,
@@ -198,7 +221,9 @@ function SkillTreeParticles({
       // Resize observer — match canvas backing store to current size in device px.
       let currentW = width;
       let currentH = height;
+      let contextDead = false;
       const syncCanvasSize = () => {
+        if (contextDead || !device) return;
         const s = sizeRef.current;
         const dpr = window.devicePixelRatio || 1;
         const w = Math.max(1, Math.round(s.width * dpr));
@@ -206,8 +231,12 @@ function SkillTreeParticles({
         if (canvas.width !== w || canvas.height !== h) {
           canvas.width = w;
           canvas.height = h;
-          if (device) {
+          try {
             ctx.configure({ device, format, alphaMode: 'premultiplied' });
+          } catch (err) {
+            console.error('[SkillTreeParticles] context configure failed:', err);
+            contextDead = true;
+            return;
           }
         }
         currentW = s.width;
@@ -223,8 +252,9 @@ function SkillTreeParticles({
       let lastTime = performance.now();
 
       const frame = (now: number) => {
-        if (cancelled || !device) return;
+        if (cancelled || !device || contextDead) return;
         syncCanvasSize();
+        if (contextDead) return;
 
         const dt = Math.min((now - lastTime) / 1000, 0.05);
         lastTime = now;
@@ -280,7 +310,12 @@ function SkillTreeParticles({
 
       rafId = requestAnimationFrame(frame);
     })().catch((err) => {
-      if (!cancelled) console.warn('[SkillTreeParticles] init failed:', err);
+      if (cancelled) return;
+      console.error('[SkillTreeParticles] init failed:', err);
+      if (device) {
+        device.destroy();
+        device = null;
+      }
     });
 
     return () => {
@@ -291,9 +326,8 @@ function SkillTreeParticles({
         device = null;
       }
     };
-    // The refs + edges list are stable for the lifetime of the parent effect;
-    // intentionally empty deps so we don't tear down and re-init on every render.
-
+    // Refs are stable across renders and listed for exhaustive-deps; `edges`
+    // and `particleCount` legitimately warrant a re-init when they change.
   }, [edges, sizeRef, nodesRef, pointerRef, revealProgressRef, isRpgRef, particleCount]);
 
   return (

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
 
 interface StatBarProps {
   label: string;
@@ -18,10 +19,50 @@ const colorMap = {
 };
 
 function StatBar({ label, level, maxLevel = 100, color = 'green', delay = 0 }: StatBarProps) {
+  const { isRpg } = useTheme();
   const c = colorMap[color];
   const pct = Math.min((level / maxLevel) * 100, 100);
   const [hovered, setHovered] = useState(false);
   const reducedMotion = useReducedMotion();
+
+  if (!isRpg) {
+    // Editorial row: label on left, LED dot + fill bar, tabular numerals right.
+    return (
+      <div className="group">
+        <div className="flex items-baseline justify-between gap-3 mb-1.5">
+          <span className="font-sans text-[14px] text-pro-ink flex items-center gap-2">
+            <span
+              className="pro-led"
+              style={{ color: '#3FD771', backgroundColor: '#3FD771' }}
+              aria-hidden
+            />
+            {label}
+          </span>
+          <span className="font-mono text-[11px] text-pro-muted pro-tabular tracking-wider">
+            {String(level).padStart(2, '0')} / {maxLevel}
+          </span>
+        </div>
+        <div
+          className="h-[3px] w-full relative overflow-hidden"
+          style={{ backgroundColor: '#22261F' }}
+          role="progressbar"
+          aria-valuenow={level}
+          aria-valuemin={0}
+          aria-valuemax={maxLevel}
+          aria-label={label}
+        >
+          <motion.div
+            initial={reducedMotion ? { width: `${pct}%` } : { width: 0 }}
+            whileInView={{ width: `${pct}%` }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
+            className="h-full"
+            style={{ backgroundColor: '#5FA97B', boxShadow: '0 0 4px rgba(95,169,123,0.35)' }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

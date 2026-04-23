@@ -7,10 +7,14 @@ import PixelPanel from '../components/ui/PixelPanel';
 import PixelButton from '../components/ui/PixelButton';
 import PixelBadge from '../components/ui/PixelBadge';
 import { FloppyDiskIcon, HourglassIcon, OfficeIcon, GradCapIcon, TrophyIcon } from '../components/ui/PixelIcons';
+import { useTheme } from '../context/ThemeContext';
+import { useLabels } from '../lib/labels';
 
 function Resume() {
   const resumeRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const { isRpg } = useTheme();
+  const L = useLabels();
 
   const addMultilineText = (doc: jsPDF, text: string, x: number, y: number, maxWidth: number, lineHeight: number, fontSize = 12, fontStyle = 'normal') => {
     doc.setFontSize(fontSize);
@@ -179,34 +183,60 @@ function Resume() {
   return (
     <PageTransition>
       <div className="max-w-4xl mx-auto space-y-6" ref={resumeRef}>
-        {/* Character Header */}
-        <PixelPanel glow="cyan" className="text-center py-6">
-          <h1 className="font-pixel text-xl text-rpg-text-bright mb-2">{structuredResume.name}</h1>
-          <span className="font-pixel text-[9px] text-neon-gold uppercase">Site Reliability Mage</span>
-          <div className="mt-3">
-            <a href={`mailto:${structuredResume.email}`} className="text-neon-cyan text-xs font-body hover:text-neon-gold transition-colors">
-              {structuredResume.email}
-            </a>
-          </div>
-          <p className="mt-4 text-sm text-rpg-text font-body max-w-2xl mx-auto leading-relaxed">
-            {structuredResume.intro}
-          </p>
-        </PixelPanel>
+        {/* Character / Professional Header */}
+        {isRpg ? (
+          <PixelPanel glow="cyan" className="text-center py-6">
+            <h1 className="font-pixel text-xl text-rpg-text-bright mb-2">{structuredResume.name}</h1>
+            <span className="font-pixel text-[9px] text-neon-gold uppercase">{L.classTitle}</span>
+            <div className="mt-3">
+              <a href={`mailto:${structuredResume.email}`} className="text-neon-cyan text-xs font-body hover:text-neon-gold transition-colors">
+                {structuredResume.email}
+              </a>
+            </div>
+            <p className="mt-4 text-sm text-rpg-text font-body max-w-2xl mx-auto leading-relaxed">
+              {structuredResume.intro}
+            </p>
+          </PixelPanel>
+        ) : (
+          <section className="pt-6 pb-2">
+            <div className="flex items-baseline gap-3 mb-5">
+              <span className="pro-label">04 / {L.classTitle}</span>
+              <span className="flex-1 h-px bg-pro-rule" aria-hidden />
+            </div>
+            <h1 className="pro-display text-[52px] md:text-[64px] leading-[0.95] tracking-tight text-pro-ink font-normal">
+              {structuredResume.name}
+            </h1>
+            <div className="mt-3 flex flex-wrap items-baseline gap-x-5 gap-y-1">
+              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-pro-accent">
+                {L.classTitle}
+              </span>
+              <a
+                href={`mailto:${structuredResume.email}`}
+                className="font-sans text-[14px] text-pro-ink-soft hover:text-pro-accent underline underline-offset-4 decoration-pro-rule hover:decoration-pro-accent transition-colors"
+              >
+                {structuredResume.email}
+              </a>
+            </div>
+            <p className="mt-6 font-sans text-[16px] text-pro-ink-soft max-w-2xl leading-[1.55]">
+              {structuredResume.intro}
+            </p>
+          </section>
+        )}
 
-        {/* Save Game Button */}
+        {/* Download Button */}
         <div className="flex justify-end no-print">
           <PixelButton onClick={generatePDF} disabled={isGenerating} variant="gold">
             <span className="inline-flex items-center gap-2">
               {isGenerating
-                ? <><HourglassIcon className="w-4 h-4" /> Saving...</>
-                : <><FloppyDiskIcon className="w-4 h-4" /> Save Game (PDF)</>
+                ? <>{isRpg && <HourglassIcon className="w-4 h-4" />} {L.saveGameLoading}</>
+                : <>{isRpg && <FloppyDiskIcon className="w-4 h-4" />} {L.saveGame}</>
               }
             </span>
           </PixelButton>
         </div>
 
-        {/* Adventure Log — Experience */}
-        <PixelPanel title="Adventure Log">
+        {/* Experience / Adventure Log */}
+        <PixelPanel title={L.adventureLog}>
           <div className="space-y-6 pt-2">
             {structuredResume.experience.map((job, index) => (
               <motion.div
@@ -237,8 +267,8 @@ function Resume() {
           </div>
         </PixelPanel>
 
-        {/* Training Grounds — Education */}
-        <PixelPanel title="Training Grounds" glow="gold">
+        {/* Education */}
+        <PixelPanel title={L.trainingGrounds} glow="gold">
           <div className="pt-2">
             <h3 className="font-pixel text-[10px] text-rpg-text-bright uppercase">
               <SectionIcon Icon={GradCapIcon} /> {structuredResume.education.degree}
@@ -250,9 +280,9 @@ function Resume() {
           </div>
         </PixelPanel>
 
-        {/* Achievements — Certifications */}
+        {/* Certifications */}
         {structuredResume.certifications?.length > 0 && (
-          <PixelPanel title="Achievements Unlocked" glow="magenta">
+          <PixelPanel title={L.achievementsUnlocked} glow="magenta">
             <div className="flex flex-wrap gap-2 pt-2">
               {structuredResume.certifications.map((cert, idx) => (
                 <div key={idx} className="flex items-center gap-2 rpg-border px-3 py-2">
@@ -264,8 +294,8 @@ function Resume() {
           </PixelPanel>
         )}
 
-        {/* Inventory — Skills */}
-        <PixelPanel title="Inventory">
+        {/* Skills & Technologies */}
+        <PixelPanel title={L.inventory}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             {Object.entries(structuredResume.skills_and_technologies).map(([category, skills], index) => (
               <motion.div

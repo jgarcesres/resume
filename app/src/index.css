@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Geist:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,26 +18,50 @@
 }
 
 /* ═══════════════════════════════════════
-   BASE STYLES — RPG VOID THEME
+   BASE — PROFESSIONAL THEME (DEFAULT)
    ═══════════════════════════════════════ */
 
 @layer base {
   html {
-    background-color: #0a0e1a;
-    color: #c8d6e5;
-    image-rendering: pixelated;
+    background-color: #0A0C0A;
+    color: #E8E4DA;
+    image-rendering: auto;
   }
 
   body {
-    font-family: 'Silkscreen', monospace;
-    background-color: #0a0e1a;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    background-color: #0A0C0A;
     overflow-x: hidden;
+    font-feature-settings: "ss01", "cv11", "tnum";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: rgba(0, 229, 255, 0.3);
-    color: #e8f0ff;
+    background-color: rgba(95, 169, 123, 0.25);
+    color: #E8E4DA;
   }
+}
+
+/* ═══════════════════════════════════════
+   BASE — RPG VOID THEME (opt-in)
+   ═══════════════════════════════════════ */
+
+html[data-theme="rpg"] {
+  background-color: #0a0e1a;
+  color: #c8d6e5;
+  image-rendering: pixelated;
+}
+
+html[data-theme="rpg"] body {
+  font-family: 'Silkscreen', monospace;
+  background-color: #0a0e1a;
+  font-feature-settings: normal;
+}
+
+html[data-theme="rpg"] ::selection {
+  background-color: rgba(0, 229, 255, 0.3);
+  color: #e8f0ff;
 }
 
 #root {
@@ -48,7 +72,31 @@
 }
 
 /* ═══════════════════════════════════════
-   CRT SCANLINE OVERLAY
+   THEME TRANSITION (brief flicker on switch)
+   ═══════════════════════════════════════ */
+
+.theme-flicker {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background:
+    repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(255, 255, 255, 0.35) 2px, rgba(255, 255, 255, 0.35) 3px),
+    linear-gradient(180deg, rgba(0, 229, 255, 0.08), rgba(255, 45, 170, 0.06));
+  mix-blend-mode: difference;
+  animation: theme-flicker-anim 520ms ease-out forwards;
+}
+
+@keyframes theme-flicker-anim {
+  0%   { opacity: 0; }
+  18%  { opacity: 0.95; transform: translateY(0); }
+  32%  { opacity: 0.45; transform: translateY(-2px); }
+  55%  { opacity: 0.85; transform: translateY(1px); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   CRT SCANLINE OVERLAY (RPG only)
    ═══════════════════════════════════════ */
 
 .crt-overlay {
@@ -72,8 +120,7 @@
 }
 
 /* ═══════════════════════════════════════
-   PIXEL BORDER SYSTEM (RPG Panel Borders)
-   Double-border style like Final Fantasy menus
+   RPG PANEL BORDERS (FF-style double)
    ═══════════════════════════════════════ */
 
 .rpg-border {
@@ -138,24 +185,222 @@
 }
 
 /* ═══════════════════════════════════════
-   CUSTOM SCROLLBAR
+   TOKEN REMAPPING — so legacy RPG class names
+   render as editorial in professional mode
+   (keeps pages from needing per-class rewrites)
    ═══════════════════════════════════════ */
 
+html[data-theme="professional"] .text-rpg-text,
+html[data-theme="professional"] .text-rpg-text-bright {
+  color: #E8E4DA;
+}
+
+html[data-theme="professional"] .text-rpg-text-dim {
+  color: #7A7D72;
+}
+
+/* Neon classes map to muted fern green — the one editorial accent. */
+html[data-theme="professional"] .text-neon-cyan,
+html[data-theme="professional"] .text-neon-blue {
+  color: #5FA97B;
+}
+
+/* Keep the classic LED hues where they signal status — server-room feel. */
+html[data-theme="professional"] .text-neon-green {
+  color: #3FD771;
+}
+
+html[data-theme="professional"] .text-neon-gold {
+  color: #E8B339;
+}
+
+html[data-theme="professional"] .text-neon-magenta,
+html[data-theme="professional"] .text-neon-red {
+  color: #E5484D;
+}
+
+html[data-theme="professional"] [class*="border-rpg-border"],
+html[data-theme="professional"] [class*="border-neon-"] {
+  border-color: #22261F !important;
+}
+
+/* Surface fills: dark panels pick up pro-surface tones instead of the RPG blue. */
+html[data-theme="professional"] .bg-rpg-panel,
+html[data-theme="professional"] .bg-rpg-panel\/50 {
+  background-color: #111411 !important;
+}
+
+html[data-theme="professional"] .bg-rpg-deep,
+html[data-theme="professional"] .bg-rpg-deep\/50,
+html[data-theme="professional"] .bg-rpg-deep\/95,
+html[data-theme="professional"] .bg-rpg-void {
+  background-color: #0A0C0A !important;
+}
+
+html[data-theme="professional"] .bg-neon-cyan\/10,
+html[data-theme="professional"] .bg-neon-gold\/10,
+html[data-theme="professional"] .bg-neon-magenta\/10,
+html[data-theme="professional"] .bg-neon-green\/10,
+html[data-theme="professional"] .bg-neon-gold\/5 {
+  background-color: transparent !important;
+}
+
+/* Font-pixel retargets to mono in pro mode — keeps the feel of small-caps
+   UI labels without the retro pixel face that kills the editorial tone. */
+html[data-theme="professional"] .font-pixel {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="professional"] .font-body {
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Silence RPG-only motion in pro mode */
+html[data-theme="professional"] .animate-blink,
+html[data-theme="professional"] .animate-arrow-bounce {
+  animation: none !important;
+}
+
+/* Neutralize RPG panel double-border when user-agent CSS applies it inside pro components */
+html[data-theme="professional"] .rpg-border {
+  border: 1px solid #22261F;
+  outline: none;
+  background: #111411;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="professional"] .rpg-hover-cyan:hover,
+html[data-theme="professional"] .rpg-hover-gold:hover {
+  border-color: #3E7555;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(95, 169, 123, 0.18);
+}
+
+html[data-theme="professional"] .rpg-border-glow-cyan,
+html[data-theme="professional"] .rpg-border-glow-gold,
+html[data-theme="professional"] .rpg-border-glow-magenta {
+  border: 1px solid #22261F;
+  outline: none;
+  box-shadow: none;
+  background: #111411;
+}
+
+/* ═══════════════════════════════════════
+   EDITORIAL FURNITURE — professional theme
+   ═══════════════════════════════════════ */
+
+.pro-rule {
+  height: 1px;
+  background: #22261F;
+}
+
+.pro-rule-strong {
+  height: 1px;
+  background: #E8E4DA;
+}
+
+.pro-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+.pro-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7A7D72;
+  font-weight: 500;
+}
+
+.pro-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.pro-panel {
+  background: #111411;
+  border: 1px solid #22261F;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.pro-panel-plain {
+  background: transparent;
+  border-top: 1px solid #22261F;
+  border-bottom: 1px solid #22261F;
+}
+
+/* Hairline divider with a tick on the left — editorial touch */
+.pro-section-head::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 1px;
+  background: #5FA97B;
+  vertical-align: middle;
+  margin-right: 10px;
+  transform: translateY(-3px);
+}
+
+/* Number prefix utility (01 — heading) */
+.pro-numeral {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #5FA97B;
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  margin-right: 0.75em;
+  vertical-align: 0.12em;
+}
+
+/* LED dot utility — small glowing indicator for server-rack status */
+.pro-led {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ═══════════════════════════════════════
+   SCROLLBARS
+   ═══════════════════════════════════════ */
+
+/* Professional (default) */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
+  background: #0A0C0A;
+  border-left: 1px solid #22261F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #22261F;
+  border: 2px solid #0A0C0A;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3E7555;
+}
+
+/* RPG override */
+html[data-theme="rpg"] ::-webkit-scrollbar-track {
   background: #0a0e1a;
   border-left: 2px solid #2a3a5c;
 }
 
-::-webkit-scrollbar-thumb {
+html[data-theme="rpg"] ::-webkit-scrollbar-thumb {
   background: #2a3a5c;
   border: 2px solid #0a0e1a;
+  border-radius: 0;
 }
 
-::-webkit-scrollbar-thumb:hover {
+html[data-theme="rpg"] ::-webkit-scrollbar-thumb:hover {
   background: #3d5a8a;
 }
 
@@ -173,7 +418,7 @@
 }
 
 /* ═══════════════════════════════════════
-   PIXEL ART CAT SPRITE (CSS-only)
+   PIXEL CAT SPRITE
    ═══════════════════════════════════════ */
 
 .pixel-cat {
@@ -181,15 +426,33 @@
   image-rendering: crisp-edges;
 }
 
+/* Subtle green-tinted cat in professional mode — server-room ambient */
+html[data-theme="professional"] .pixel-cat {
+  filter: grayscale(0.85) opacity(0.55) brightness(1.2) hue-rotate(85deg);
+  transition: filter 0.3s ease;
+}
+
+html[data-theme="professional"] .pixel-cat:hover {
+  filter: grayscale(0) opacity(1) brightness(1) hue-rotate(0);
+}
+
 /* ═══════════════════════════════════════
-   BACKGROUND GRID PATTERN
+   BACKGROUND PATTERNS
    ═══════════════════════════════════════ */
 
-.grid-bg {
+/* RPG: visible blue grid */
+html[data-theme="rpg"] .grid-bg {
   background-image:
     linear-gradient(rgba(42, 58, 92, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(42, 58, 92, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+/* Professional: very faint green-tinted dot grid — server rack vent vibe */
+html[data-theme="professional"] .grid-bg {
+  background-image: radial-gradient(circle, rgba(95, 169, 123, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: 0 0;
 }
 
 /* ═══════════════════════════════════════
@@ -228,7 +491,7 @@
 }
 
 /* ═══════════════════════════════════════
-   PRINT STYLES (keep professional)
+   PRINT STYLES
    ═══════════════════════════════════════ */
 
 @media print {

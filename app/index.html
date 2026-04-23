@@ -1,16 +1,27 @@
 <!doctype html>
-<html lang="en" class="dark overflow-x-hidden">
+<html lang="en" class="overflow-x-hidden" data-theme="professional">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>⚔️</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0a0e1a" />
-    <title>Juan Garces // Lv.99 SRE</title>
-    <meta name="description" content="Portfolio of Juan Garces — Site Reliability Engineer, DevOps adventurer, homelab architect. Enter the quest log." />
+    <meta name="theme-color" content="#0A0C0A" />
+    <title>Juan Garces — Site Reliability Engineer</title>
+    <meta name="description" content="Portfolio of Juan Garces — Site Reliability Engineer, DevOps, homelab architect." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script>
+      // Apply stored theme before React mounts to avoid flash-of-RPG on first paint.
+      (function () {
+        try {
+          var t = localStorage.getItem('site-theme');
+          document.documentElement.dataset.theme = t === 'rpg' ? 'rpg' : 'professional';
+        } catch (e) {
+          document.documentElement.dataset.theme = 'professional';
+        }
+      })();
+    </script>
   </head>
-  <body class="overflow-x-hidden bg-rpg-void">
+  <body class="overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

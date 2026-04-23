@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import PixelPanel from '../components/ui/PixelPanel';
 import { TrophyIcon, PixelCoffeeIcon, PartyMemberIcon, BabyMemberIcon } from '../components/ui/PixelIcons';
+import { useLabels } from '../lib/labels';
 
 const credits = [
   {
@@ -41,6 +42,7 @@ const credits = [
 ];
 
 function Credits() {
+  const L = useLabels();
   return (
     <PageTransition>
       <div className="max-w-2xl mx-auto space-y-2 pb-20">
@@ -48,9 +50,9 @@ function Credits() {
           <span className="flex justify-center mb-3">
             <TrophyIcon className="w-10 h-10 text-neon-gold" style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.4))' }} />
           </span>
-          <h1 className="font-pixel text-lg text-neon-gold mb-2">Credits</h1>
+          <h1 className="font-pixel text-lg text-neon-gold mb-2">{L.credits}</h1>
           <p className="font-pixel text-[8px] text-rpg-text-dim">
-            — THE END? —
+            {L.creditsEnd}
           </p>
         </PixelPanel>
 
@@ -97,7 +99,7 @@ function Credits() {
           className="text-center pt-8 pb-12"
         >
           <p className="font-pixel text-[8px] text-rpg-text-dim animate-blink">
-            PRESS START TO CONTINUE...
+            {L.pressStart}
           </p>
         </motion.div>
       </div>

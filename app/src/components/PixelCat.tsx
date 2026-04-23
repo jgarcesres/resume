@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
 function PixelCat() {
   const [meow, setMeow] = useState(false);
@@ -7,6 +8,7 @@ function PixelCat() {
   const facingLeftRef = useRef(false);
   const meowTimer = useRef<ReturnType<typeof setTimeout>>();
   const x = useMotionValue(-60);
+  const { isRpg, setTheme } = useTheme();
 
   const speed = 0.8;
 
@@ -38,10 +40,16 @@ function PixelCat() {
   }, []);
 
   const handleClick = useCallback(() => {
+    if (!isRpg) {
+      setTheme('rpg');
+      return;
+    }
     setMeow(true);
     clearTimeout(meowTimer.current);
     meowTimer.current = setTimeout(() => setMeow(false), 1500);
-  }, []);
+  }, [isRpg, setTheme]);
+
+  const title = isRpg ? 'meow' : 'unlock pixel mode';
 
   return (
     <div
@@ -56,7 +64,8 @@ function PixelCat() {
           willChange: 'transform',
         }}
         onClick={handleClick}
-        title="meow"
+        title={title}
+        aria-label={title}
       >
         <div className="relative">
           <AnimatePresence>

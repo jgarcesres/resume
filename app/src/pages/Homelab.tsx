@@ -16,6 +16,8 @@ import {
   LockIcon,
 } from '../components/ui/PixelIcons';
 import type { ComponentType, CSSProperties } from 'react';
+import { useLabels } from '../lib/labels';
+import { useTheme } from '../context/ThemeContext';
 
 const badgeColors: Record<string, 'cyan' | 'magenta' | 'gold' | 'green' | 'default'> = {
   'K3s': 'cyan', 'ArgoCD': 'cyan', 'Helm': 'cyan',
@@ -37,6 +39,8 @@ const specIcons: Record<string, ComponentType<{ className?: string; style?: CSSP
 
 function Homelab() {
   const specs = homelabContent.specs;
+  const L = useLabels();
+  const { isRpg } = useTheme();
 
   return (
     <PageTransition>
@@ -74,13 +78,33 @@ function Homelab() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + i * 0.05 }}
-              className="border border-rpg-border/50 bg-rpg-panel/50 p-2.5 text-center"
+              className={
+                isRpg
+                  ? 'border border-rpg-border/50 bg-rpg-panel/50 p-2.5 text-center'
+                  : 'border border-pro-rule bg-pro-surface p-3 text-center'
+              }
             >
               <span className="flex justify-center">
-                {SpecIcon && <SpecIcon className="w-4 h-4 text-rpg-text" />}
+                {SpecIcon && <SpecIcon className={`w-4 h-4 ${isRpg ? 'text-rpg-text' : 'text-pro-accent'}`} />}
               </span>
-              <span className="font-pixel text-[7px] text-rpg-text-dim uppercase block mt-1">{spec.label}</span>
-              <span className="font-body text-[10px] text-rpg-text block mt-0.5">{spec.value}</span>
+              <span
+                className={
+                  isRpg
+                    ? 'font-pixel text-[7px] text-rpg-text-dim uppercase block mt-1'
+                    : 'font-mono text-[9px] text-pro-muted uppercase tracking-[0.16em] block mt-2'
+                }
+              >
+                {spec.label}
+              </span>
+              <span
+                className={
+                  isRpg
+                    ? 'font-body text-[10px] text-rpg-text block mt-0.5'
+                    : 'font-sans text-[13px] text-pro-ink block mt-1 pro-tabular'
+                }
+              >
+                {spec.value}
+              </span>
             </motion.div>
             );
           })}
@@ -113,7 +137,7 @@ function Homelab() {
         </PixelPanel>
 
         {/* Tech Stack */}
-        <PixelPanel title="Tech Arsenal">
+        <PixelPanel title={L.techArsenal}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
             {homelabContent.techStack.map((cat, i) => (
               <motion.div

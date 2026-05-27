@@ -11,6 +11,8 @@ describe('TopologyDiagram', () => {
     expect(screen.getAllByText('mde-pve1').length).toBeGreaterThan(0);
     expect(screen.getAllByText('mde-k3s-w1').length).toBeGreaterThan(0);
     expect(screen.getAllByText('k3s-cp1').length).toBeGreaterThan(0);
+    // MDE site gateway (UCG Max) — documented after the original design handoff.
+    expect(screen.getAllByText('UCG Max').length).toBeGreaterThan(0);
   });
 
   it('reveals node detail beneath the diagram on click (not a floating popup)', () => {

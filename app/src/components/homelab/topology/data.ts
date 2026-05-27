@@ -288,7 +288,7 @@ export const NODES: TopoNode[] = [
     },
   },
 
-  // ── MDE · Physical · bottom sub-row: Garage S3 Pi ───────────────────
+  // ── MDE · Physical · bottom sub-row: Garage S3 Pi + site gateway ────
   {
     id: 'pi-s3-card',
     label: 'mde-pi-s3',
@@ -296,12 +296,28 @@ export const NODES: TopoNode[] = [
     kind: 'storage-pi',
     site: 'mde',
     tier: 'physical',
-    x: 755, y: 345, w: 482, h: 85,
+    x: 755, y: 345, w: 375, h: 85,
     tailnet: { ip: '100.x.x.83', hostname: 'mde-pi-s3', tag: 'tag:storage' },
     meta: {
       Hardware: 'Pi · SATA SSD on USB',
       Service: 'Garage v2.2.0 (S3-compatible)',
       Role: 'backup target · Loki / Thanos / VolSync',
+    },
+  },
+  {
+    id: 'mde-gw',
+    label: 'UCG Max',
+    sub: 'UniFi gateway · dual-WAN',
+    kind: 'router',
+    site: 'mde',
+    tier: 'physical',
+    x: 1145, y: 345, w: 155, h: 85,
+    meta: {
+      WAN1: 'Movistar GPON · ~1Gb',
+      WAN2: 'Somos · CGNAT failover',
+      Mode: 'failover (WAN1 → WAN2)',
+      LAN: '192.168.15.0/24',
+      Mgmt: '192.168.11.1',
     },
   },
 
@@ -402,6 +418,10 @@ export const LINKS: TopoLink[] = [
   { from: 'k3s-cp1-bm', to: 'k3s-cp1', kind: 'k3s-vm' },
   { from: 'k3s-cp2-bm', to: 'k3s-cp2', kind: 'k3s-vm' },
   { from: 'k3s-cp3-bm', to: 'k3s-cp3', kind: 'k3s-vm' },
+
+  // MDE site gateway (UCG Max) → LAN (VLAN 15)
+  { from: 'mde-gw', to: 'mde-pve1', kind: 'lan' },
+  { from: 'mde-gw', to: 'pi-s3-card', kind: 'lan' },
 
   // MDE mde-pve1 → VM → k3s
   { from: 'mde-pve1', to: 'mde-k3s-w1-vm', kind: 'vm-host' },

@@ -297,19 +297,15 @@ function LegendItem({ dash, color, glow, label }: { dash: string; color: string;
   );
 }
 
-// Node detail — rendered BENEATH the diagram so it never blocks the figure.
-function DetailPanel({ node, t, onClose }: { node: TopoNode; t: TopologyTheme; onClose: () => void }) {
+// Node detail content. Rendered inside a persistent panel BENEATH the diagram
+// (see render below) so it never blocks the figure; the wrapper crossfades this
+// content when the selected node changes.
+function DetailPanelContent({ node, t, onClose }: { node: TopoNode; t: TopologyTheme; onClose: () => void }) {
   const ts = node.tailnet;
   const myProxies = PROXY_GROUPS.filter((p) => p.node === node.label);
   const metaEntries = Object.entries(node.meta || {});
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.22, ease: 'easeOut' }}
-      style={{ marginTop: 16, background: t.panel, border: `1px solid ${t.ruleStrong}`, padding: '16px 18px' }}
-    >
+    <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16 }}>
         <div>
           <div style={{ fontFamily: t.fontLabel, fontSize: 10, color: t.accent, letterSpacing: '0.16em', textTransform: 'uppercase' }}>
@@ -384,7 +380,7 @@ function DetailPanel({ node, t, onClose }: { node: TopoNode; t: TopologyTheme; o
           </div>
         )}
       </div>
-    </motion.div>
+    </>
   );
 }
 
@@ -537,9 +533,40 @@ function TopologyDiagram() {
           <span style={{ color: t.dim, marginLeft: 'auto' }}>Tap a node → details below + pulse along its links.</span>
         </div>
 
-        {/* Detail panel — beneath the diagram */}
+        {/* Detail panel — beneath the diagram. The container stays mounted while
+            a node is selected (opacity in/out only); switching nodes crossfades
+            the inner content and `layout` eases the height change, so a new node
+            never pops in sharply. */}
         <AnimatePresence>
-          {selected && <DetailPanel key={selected.id} node={selected} t={t} onClose={() => setSelected(null)} />}
+          {selected && (
+            <motion.div
+              key="topo-detail-panel"
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              style={{
+                marginTop: 16,
+                background: t.panel,
+                border: `1px solid ${t.ruleStrong}`,
+                padding: '16px 18px',
+                overflow: 'hidden',
+              }}
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={selected.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.16, ease: 'easeOut' }}
+                >
+                  <DetailPanelContent node={selected} t={t} onClose={() => setSelected(null)} />
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* RPG scanline overlay, scoped to the diagram */}

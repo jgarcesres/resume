@@ -113,11 +113,46 @@ function Homelab() {
         {/* Topology Diagram */}
         <PixelPanel title="Network Topology">
           <div className="pt-2">
-            <TopologyDiagram
-              nodes={homelabContent.nodes}
-              connections={homelabContent.connections}
-              sites={homelabContent.sites}
-            />
+            <TopologyDiagram />
+            {/* Reading guide */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+              {[
+                {
+                  h: 'Reading the diagram',
+                  b: 'Bottom to top: physical hosts run VMs, which run K3s nodes. Anything joined to the tailnet sends a thin uplink to the amber plane above.',
+                },
+                {
+                  h: 'The tailnet plane',
+                  b: 'The amber bus carries every cross-site call. Shared ingress proxies (grouped by ACL tag) live on the bus and front cluster services as *.ts.net VIPs — without ever opening a public port.',
+                },
+                {
+                  h: 'Storage path',
+                  b: 'TrueNAS and k3s-pve share a private 10 Gb storage NIC (10.99.99.0/24, MTU 9000). iSCSI never touches the LAN. Backups land in Garage S3 on a Pi in Medellín.',
+                },
+              ].map((hint) => (
+                <div
+                  key={hint.h}
+                  className={
+                    isRpg
+                      ? 'border border-rpg-border/40 bg-rpg-panel/40 p-3'
+                      : 'border border-pro-rule bg-pro-surface p-3'
+                  }
+                >
+                  <div
+                    className={
+                      isRpg
+                        ? 'font-pixel text-[7px] text-rpg-text-dim uppercase mb-1.5'
+                        : 'font-mono text-[9px] text-pro-muted uppercase tracking-[0.16em] mb-1.5'
+                    }
+                  >
+                    {hint.h}
+                  </div>
+                  <div className={isRpg ? 'text-[10px] text-rpg-text font-body leading-relaxed' : 'text-[13px] text-pro-ink-soft leading-relaxed'}>
+                    {hint.b}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </PixelPanel>
 

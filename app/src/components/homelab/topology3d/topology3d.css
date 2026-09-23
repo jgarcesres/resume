@@ -1,0 +1,116 @@
+/* Topology3D — everything is scoped under .t3d so the design's short class
+   names (card, led, note…) can't collide with the rest of the site. */
+
+.t3d{position:relative;height:580px;overflow:hidden;background:#0A0C0A;color:#E8E4DA;
+  font-family:'Geist',ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased;outline:none}
+:where(.t3d) button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.t3d-stage{position:absolute;inset:0}
+.t3d-stage canvas{display:block}
+.t3d-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 40% 45%,transparent 55%,rgba(5,6,5,.65) 100%)}
+.t3d-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.t3d-mono,.t3d-l3,.t3d-card-hd,.t3d-viewbar button,.t3d-lg-row,.t3d-lg-hint,.t3d-inv-th,.t3d-inv-site,
+.t3d-insp-eye,.t3d-kv dt,.t3d-blk-h,.t3d-ts-row,.t3d-ts-tags,.t3d-conn,.t3d-insp-status,.t3d-hint{
+  font-family:'JetBrains Mono',ui-monospace,monospace}
+
+/* 3D labels (positioned by scene.ts) */
+.t3d-l3{position:absolute;left:0;top:0;white-space:nowrap;will-change:transform;font-size:10.5px;line-height:1}
+.t3d-l3-node,.t3d-l3-chip{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:6px;padding:3px 6px;
+  background:rgba(10,12,10,.78);border:1px solid #2A3129;color:#E8E4DA;translate:-50% -100%;transition:opacity .2s,border-color .2s}
+.t3d-l3 .dot{width:6px;height:6px;border-radius:50%;flex:none}
+.t3d-l3 b{font-weight:500}
+.t3d-l3 i{font-style:normal;color:#9AA0A6;display:none}
+.t3d-l3.open i{display:inline}
+.t3d-l3.hov{border-color:#FFD978}
+.t3d-l3.sel{border-color:#E8B339;background:rgba(31,26,14,.92)}
+.t3d-l3.dim{opacity:.22}
+.t3d-l3-chip{color:#E8B339;border-color:rgba(232,179,57,.45);background:rgba(31,26,14,.8)}
+.t3d-l3-link{display:flex;align-items:center;gap:6px;color:#C9CCC2;font-size:10px;padding:3px 6px;background:rgba(10,12,10,.85);translate:-50% -50%}
+.t3d-l3-link span{width:10px;height:2px}
+.t3d-l3-tier{color:#7A7D72;font-size:10px;letter-spacing:.14em;text-transform:uppercase;translate:-100% -50%;padding-right:10px;display:flex;gap:8px}
+.t3d-l3-tier em{font-style:normal;color:#5FA97B}
+.t3d-l3-site{translate:0 6px;display:flex;flex-direction:column;gap:5px}
+.t3d-l3-site em{font-style:normal;color:#5FA97B;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
+.t3d-l3-site b{font-family:'Geist',sans-serif;font-weight:400;font-size:18px;letter-spacing:-.01em;color:#E8E4DA}
+.t3d-l3-site i{font-style:normal;color:#7A7D72;font-size:10px}
+.t3d-l3-gap{color:#E8B339;font-size:10px;letter-spacing:.14em;text-transform:uppercase;translate:-50% -50%;opacity:.85}
+
+/* HUD cards */
+.t3d-card{pointer-events:auto;background:rgba(14,17,16,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #22261F}
+.t3d-card-hd{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 14px;font-size:10px;
+  letter-spacing:.16em;text-transform:uppercase;color:#5FA97B;border-bottom:1px solid #22261F}
+.t3d-card-hd .chev{color:#7A7D72;font-size:13px;letter-spacing:0;padding:0 2px}
+.t3d-card-hd .back{color:#E8B339;letter-spacing:.12em;text-transform:uppercase;font-size:10px}
+.t3d-card-hd .back:hover{color:#FFD978}
+.t3d-card.closed .t3d-card-hd{border-bottom:0}
+.t3d-rail{position:absolute;top:12px;right:12px;bottom:12px;width:300px;display:flex;flex-direction:column;gap:8px;pointer-events:none;z-index:2}
+.t3d-viewbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.t3d-viewbar button{padding:9px 0;text-align:center;font-size:9.5px;letter-spacing:.04em;color:#9AA0A6;border-right:1px solid #22261F;transition:color .15s,background .15s}
+.t3d-viewbar button:last-child{border-right:0}
+.t3d-viewbar button:hover{color:#E8E4DA;background:rgba(232,228,218,.04)}
+.t3d-viewbar button.on{color:#0A0C0A;background:#E8B339}
+.t3d-panel{flex:1;min-height:0;display:flex;flex-direction:column}
+.t3d-panel.closed{flex:none}
+.t3d-panel-body{overflow:auto;flex:1;min-height:0;scrollbar-width:thin;scrollbar-color:#2A3129 transparent}
+
+.t3d-inv section{padding:6px 0 10px;border-bottom:1px solid #22261F}
+.t3d-inv section:last-child{border-bottom:0}
+.t3d-inv-site{display:flex;align-items:baseline;gap:8px;padding:10px 14px 4px;font-size:11px;color:#E8E4DA}
+.t3d-inv-site em{font-style:normal;color:#5FA97B}
+.t3d-inv-site span{margin-left:auto;color:#7A7D72;font-size:10px}
+.t3d-inv-th{padding:8px 14px 3px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5F635B}
+.t3d-inv-row{display:grid;grid-template-columns:8px auto minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:5px 14px;font-size:12.5px}
+.t3d-inv-row:hover,.t3d-inv-row.hov{background:rgba(232,179,57,.07)}
+.t3d-dot{width:6px;height:6px;border-radius:50%}
+.t3d-inv-l{font-weight:500}
+.t3d-inv-s{color:#7A7D72;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t3d-inv-warn{width:14px;height:14px;display:grid;place-items:center;font-size:9px;font-weight:600;color:#0A0C0A;background:#E8B339;border-radius:50%}
+
+.t3d-insp{padding:16px 16px 20px;animation:t3dIn .35s ease}
+@keyframes t3dIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.t3d-insp-eye{display:flex;align-items:center;gap:8px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#7A7D72}
+.t3d-insp h3{font-weight:500;font-size:24px;letter-spacing:-.01em;margin:10px 0 2px;color:#E8E4DA}
+.t3d-insp-sub{color:#9AA0A6;font-size:13px}
+.t3d-insp-status{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:10.5px;color:#C9CCC2}
+.t3d-led{width:7px;height:7px;border-radius:50%;background:#3FD771;box-shadow:0 0 8px #3FD771}
+.t3d-led.warn{background:#E8B339;box-shadow:0 0 8px #E8B339;animation:t3dBlink 1.4s ease-in-out infinite}
+@keyframes t3dBlink{50%{opacity:.35}}
+.t3d-note{margin-top:12px;padding:9px 11px;font-size:12px;line-height:1.5;color:#C9CCC2;background:rgba(139,176,224,.06);border:1px solid rgba(139,176,224,.18);text-wrap:pretty}
+.t3d-note.warn{background:rgba(232,179,57,.07);border-color:rgba(232,179,57,.3);color:#E8E4DA}
+.t3d-kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 14px;margin:16px 0 0;padding-top:14px;border-top:1px solid #22261F}
+.t3d-kv dt{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#5F635B;padding-top:2px}
+.t3d-kv dd{margin:0;font-size:12.5px;color:#E8E4DA}
+.t3d-blk-h{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#7A7D72;margin-bottom:8px}
+.t3d-ts-block,.t3d-conns{margin-top:16px;padding-top:14px;border-top:1px solid #22261F}
+.t3d-ts-row{display:flex;gap:10px;align-items:center;font-size:11.5px;color:#C9CCC2}
+.t3d-ts-host{color:#E8B339;background:rgba(232,179,57,.1);padding:2px 6px}
+.t3d-ts-tags{font-size:10.5px;color:#7A7D72;margin-top:6px}
+.t3d-conn{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;padding:6px 0;font-size:11px;border-bottom:1px dashed #1C211B}
+.t3d-conn:hover .t3d-conn-o{color:#FFD978}
+.t3d-conn-d{color:#9AA0A6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t3d-conn-o{color:#E8E4DA}
+.t3d-sw{display:block;width:18px;height:0;border-top:2px solid var(--c)}
+.t3d-sw.dashed{border-top-style:dashed;border-top-width:1.5px}
+
+.t3d-legend{position:absolute;left:12px;bottom:12px;width:230px;z-index:2}
+.t3d-legend-rows{padding:6px 0}
+.t3d-lg-row{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:4px 14px;font-size:10.5px;color:#C9CCC2;transition:opacity .15s}
+.t3d-lg-row:hover{background:rgba(232,228,218,.04)}
+.t3d-lg-row.off{opacity:.35}
+.t3d-lg-row.off .t3d-sw{border-top-color:#5F635B}
+.t3d-lg-n{color:#5F635B;font-size:10px}
+.t3d-lg-hint{padding:8px 14px 4px;margin-top:4px;border-top:1px solid #22261F;font-size:9.5px;color:#5F635B;letter-spacing:.04em}
+
+.t3d-hint{position:absolute;left:50%;top:14px;translate:-50% 0;z-index:2;pointer-events:none;padding:5px 10px;font-size:10px;
+  letter-spacing:.08em;color:#C9CCC2;background:rgba(10,12,10,.8);border:1px solid #2A3129;transition:opacity .3s}
+.t3d-hint.gone{opacity:0}
+
+@media (max-width:767px){
+  .t3d{height:auto}
+  .t3d-stage{position:relative;height:400px}
+  .t3d-rail{position:static;width:auto;gap:0}
+  .t3d-card{background:#0E1110}
+  .t3d-panel-body{max-height:340px}
+  .t3d-legend{display:none}
+  .t3d-hint{top:10px}
+}

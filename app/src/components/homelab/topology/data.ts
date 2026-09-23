@@ -7,7 +7,7 @@
 //   pve-home1  → mde-pve1    (MDE Proxmox host)
 //   k3s-home2  → mde-k3s-w1  (MDE on-demand worker; ex k3s-home1 is now cp1)
 //
-// Tailscale IPs are masked (100.x.x.NN) on purpose — this is a public page.
+// No addresses (tailnet IPs, LAN IPs, subnets, public IP) on purpose — this is a public page.
 //
 // Canvas: 1440 × 800
 //   y-band 18-88     → Tailscale plane (overlay)
@@ -32,7 +32,6 @@ export type TierId = 'physical' | 'vm' | 'k3s';
 export type SiteId = 'fl' | 'mde';
 
 export interface TailnetInfo {
-  ip: string;
   hostname: string;
   tag: string;
 }
@@ -84,8 +83,8 @@ export interface SiteDef {
   id: SiteId;
   label: string;
   flag: string;
-  subnet: string;
-  publicIp: string;
+  /** WAN descriptor shown under the site name. No addresses — this page is public. */
+  wan: string;
   x: number;
   w: number;
 }
@@ -100,10 +99,9 @@ export interface TierDef {
 export const SITES: Record<SiteId, SiteDef> = {
   fl: {
     id: 'fl',
-    label: 'Homestead, FL',
+    label: 'Florida, US',
     flag: '🇺🇸',
-    subnet: '192.168.1.0/24',
-    publicIp: 'static IP',
+    wan: 'AT&T fiber · static IP',
     x: 40,
     w: 660,
   },
@@ -111,8 +109,7 @@ export const SITES: Record<SiteId, SiteDef> = {
     id: 'mde',
     label: 'Medellín, CO',
     flag: '🇨🇴',
-    subnet: '192.168.15.0/24',
-    publicIp: 'dynamic',
+    wan: 'dual-WAN · dynamic IP',
     x: 740,
     w: 660,
   },
@@ -134,13 +131,12 @@ export const NODES: TopoNode[] = [
     site: 'fl',
     tier: 'physical',
     x: 80, y: 200, w: 260, h: 220,
-    tailnet: { ip: '100.x.x.90', hostname: 'fl-pve1', tag: 'tag:proxmox' },
+    tailnet: { hostname: 'fl-pve1', tag: 'tag:proxmox' },
     meta: {
       CPU: 'Xeon W-2245 · 8C/16T',
       RAM: '128GB DDR4 ECC',
       GPU: 'NVIDIA Quadro RTX 4000',
       Storage: '6×22TB RAIDZ1 + 4×2TB NVMe',
-      LAN: '192.168.1.100',
       OS: 'Proxmox VE 8.x',
     },
   },
@@ -154,7 +150,6 @@ export const NODES: TopoNode[] = [
     x: 380, y: 200, w: 200, h: 100,
     meta: {
       Drives: '5×10TB · ~40TB',
-      LAN: '192.168.1.200',
       Shares: 'NFS · media',
     },
   },
@@ -168,7 +163,6 @@ export const NODES: TopoNode[] = [
     x: 380, y: 320, w: 200, h: 100,
     meta: {
       Public: 'static IP',
-      LAN: '192.168.1.254',
       Forwards: ':80/:443 → k3s-pve',
     },
   },
@@ -183,7 +177,7 @@ export const NODES: TopoNode[] = [
     tier: 'vm',
     x: 80, y: 445, w: 195, h: 80,
     parent: 'fl-pve1',
-    tailnet: { ip: '100.x.x.21', hostname: 'truenas', tag: 'tag:storage' },
+    tailnet: { hostname: 'truenas', tag: 'tag:storage' },
     meta: {
       RAM: '48GB · 4 cores',
       HBA: 'SATA controller passthrough',
@@ -216,7 +210,7 @@ export const NODES: TopoNode[] = [
     tier: 'k3s',
     x: 80, y: 565, w: 410, h: 200,
     parent: 'k3s-pve-vm',
-    tailnet: { ip: '100.x.x.80', hostname: 'k3s-pve', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-pve', tag: 'tag:k8s' },
     meta: {
       Role: 'worker',
       Taint: 'location=fl-us:NoSchedule',
@@ -235,7 +229,7 @@ export const NODES: TopoNode[] = [
     site: 'mde',
     tier: 'physical',
     x: 755, y: 200, w: 152, h: 130,
-    tailnet: { ip: '100.x.x.118', hostname: 'k3s-cp1', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp1', tag: 'tag:k8s' },
     meta: {
       CPU: 'i7-8809G · 4C/8T',
       RAM: '32GB',
@@ -250,7 +244,7 @@ export const NODES: TopoNode[] = [
     site: 'mde',
     tier: 'physical',
     x: 920, y: 200, w: 152, h: 130,
-    tailnet: { ip: '100.x.x.15', hostname: 'k3s-cp2', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp2', tag: 'tag:k8s' },
     meta: {
       CPU: 'i7-10710U · 6C/12T',
       RAM: '32GB',
@@ -265,7 +259,7 @@ export const NODES: TopoNode[] = [
     site: 'mde',
     tier: 'physical',
     x: 1085, y: 200, w: 152, h: 130,
-    tailnet: { ip: '100.x.x.71', hostname: 'k3s-cp3', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp3', tag: 'tag:k8s' },
     meta: {
       CPU: 'Cortex-A76 · 4C',
       RAM: '8GB',
@@ -280,7 +274,7 @@ export const NODES: TopoNode[] = [
     site: 'mde',
     tier: 'physical',
     x: 1250, y: 200, w: 150, h: 130,
-    tailnet: { ip: '100.x.x.31', hostname: 'mde-pve1', tag: 'tag:proxmox' },
+    tailnet: { hostname: 'mde-pve1', tag: 'tag:proxmox' },
     meta: {
       CPU: 'Ryzen 9 5950X',
       RAM: '32GB',
@@ -297,7 +291,7 @@ export const NODES: TopoNode[] = [
     site: 'mde',
     tier: 'physical',
     x: 755, y: 345, w: 375, h: 85,
-    tailnet: { ip: '100.x.x.83', hostname: 'mde-pi-s3', tag: 'tag:storage' },
+    tailnet: { hostname: 'mde-pi-s3', tag: 'tag:storage' },
     meta: {
       Hardware: 'Pi · SATA SSD on USB',
       Service: 'Garage v2.2.0 (S3-compatible)',
@@ -316,8 +310,6 @@ export const NODES: TopoNode[] = [
       WAN1: 'Movistar GPON · ~1Gb',
       WAN2: 'Somos · CGNAT failover',
       Mode: 'failover (WAN1 → WAN2)',
-      LAN: '192.168.15.0/24',
-      Mgmt: '192.168.11.1',
     },
   },
 
@@ -347,7 +339,7 @@ export const NODES: TopoNode[] = [
     tier: 'k3s',
     x: 755, y: 565, w: 152, h: 200,
     parent: 'k3s-cp1-bm',
-    tailnet: { ip: '100.x.x.118', hostname: 'k3s-cp1', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp1', tag: 'tag:k8s' },
     meta: {
       Role: 'control-plane + etcd',
       'Pod CIDR': '10.42.1.0/24',
@@ -363,7 +355,7 @@ export const NODES: TopoNode[] = [
     tier: 'k3s',
     x: 920, y: 565, w: 152, h: 200,
     parent: 'k3s-cp2-bm',
-    tailnet: { ip: '100.x.x.15', hostname: 'k3s-cp2', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp2', tag: 'tag:k8s' },
     meta: {
       Role: 'control-plane + etcd',
       'Pod CIDR': '10.42.3.0/24',
@@ -379,7 +371,7 @@ export const NODES: TopoNode[] = [
     tier: 'k3s',
     x: 1085, y: 565, w: 152, h: 200,
     parent: 'k3s-cp3-bm',
-    tailnet: { ip: '100.x.x.71', hostname: 'k3s-cp3', tag: 'tag:k8s' },
+    tailnet: { hostname: 'k3s-cp3', tag: 'tag:k8s' },
     meta: {
       Role: 'control-plane + etcd',
       'Pod CIDR': '10.42.4.0/24',
@@ -395,7 +387,7 @@ export const NODES: TopoNode[] = [
     tier: 'k3s',
     x: 1250, y: 565, w: 150, h: 200,
     parent: 'mde-k3s-w1-vm',
-    tailnet: { ip: '100.x.x.45', hostname: 'mde-k3s-w1', tag: 'tag:k8s' },
+    tailnet: { hostname: 'mde-k3s-w1', tag: 'tag:k8s' },
     meta: {
       Role: 'worker',
       'Pod CIDR': '10.42.0.0/24',
@@ -475,14 +467,14 @@ export const PROXY_GROUPS: ProxyGroup[] = [
 // tier). Bare-metal nodes share kernel identity with their k3s counterpart —
 // we want a single uplink per device, drawn from the topmost card.
 export function tailnetDevices(): TopoNode[] {
-  const byIp = new Map<string, TopoNode>();
+  const byHost = new Map<string, TopoNode>();
   for (const n of NODES) {
     if (!n.tailnet || n.hidden) continue;
-    const ip = n.tailnet.ip;
-    const prev = byIp.get(ip);
-    if (!prev || n.y < prev.y) byIp.set(ip, n);
+    const host = n.tailnet.hostname;
+    const prev = byHost.get(host);
+    if (!prev || n.y < prev.y) byHost.set(host, n);
   }
-  return Array.from(byIp.values());
+  return Array.from(byHost.values());
 }
 
 export const TAG_COLOR: Record<string, string> = {

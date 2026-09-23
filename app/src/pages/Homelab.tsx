@@ -3,7 +3,7 @@ import PageTransition from '../components/PageTransition';
 import PixelPanel from '../components/ui/PixelPanel';
 import PixelBadge from '../components/ui/PixelBadge';
 import TypewriterText from '../components/ui/TypewriterText';
-import TopologyDiagram from '../components/homelab/TopologyDiagram';
+import TopologyView from '../components/homelab/TopologyView';
 import ServiceStatus from '../components/homelab/ServiceStatus';
 import homelabContent from '@resources/homelab_content.json';
 import {
@@ -113,7 +113,7 @@ function Homelab() {
         {/* Topology Diagram */}
         <PixelPanel title="Network Topology">
           <div className="pt-2">
-            <TopologyDiagram />
+            <TopologyView />
             {/* Reading guide */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
               {[
@@ -127,7 +127,7 @@ function Homelab() {
                 },
                 {
                   h: 'Storage path',
-                  b: 'TrueNAS and k3s-pve share a private 10 Gb storage NIC (10.99.99.0/24, MTU 9000). iSCSI never touches the LAN. Backups land in Garage S3 on a Pi in Medellín.',
+                  b: 'TrueNAS and k3s-pve share a private 10 Gb storage bridge (MTU 9000). iSCSI never touches the LAN. Backups land in Garage S3 on a Pi in Medellín.',
                 },
               ].map((hint) => (
                 <div

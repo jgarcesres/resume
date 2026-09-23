@@ -148,12 +148,11 @@ export function RackTexture({ x, y, w, h, color }: RackTextureProps) {
 interface TailnetBadgeProps {
   x: number;
   y: number;
-  ip: string;
   hovered: boolean;
 }
 
 // Tailnet badge — small ".ts.net" tag attached to a card corner.
-export function TailnetBadge({ x, y, ip, hovered }: TailnetBadgeProps) {
+export function TailnetBadge({ x, y, hovered }: TailnetBadgeProps) {
   const t = useTopoTheme();
   return (
     <g style={{ pointerEvents: 'none' }}>
@@ -170,7 +169,7 @@ export function TailnetBadge({ x, y, ip, hovered }: TailnetBadgeProps) {
       />
       <circle cx={x + 6} cy={y + 6.5} r="2" fill={t.ts} />
       <text x={x + 11} y={y + 9.5} fontSize="7.5" fill={t.ts} fontFamily={t.fontMono} letterSpacing="0.04em">
-        {ip}
+        .ts.net
       </text>
     </g>
   );

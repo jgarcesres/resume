@@ -66,8 +66,7 @@ function SiteBackground({ site, t }: { site: SiteDef; t: TopologyTheme }) {
         <tspan dx="10">{site.label}</tspan>
       </text>
       <text x={site.x + 14} y="168" fontSize="10" fill={t.mute} fontFamily={t.fontMono} letterSpacing="0.1em">
-        {site.subnet}
-        {site.publicIp !== 'dynamic' ? ` · ${site.publicIp}` : ' · dynamic IP'}
+        {site.wan}
       </text>
       <line x1={site.x} y1="178" x2={site.x + site.w} y2="178" stroke={accent} strokeOpacity="0.45" strokeWidth="0.8" />
     </g>
@@ -188,7 +187,7 @@ function NodeCard({ node, isSelected, isHovered, onSelect, onHover, t, animate }
       <NodeMeta node={node} t={t} />
 
       {node.tailnet && (
-        <TailnetBadge x={node.x + node.w - 70} y={node.y + node.h - 17} ip={node.tailnet.ip} hovered={isHovered || isSelected} />
+        <TailnetBadge x={node.x + node.w - 70} y={node.y + node.h - 17} hovered={isHovered || isSelected} />
       )}
 
       {isK3sCp && (
@@ -343,7 +342,7 @@ function DetailPanelContent({ node, t, onClose }: { node: TopoNode; t: TopologyT
             </div>
             <div style={{ fontFamily: t.fontMono, fontSize: 12, color: t.ink, marginTop: 4 }}>{ts.hostname} · tailnet</div>
             <div style={{ fontFamily: t.fontMono, fontSize: 11, color: t.mute, marginTop: 2 }}>
-              {ts.ip} · {ts.tag}
+              {ts.tag}
             </div>
           </div>
         )}

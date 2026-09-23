@@ -24,7 +24,7 @@ const badgeColors: Record<string, 'cyan' | 'magenta' | 'gold' | 'green' | 'defau
   'Tailscale': 'gold', 'Cilium': 'green', 'Traefik': 'cyan', 'CoreDNS': 'green',
   'Prometheus': 'gold', 'Grafana': 'gold', 'Loki': 'gold', 'AlertManager': 'magenta', 'OpenTelemetry': 'gold',
   'ZFS': 'green', 'TrueNAS': 'green', 'NFS CSI': 'green', 'Democratic CSI': 'green', 'Garage (S3)': 'green',
-  '1Password Operator': 'magenta', 'cert-manager': 'magenta', 'Pocket ID (OAuth)': 'magenta', 'Tailscale ACLs': 'gold',
+  '1Password Operator': 'magenta', 'cert-manager': 'magenta', 'wisp (OIDC)': 'magenta', 'Tailscale ACLs': 'gold',
   'GitHub Actions': 'cyan', 'ARC Runners': 'cyan', 'ArgoCD Image Updater': 'cyan',
 };
 
@@ -123,11 +123,11 @@ function Homelab() {
                 },
                 {
                   h: 'The tailnet plane',
-                  b: 'The amber bus carries every cross-site call. Shared ingress proxies (grouped by ACL tag) live on the bus and front cluster services as *.ts.net VIPs — without ever opening a public port.',
+                  b: 'The amber bus carries every cross-site call. Ingress proxies are grouped by location (Florida, the Medellín control plane, and an anycast pair spanning both) and front cluster services as *.ts.net VIPs — without ever opening a public port.',
                 },
                 {
                   h: 'Storage path',
-                  b: 'TrueNAS and k3s-pve share a private 10 Gb storage bridge (MTU 9000). iSCSI never touches the LAN. Backups land in Garage S3 on a Pi in Medellín.',
+                  b: 'At each site, TrueNAS and the GPU worker share a private, host-internal jumbo-frame storage bridge, so NFS and iSCSI never touch the LAN. Backups land in Garage S3 on a Pi in Medellín.',
                 },
               ].map((hint) => (
                 <div

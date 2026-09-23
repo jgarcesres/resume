@@ -138,7 +138,7 @@ export const NODES: TopoNode[] = [
   { id: 'mde-truenas', label: 'mde-truenas', sub: 'VMID 102 · on mde-pve1', kind: 'vm', site: 'mde', tier: 'vm',
     pos: [5.3, -0.2], size: [1.9, 0.85, 1.7],
     ts: { host: 'mde-truenas', tags: 'tag:storage' },
-    meta: { Resources: '10 GiB · 4 vCPU', HBA: 'onboard SATA passthrough', Pool: 'tank · 4×6 TB RAIDZ1', Exports: 'NFS · iSCSI' } },
+    meta: { Resources: '10 GiB · 4 vCPU', HBA: 'LSI SAS HBA passthrough', Pool: 'tank · 4×6 TB RAIDZ1', Exports: 'NFS · iSCSI' } },
   { id: 'mde-k3s-w1', label: 'mde-k3s-w1', sub: 'worker · GPU · MDE media', kind: 'worker', site: 'mde', tier: 'k3s',
     pos: [3.1, -0.2], r: 1.15, h: 0.8,
     ts: { host: 'mde-k3s-w1', tags: 'tag:k3s' },

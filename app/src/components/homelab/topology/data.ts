@@ -355,7 +355,7 @@ export const NODES: TopoNode[] = [
     tailnet: { hostname: 'mde-truenas', tag: 'tag:storage' },
     meta: {
       RAM: '10 GiB · 4 vCPU',
-      HBA: 'SATA passthrough',
+      HBA: 'LSI HBA passthrough',
     },
   },
 

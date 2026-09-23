@@ -8,6 +8,9 @@ import { NODES, CHIPS } from '../../components/homelab/topology3d/data';
 vi.mock('../../components/homelab/topology3d/Topology3D', () => ({
   default: () => <div data-testid="topology-3d" />,
 }));
+vi.mock('../../components/homelab/topologyPixel/TopologyPixel', () => ({
+  default: () => <div data-testid="topology-pixel" />,
+}));
 
 describe('TopologyView', () => {
   beforeEach(() => {
@@ -28,11 +31,13 @@ describe('TopologyView', () => {
     expect(screen.queryByRole('img', { name: /topology/i })).not.toBeInTheDocument();
   });
 
-  it('offers 2D only in RPG mode', () => {
+  it('swaps to the pixel-art scene when 3D is picked in RPG mode', async () => {
     localStorage.setItem('site-theme', 'rpg');
     render(<ThemeProvider><TopologyView /></ThemeProvider>);
     expect(screen.getByRole('img', { name: /topology/i })).toBeInTheDocument();
-    expect(screen.queryByRole('radiogroup', { name: /topology view/i })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('radio', { name: '3D' }));
+    expect(await screen.findByTestId('topology-pixel')).toBeInTheDocument();
+    expect(screen.queryByTestId('topology-3d')).not.toBeInTheDocument();
   });
 });
 

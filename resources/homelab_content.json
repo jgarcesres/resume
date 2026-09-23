@@ -6,7 +6,7 @@
     { "category": "Networking", "items": ["Tailscale", "Cilium", "Traefik", "CoreDNS"] },
     { "category": "Monitoring", "items": ["Prometheus", "Grafana", "Loki", "AlertManager", "OpenTelemetry"] },
     { "category": "Storage", "items": ["ZFS", "TrueNAS", "NFS CSI", "Democratic CSI", "Garage (S3)"] },
-    { "category": "Security", "items": ["1Password Operator", "cert-manager", "Pocket ID (OAuth)", "Tailscale ACLs"] },
+    { "category": "Security", "items": ["1Password Operator", "cert-manager", "wisp (OIDC)", "Tailscale ACLs"] },
     { "category": "CI/CD", "items": ["GitHub Actions", "ARC Runners", "ArgoCD Image Updater"] }
   ],
   "services": [
@@ -25,17 +25,16 @@
     { "name": "OpenTelemetry", "category": "monitoring", "status": "online", "icon": "telescope" },
     { "name": "ArgoCD", "category": "infra", "status": "online", "icon": "sync" },
     { "name": "Traefik", "category": "infra", "status": "online", "icon": "web" },
-    { "name": "Pocket ID", "category": "infra", "status": "online", "icon": "key" },
+    { "name": "wisp (OIDC)", "category": "infra", "status": "online", "icon": "key" },
     { "name": "cert-manager", "category": "infra", "status": "online", "icon": "lock" },
     { "name": "Garage (S3)", "category": "storage", "status": "online", "icon": "bucket" },
-    { "name": "NMS", "category": "apps", "status": "online", "icon": "coin" },
-    { "name": "Home Assistant", "category": "apps", "status": "online", "icon": "house" }
+    { "name": "NMS", "category": "apps", "status": "online", "icon": "coin" }
   ],
   "specs": {
-    "totalCores": "34 cores / 56 threads",
-    "totalRam": "192GB",
-    "totalStorage": "~140TB raw",
-    "gpu": "NVIDIA Quadro RTX 4000",
+    "totalCores": "44 cores / 84 threads",
+    "totalRam": "264GB",
+    "totalStorage": "~210TB raw",
+    "gpu": "Quadro RTX 4000 + P4000",
     "sites": "2 (FL, US + Medellín, CO)",
     "vpn": "Tailscale (WireGuard)"
   }

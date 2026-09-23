@@ -30,6 +30,7 @@ import type { ProxyGroup, SiteDef, TierDef, TopoNode } from './topology/data';
 
 const CANVAS_W = 1440;
 const CANVAS_H = 800;
+const K3S_NODE_COUNT = NODES.filter((n) => n.tier === 'k3s').length;
 
 function usePrefersReducedMotion(): boolean {
   return useMemo(
@@ -437,9 +438,9 @@ function TopologyDiagram() {
                   display: 'inline-block',
                 }}
               />
-              5 nodes online
+              {K3S_NODE_COUNT} nodes online
             </span>
-            <span>pod CIDR · 10.42.0.0/16</span>
+            <span>Cilium · native routing</span>
             <span>etcd HA · cp1·cp2·cp3</span>
           </span>
         </div>

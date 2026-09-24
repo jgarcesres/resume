@@ -292,6 +292,24 @@ export function CastleIcon({ className, style }: PixelIconProps) {
   );
 }
 
+/** Pixel art anvil with sparks for Tools / the Forge */
+export function AnvilIcon({ className, style }: PixelIconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} style={{ ...style, ...px }} aria-hidden="true">
+      <rect x="2" y="7" width="20" height="3" fill="currentColor" />
+      <rect x="0" y="7" width="3" height="2" fill="currentColor" opacity="0.7" />
+      <rect x="5" y="10" width="14" height="2" fill="currentColor" opacity="0.85" />
+      <rect x="9" y="12" width="6" height="5" fill="currentColor" opacity="0.7" />
+      <rect x="6" y="17" width="12" height="3" fill="currentColor" />
+      <rect x="4" y="20" width="16" height="2" fill="currentColor" opacity="0.6" />
+      <motion.g animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.4, repeat: Infinity }}>
+        <rect x="16" y="4" width="2" height="2" fill="#ffd700" />
+        <rect x="19" y="2" width="2" height="2" fill="#ff6a00" />
+      </motion.g>
+    </svg>
+  );
+}
+
 /** Pixel party member silhouette */
 export function PartyMemberIcon({ className, style }: PixelIconProps) {
   return (

@@ -6,6 +6,8 @@
 mod error;
 mod legacy;
 mod pdf;
+#[cfg(target_arch = "wasm32")]
+mod wasm;
 
 pub use error::UnlockError;
 pub use pdf::{Inspection, inspect, unlock};

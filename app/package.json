@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:wasm": "bash ../tools/pdf-unlock/scripts/build.sh",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

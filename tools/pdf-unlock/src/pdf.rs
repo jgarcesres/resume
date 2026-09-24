@@ -2,6 +2,7 @@ use lopdf::encryption::PasswordAlgorithm;
 use lopdf::{Document, LoadOptions, Object};
 
 use crate::UnlockError;
+use crate::legacy;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Inspection {
@@ -70,8 +71,7 @@ fn key_password(doc: &Document, revision: i64, password: &str) -> Result<String,
             // AES-256 derives the file key from either password directly.
             encoded
         } else {
-            // Legacy owner passwords need the user password recovered first.
-            return Err(UnlockError::UnsupportedEncryption);
+            recovered_user_password(doc, revision, &encoded)?
         }
     } else {
         return Err(UnlockError::WrongPassword);
@@ -83,6 +83,31 @@ fn key_password(doc: &Document, revision: i64, password: &str) -> Result<String,
         return Err(UnlockError::UnsupportedEncryption);
     }
     String::from_utf8(key_bytes).map_err(unsupported)
+}
+
+/// Revision <= 4: turn an authenticated owner password back into the user
+/// password (which the file key is derived from) and double-check it.
+fn recovered_user_password(
+    doc: &Document,
+    revision: i64,
+    owner: &[u8],
+) -> Result<Vec<u8>, UnlockError> {
+    let dict = doc.get_encrypted().map_err(unsupported)?;
+    let o_entry = dict
+        .get(b"O")
+        .and_then(Object::as_str)
+        .map_err(unsupported)?;
+    // /Length is optional; V4 (AES-128) files are always 128-bit.
+    let default_bits = if revision == 4 { 128 } else { 40 };
+    let length_bits = dict
+        .get(b"Length")
+        .and_then(Object::as_i64)
+        .unwrap_or(default_bits);
+    let key_length = usize::try_from(length_bits / 8).map_err(unsupported)?;
+
+    legacy::recover_user_password(owner, o_entry, revision, key_length)
+        .filter(|user| doc.authenticate_raw_user_password(user).is_ok())
+        .ok_or(UnlockError::UnsupportedEncryption)
 }
 
 fn save(mut doc: Document) -> Result<Vec<u8>, UnlockError> {

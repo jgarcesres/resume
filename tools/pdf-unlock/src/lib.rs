@@ -4,6 +4,7 @@
 //! exposes it to the browser through wasm-bindgen.
 
 mod error;
+mod legacy;
 mod pdf;
 
 pub use error::UnlockError;

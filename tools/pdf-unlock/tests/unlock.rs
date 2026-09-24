@@ -205,3 +205,27 @@ fn unlock_rejects_non_standard_security_handlers() {
         Err(UnlockError::UnsupportedEncryption)
     );
 }
+
+#[test]
+fn unlock_with_owner_password_decrypts_every_supported_cipher() {
+    for name in [
+        "rc4-40",
+        "rc4-128",
+        "aes-128",
+        "aes-256",
+        "aes-256-objstm",
+        "aes-256-utf8",
+    ] {
+        let out = unlock(&fixture(name), "owner").unwrap_or_else(|e| panic!("{name}: {e}"));
+        assert_eq!(unlocked_text(&out), TEXT, "{name}");
+    }
+}
+
+#[test]
+fn unlock_refuses_legacy_owner_password_when_the_user_password_is_non_ascii() {
+    // The recovered user password ("contraseña") can't be handed to lopdf intact.
+    assert_eq!(
+        unlock(&fixture("rc4-128-utf8"), "owner"),
+        Err(UnlockError::UnsupportedEncryption)
+    );
+}

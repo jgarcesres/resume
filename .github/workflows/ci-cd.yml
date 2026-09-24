@@ -92,6 +92,13 @@ jobs:
             exit 1
           fi
 
+      - name: Upload the CI build for comparison
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-unlock-wasm-ci
+          path: app/src/wasm/pdf-unlock/
+
   build:
     name: Build
     runs-on: ubuntu-latest

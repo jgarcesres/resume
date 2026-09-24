@@ -49,7 +49,10 @@ jobs:
 
   wasm:
     name: WASM (Rust)
-    runs-on: ubuntu-latest
+    # Rust builds are only byte-reproducible on the same host platform (cargo
+    # hashes the host into crate metadata), and the committed WASM is built on
+    # an Apple Silicon Mac, so verify it on one.
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: tools/pdf-unlock
@@ -92,25 +95,12 @@ jobs:
             exit 1
           fi
 
-      - name: "TEMP: build stages for reproducibility debugging"
-        if: failure()
-        run: |
-          export RUSTFLAGS="--remap-path-prefix=${CARGO_HOME:-$HOME/.cargo}=/cargo --remap-path-prefix=$PWD=/pdf-unlock"
-          wasm-pack build --release --no-opt --target web --out-dir "$RUNNER_TEMP/noopt" --out-name pdf_unlock
-          mkdir -p "$RUNNER_TEMP/stages"
-          cp target/wasm32-unknown-unknown/release/pdf_unlock.wasm "$RUNNER_TEMP/stages/rustc.wasm"
-          cp "$RUNNER_TEMP/noopt/pdf_unlock_bg.wasm" "$RUNNER_TEMP/stages/bindgen-noopt.wasm"
-          cp ../../app/src/wasm/pdf-unlock/pdf_unlock_bg.wasm "$RUNNER_TEMP/stages/final.wasm"
-          ls -la ~/.cache/.wasm-pack 2>/dev/null || true; find ~/.cache/.wasm-pack -maxdepth 2 2>/dev/null | head -20 || true
-
       - name: Upload the CI build for comparison
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: pdf-unlock-wasm-ci
-          path: |
-            app/src/wasm/pdf-unlock/
-            ${{ runner.temp }}/stages/
+          path: app/src/wasm/pdf-unlock/
 
   build:
     name: Build

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Builds the pdf-unlock WASM into app/src/wasm/pdf-unlock and stamps its source hash.
-# The build is reproducible, so CI rebuilds it and fails if the committed files differ.
+# The build is reproducible on the same host platform, so CI rebuilds it on
+# macOS arm64 (like the Apple Silicon Mac it's committed from) and fails if the
+# committed files differ.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

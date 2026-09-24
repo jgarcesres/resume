@@ -111,6 +111,9 @@ fn recovered_user_password(
 }
 
 fn save(mut doc: Document) -> Result<Vec<u8>, UnlockError> {
+    // Decryption drops the /Encrypt dictionary, which is often the highest-numbered
+    // object; lopdf would still write /Size from the old max_id.
+    doc.max_id = doc.objects.keys().map(|&(id, _)| id).max().unwrap_or(0);
     let mut out = Vec::new();
     doc.save_to(&mut out)
         .map_err(|_| UnlockError::MalformedPdf)?;

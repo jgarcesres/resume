@@ -107,6 +107,14 @@ fn unlocked_text(pdf: &[u8]) -> String {
         doc.trailer.get(b"Encrypt").is_err(),
         "output trailer must not reference /Encrypt"
     );
+    // /Size must be one more than the highest object number (strict readers warn otherwise).
+    let highest = doc.objects.keys().map(|&(id, _)| id).max().unwrap_or(0);
+    let size = doc
+        .trailer
+        .get(b"Size")
+        .and_then(Object::as_i64)
+        .expect("trailer /Size");
+    assert_eq!(size, i64::from(highest) + 1, "trailer /Size");
     doc.extract_text(&[1])
         .expect("page 1 text")
         .trim()

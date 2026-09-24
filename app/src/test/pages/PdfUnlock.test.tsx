@@ -7,11 +7,14 @@ import { ThemeProvider } from '../../context/ThemeContext';
 import { UnlockFailure } from '../../tools/pdfUnlock/client';
 import type { Inspection } from '../../tools/pdfUnlock/protocol';
 
-const mocks = vi.hoisted(() => ({ inspect: vi.fn(), unlock: vi.fn(), dispose: vi.fn() }));
+const mocks = vi.hoisted(() => {
+  const unlocker = { inspect: vi.fn(), unlock: vi.fn(), dispose: vi.fn() };
+  return { ...unlocker, unlocker, create: vi.fn() };
+});
 
 vi.mock('../../tools/pdfUnlock/client', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../tools/pdfUnlock/client')>();
-  return { ...actual, createPdfUnlocker: () => mocks };
+  return { ...actual, createPdfUnlocker: () => mocks.create() };
 });
 
 const LOCKED: Inspection = { encrypted: true, needsPassword: true };
@@ -34,6 +37,7 @@ async function unlockWithPassword(user: ReturnType<typeof userEvent.setup>, pass
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.create.mockImplementation(() => mocks.unlocker);
   localStorage.clear();
   Object.defineProperty(URL, 'createObjectURL', { configurable: true, writable: true, value: vi.fn(() => 'blob:unlocked') });
   Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, writable: true, value: vi.fn() });
@@ -89,6 +93,7 @@ describe('PdfUnlock page', () => {
 
     expect(await screen.findByRole('link', { name: /download/i })).toBeInTheDocument();
     expect(mocks.unlock).toHaveBeenLastCalledWith(expect.any(File), 'right');
+    expect(mocks.create).toHaveBeenCalledTimes(1);
   });
 
   it('passes the password exactly as typed', async () => {
@@ -152,8 +157,27 @@ describe('PdfUnlock page', () => {
     await user.click(await screen.findByRole('button', { name: /unlock another/i }));
 
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:unlocked');
+    expect(mocks.dispose).toHaveBeenCalledTimes(1);
     await user.upload(screen.getByLabelText(/choose a pdf/i), pdfFile());
     expect(await screen.findByLabelText(/password for statement\.pdf/i)).toHaveValue('');
+  });
+
+  it('gives each file a fresh worker and stops the previous one', async () => {
+    mocks.inspect
+      .mockImplementationOnce(() => new Promise<Inspection>(() => {})) // stuck forever
+      .mockResolvedValueOnce(LOCKED);
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByLabelText(/choose a pdf/i);
+    await user.upload(input, pdfFile('first.pdf'));
+    expect(mocks.create).toHaveBeenCalledTimes(1);
+    await user.upload(input, pdfFile('second.pdf'));
+
+    // A stuck or crashed worker must not delay or poison the next file.
+    expect(mocks.dispose).toHaveBeenCalledTimes(1);
+    expect(mocks.create).toHaveBeenCalledTimes(2);
+    expect(await screen.findByLabelText(/password for second\.pdf/i)).toBeInTheDocument();
   });
 
   it('revokes the URL and stops the worker when leaving the page', async () => {

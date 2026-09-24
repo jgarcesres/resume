@@ -88,6 +88,14 @@ function PdfUnlock() {
     s.url = null;
   };
 
+  // Each file gets its own worker: a stuck or crashed one (e.g. out of memory)
+  // can't delay or poison the next file, and its memory is freed.
+  const dropUnlocker = () => {
+    const s = session.current;
+    s.unlocker?.dispose();
+    s.unlocker = null;
+  };
+
   async function runUnlock(file: File, typedPassword: string | null) {
     const generation = ++session.current.generation;
     const isStale = () => generation !== session.current.generation;
@@ -129,6 +137,8 @@ function PdfUnlock() {
 
   function chooseFile(file: File | undefined) {
     if (!file) return;
+    session.current.generation++; // invalidate the old run before its worker is stopped
+    dropUnlocker();
     releaseUrl();
     setPassword('');
     void runUnlock(file, null);
@@ -136,6 +146,7 @@ function PdfUnlock() {
 
   function reset() {
     session.current.generation++;
+    dropUnlocker();
     releaseUrl();
     setPassword('');
     setPhase({ kind: 'idle' });

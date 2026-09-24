@@ -15,7 +15,8 @@ objs = [
     b"<< /Title (Unlock Fixture) >>",
 ]
 content = b"BT /F1 24 Tf 72 700 Td (Hello from the unlock fixture) Tj ET"
-objs[3] = b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream"
+# A string in a stream *dictionary*: lopdf decrypts stream content but not these.
+objs[3] = b"<< /Length %d /Note (stream dict string) >>\nstream\n" % len(content) + content + b"\nendstream"
 out = bytearray(b"%PDF-1.7\n")
 offsets = []
 for i, body in enumerate(objs, 1):
@@ -61,7 +62,50 @@ def edit(src, dst, old, new):
 edit("aes-128.pdf", "aes-128-unknown-cfm.pdf", b"/CFM /AESV2", b"/CFM /AESV9")
 edit("aes-128.pdf", "aes-128-unnamed-stmf.pdf", b"/StmF /StdCF", b"/StmF /NoCF1")
 edit("aes-128-owner-only.tmp.pdf", "aes-128-owner-only-unknown-cfm.pdf", b"/CFM /AESV2", b"/CFM /AESV9")
+
+# A stale xref offset, common in slightly damaged PDFs: lopdf silently drops the
+# object it can't parse there and would save the document without it.
+import re
+
+def bump_xref(src, dst, pattern):
+    data = bytearray(open(src, "rb").read())
+    num = int(re.search(pattern, data).group(1))
+    start = data.rindex(b"\nxref\n") + 1
+    table = start + re.match(rb"xref\n0 \d+\n", data[start:]).end()
+    entry = table + 20 * num
+    data[entry:entry + 10] = b"%010d" % (int(data[entry:entry + 10]) + 1)
+    open(dst, "wb").write(bytes(data))
+
+bump_xref("aes-128.pdf", "aes-128-stale-xref-catalog.pdf", rb"(\d+) 0 obj\s*<<[^>]*/Type /Catalog")
+bump_xref("aes-128.pdf", "aes-128-stale-xref-font.pdf", rb"(\d+) 0 obj\s*<< /BaseFont /Helvetica")
 EOF2
 rm aes-128-owner-only.tmp.pdf
+
+# Decompression bomb: a 2.7 KB PDF whose xref stream inflates to 1.5 GB of zeros.
+python3 - <<'EOF3'
+import zlib
+
+layer1 = zlib.compressobj(9)
+inflated = bytearray()
+chunk = bytes(1 << 20)
+for _ in range(1536):
+    inflated += layer1.compress(chunk)
+inflated += layer1.flush()
+layer2 = zlib.compress(bytes(inflated), 9)
+parts = [
+    b"%PDF-1.5\n",
+    b"1 0 obj <</Type/Catalog/Pages 2 0 R>> endobj\n",
+    b"2 0 obj <</Type/Pages/Kids[]/Count 0>> endobj\n",
+]
+xref = sum(map(len, parts))
+parts += [
+    b"3 0 obj <</Type/XRef/Size 4/W[1 2 1]/Root 1 0 R/Filter[/FlateDecode/FlateDecode]"
+    b"/Length %d>> stream\n" % len(layer2),
+    layer2,
+    b"\nendstream endobj\n",
+    b"startxref\n%d\n%%%%EOF\n" % xref,
+]
+open("xref-stream-bomb.pdf", "wb").write(b"".join(parts))
+EOF3
 
 echo "fixtures regenerated"

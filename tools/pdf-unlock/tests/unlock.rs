@@ -124,6 +124,15 @@ fn unlocked_text(pdf: &[u8]) -> String {
         .expect("/Info");
     let title = lopdf::decode_text_string(info.get(b"Title").expect("/Title")).expect("title");
     assert_eq!(title, "Unlock Fixture", "/Info /Title");
+    // ...and strings inside stream dictionaries, which lopdf leaves encrypted.
+    let page = *doc.get_pages().get(&1).expect("page 1");
+    let contents = doc.get_page_contents(page);
+    let stream = doc
+        .get_object(contents[0])
+        .and_then(Object::as_stream)
+        .expect("content stream");
+    let note = lopdf::decode_text_string(stream.dict.get(b"Note").expect("/Note")).expect("note");
+    assert_eq!(note, "stream dict string", "content stream /Note");
     doc.extract_text(&[1])
         .expect("page 1 text")
         .trim()
@@ -270,4 +279,60 @@ fn owner_only_pdfs_with_unusable_crypt_filters_are_refused() {
     let pdf = fixture("aes-128-owner-only-unknown-cfm");
     assert_eq!(inspect(&pdf), Err(UnlockError::UnsupportedEncryption));
     assert_eq!(unlock(&pdf, ""), Err(UnlockError::UnsupportedEncryption));
+}
+
+/// Open password "user" with an *empty owner* password, RC4-128 and
+/// uncompressed streams. qpdf can't produce this, so use lopdf's encryptor.
+fn empty_owner_pdf() -> Vec<u8> {
+    use lopdf::{EncryptionState, EncryptionVersion, Permissions};
+    let mut doc = Document::load_mem(&fixture("plain")).unwrap();
+    doc.decompress();
+    let version = EncryptionVersion::V2 {
+        document: &doc,
+        owner_password: "",
+        user_password: "user",
+        key_length: 128,
+        permissions: Permissions::all(),
+    };
+    let state = EncryptionState::try_from(version).unwrap();
+    doc.encrypt(&state).unwrap();
+    let mut out = Vec::new();
+    doc.save_to(&mut out).unwrap();
+    out
+}
+
+#[test]
+fn empty_owner_password_on_legacy_ciphers_is_refused_instead_of_garbled() {
+    // lopdf tries "" first while loading; it matches as the *owner* password,
+    // and lopdf then derives the key as if it were the user password.
+    let pdf = empty_owner_pdf();
+    assert_eq!(inspect(&pdf), Err(UnlockError::UnsupportedEncryption));
+    for pw in ["", "user"] {
+        assert_eq!(
+            unlock(&pdf, pw),
+            Err(UnlockError::UnsupportedEncryption),
+            "{pw:?}"
+        );
+    }
+}
+
+#[test]
+fn objects_lopdf_could_not_load_are_refused_instead_of_dropped() {
+    // A stale xref offset makes lopdf silently skip that object.
+    for name in ["aes-128-stale-xref-catalog", "aes-128-stale-xref-font"] {
+        assert_eq!(
+            unlock(&fixture(name), "user"),
+            Err(UnlockError::MalformedPdf),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn passwords_aes_256_cannot_accept_are_reported_as_wrong() {
+    // SASLprep rejects control characters, so this can't be the real password.
+    assert_eq!(
+        unlock(&fixture("aes-256"), "bad\u{7}password"),
+        Err(UnlockError::WrongPassword)
+    );
 }

@@ -115,6 +115,15 @@ fn unlocked_text(pdf: &[u8]) -> String {
         .and_then(Object::as_i64)
         .expect("trailer /Size");
     assert_eq!(size, i64::from(highest) + 1, "trailer /Size");
+    // Strings are decrypted separately from streams (/StrF), so check one.
+    let info = doc
+        .trailer
+        .get(b"Info")
+        .and_then(Object::as_reference)
+        .and_then(|id| doc.get_dictionary(id))
+        .expect("/Info");
+    let title = lopdf::decode_text_string(info.get(b"Title").expect("/Title")).expect("title");
+    assert_eq!(title, "Unlock Fixture", "/Info /Title");
     doc.extract_text(&[1])
         .expect("page 1 text")
         .trim()
@@ -236,4 +245,29 @@ fn unlock_refuses_legacy_owner_password_when_the_user_password_is_non_ascii() {
         unlock(&fixture("rc4-128-utf8"), "owner"),
         Err(UnlockError::UnsupportedEncryption)
     );
+}
+
+#[test]
+fn crypt_filters_lopdf_cannot_apply_are_refused_instead_of_garbled() {
+    // Unknown /CFM, and /StmF naming a filter missing from /CF: lopdf 0.45
+    // silently falls back to RC4 for both.
+    for name in ["aes-128-unknown-cfm", "aes-128-unnamed-stmf"] {
+        assert_eq!(
+            inspect(&fixture(name)),
+            Err(UnlockError::UnsupportedEncryption),
+            "{name}"
+        );
+        assert_eq!(
+            unlock(&fixture(name), "user"),
+            Err(UnlockError::UnsupportedEncryption),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn owner_only_pdfs_with_unusable_crypt_filters_are_refused() {
+    let pdf = fixture("aes-128-owner-only-unknown-cfm");
+    assert_eq!(inspect(&pdf), Err(UnlockError::UnsupportedEncryption));
+    assert_eq!(unlock(&pdf, ""), Err(UnlockError::UnsupportedEncryption));
 }

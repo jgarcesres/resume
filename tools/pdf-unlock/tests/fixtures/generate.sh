@@ -49,4 +49,19 @@ enc rc4-128-owner-only.pdf --encrypt --user-password= --owner-password=owner --b
 enc aes-256-utf8.pdf       --encrypt --user-password=contraseña --owner-password=owner --bits=256
 enc rc4-128-utf8.pdf       --encrypt --user-password=contraseña --owner-password=owner --bits=128 --use-aes=n
 
+# Crypt filters lopdf 0.45 can't apply (it silently falls back to RC4 for them).
+# Same-length byte edits keep the xref offsets valid.
+enc aes-128-owner-only.tmp.pdf --encrypt --user-password= --owner-password=owner --bits=128 --use-aes=y
+python3 - <<'EOF2'
+def edit(src, dst, old, new):
+    data = open(src, "rb").read()
+    assert len(old) == len(new) and data.count(old) == 1, (src, old)
+    open(dst, "wb").write(data.replace(old, new))
+
+edit("aes-128.pdf", "aes-128-unknown-cfm.pdf", b"/CFM /AESV2", b"/CFM /AESV9")
+edit("aes-128.pdf", "aes-128-unnamed-stmf.pdf", b"/StmF /StdCF", b"/StmF /NoCF1")
+edit("aes-128-owner-only.tmp.pdf", "aes-128-owner-only-unknown-cfm.pdf", b"/CFM /AESV2", b"/CFM /AESV9")
+EOF2
+rm aes-128-owner-only.tmp.pdf
+
 echo "fixtures regenerated"

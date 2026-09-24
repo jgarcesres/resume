@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ChangeEvent, DragEvent, FormEvent } from 'react';
+import type { ChangeEvent, DragEvent, KeyboardEvent } from 'react';
 import PageTransition from '../components/PageTransition';
 import PixelPanel from '../components/ui/PixelPanel';
 import PixelButton from '../components/ui/PixelButton';
@@ -16,8 +16,10 @@ const ERROR_MESSAGES: Record<UnlockCode, string> = {
   NOT_ENCRYPTED: "This PDF isn't password-protected, so there's nothing to remove.",
   WRONG_PASSWORD: "That password didn't work. Check it and try again.",
   UNSUPPORTED_ENCRYPTION:
-    "This PDF uses encryption this tool can't remove (for example certificate-based encryption, or a non-ASCII password on an older RC4/AES-128 file).",
-  MALFORMED_PDF: "Couldn't read this file. Make sure it's a valid PDF.",
+    "This PDF uses encryption this tool can't remove, for example certificate-based encryption, or a password with accented letters (like ñ) on an older PDF.",
+  MALFORMED_PDF: "Couldn't read this file. It may not be a PDF, or it may be damaged.",
+  INTERNAL_ERROR:
+    'Something went wrong while processing this file. Very large PDFs can run out of browser memory. Try again, or reload the page.',
 };
 
 const RPG_UI = {
@@ -106,6 +108,7 @@ function PdfUnlock() {
         const info = await unlocker().inspect(file);
         if (isStale()) return;
         if (!info.encrypted) {
+          dropUnlocker();
           setPhase({ kind: 'error', code: 'NOT_ENCRYPTED' });
           return;
         }
@@ -118,6 +121,9 @@ function PdfUnlock() {
       setPhase({ kind: 'busy', file, step: 'Unlocking' });
       const pdf = await unlocker().unlock(file, pw);
       if (isStale()) return;
+      // Done with this file: stopping the worker frees its memory (which still
+      // holds the decrypted bytes and password).
+      dropUnlocker();
       releaseUrl();
       const url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
       session.current.url = url;
@@ -125,11 +131,12 @@ function PdfUnlock() {
       setPhase({ kind: 'done', file, url });
     } catch (err) {
       if (isStale()) return;
-      const code = err instanceof UnlockFailure ? err.code : 'MALFORMED_PDF';
+      const code = err instanceof UnlockFailure ? err.code : 'INTERNAL_ERROR';
       if (code === 'WRONG_PASSWORD') {
         setPhase({ kind: 'password', file, wrong: true });
         return;
       }
+      dropUnlocker();
       setPassword('');
       setPhase({ kind: 'error', code });
     }
@@ -164,9 +171,14 @@ function PdfUnlock() {
     chooseFile(event.dataTransfer.files[0]);
   };
 
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault();
+  const submitPassword = () => {
     if (phase.kind === 'password') void runUnlock(phase.file, password);
+  };
+
+  const onPasswordKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    submitPassword();
   };
 
   return (
@@ -189,10 +201,14 @@ function PdfUnlock() {
           {phase.kind === 'done' ? (
             <div className="space-y-4 text-center">
               <p className={ui.text}>
-                Unlocked <strong>{phase.file.name}</strong>. The copy below has no password.
+                Unlocked{' '}
+                <strong>
+                  <bdi>{phase.file.name}</bdi>
+                </strong>
+                . The copy below has no password.
               </p>
               <a href={phase.url} download={unlockedFilename(phase.file.name)} className={ui.download}>
-                Download {unlockedFilename(phase.file.name)}
+                Download <bdi>{unlockedFilename(phase.file.name)}</bdi>
               </a>
               <div>
                 <PixelButton variant="magenta" onClick={reset}>
@@ -225,7 +241,7 @@ function PdfUnlock() {
           <div role="status" aria-live="polite" className="mt-4 min-h-[1.25rem]">
             {phase.kind === 'busy' && (
               <span className={ui.dim}>
-                {phase.step} {phase.file.name}…
+                {phase.step} <bdi>{phase.file.name}</bdi>…
               </span>
             )}
           </div>
@@ -237,17 +253,23 @@ function PdfUnlock() {
           )}
 
           {phase.kind === 'password' && (
-            <form onSubmit={onSubmit} className="space-y-3">
+            // Deliberately not a <form>: browsers treat a password form that
+            // disappears after submit as a login and offer to save the password.
+            <div className="space-y-3">
               <label htmlFor="pdf-password" className={`block ${ui.text}`}>
-                Password for {phase.file.name}
+                Password for <bdi>{phase.file.name}</bdi>
               </label>
               <input
                 id="pdf-password"
                 type="password"
                 autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-bwignore="true"
                 autoFocus
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
+                onKeyDown={onPasswordKeyDown}
                 aria-invalid={phase.wrong || undefined}
                 aria-describedby={phase.wrong ? 'pdf-password-error' : undefined}
                 className={ui.input}
@@ -257,8 +279,10 @@ function PdfUnlock() {
                   {ERROR_MESSAGES.WRONG_PASSWORD}
                 </p>
               )}
-              <PixelButton variant="gold">Unlock</PixelButton>
-            </form>
+              <PixelButton variant="gold" onClick={submitPassword}>
+                Unlock
+              </PixelButton>
+            </div>
           )}
         </PixelPanel>
 

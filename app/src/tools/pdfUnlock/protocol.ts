@@ -1,11 +1,17 @@
-/** Keep in sync with `UnlockError::code()` in tools/pdf-unlock/src/error.rs. */
+/** Codes the WASM throws. Keep in sync with `UnlockError::code()` in tools/pdf-unlock/src/error.rs. */
 export const UNLOCK_CODES = ['NOT_ENCRYPTED', 'WRONG_PASSWORD', 'UNSUPPORTED_ENCRYPTION', 'MALFORMED_PDF'] as const;
-export type UnlockCode = (typeof UNLOCK_CODES)[number];
+/** The WASM codes, plus INTERNAL_ERROR for a crash, out-of-memory, or a worker that failed to load. */
+export type UnlockCode = (typeof UNLOCK_CODES)[number] | 'INTERNAL_ERROR';
 
-/** WASM errors carry their code as the message; anything else is a generic failure. */
+/**
+ * WASM errors carry their code as the message. Anything else is unexpected, so
+ * log it (locally; it never contains file data or the password) for debugging.
+ */
 export function toUnlockCode(value: unknown): UnlockCode {
   const message = value instanceof Error ? value.message : String(value);
-  return (UNLOCK_CODES as readonly string[]).includes(message) ? (message as UnlockCode) : 'MALFORMED_PDF';
+  if ((UNLOCK_CODES as readonly string[]).includes(message)) return message as UnlockCode;
+  console.error('pdf-unlock: unexpected failure', value);
+  return 'INTERNAL_ERROR';
 }
 
 export interface Inspection {

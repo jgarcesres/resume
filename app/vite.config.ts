@@ -5,6 +5,10 @@ import * as path from 'node:path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  worker: {
+    // The worker imports the wasm-bindgen ES module glue.
+    format: 'es',
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

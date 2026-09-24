@@ -8,6 +8,7 @@ import {
   SparklesIcon,
   ScrollIcon,
   CastleIcon,
+  AnvilIcon,
   PartyMemberIcon,
   BabyMemberIcon,
   JuanExeLogo,
@@ -31,6 +32,7 @@ const navItems: NavItem[] = [
   { to: '/hobbies', rpgLabel: 'Skills', proLabel: 'Hobbies', Icon: SparklesIcon },
   { to: '/resume', rpgLabel: 'Stats', proLabel: 'Resume', Icon: ScrollIcon },
   { to: '/homelab', rpgLabel: 'Base', proLabel: 'Homelab', Icon: CastleIcon },
+  { to: '/tools', rpgLabel: 'Forge', proLabel: 'Tools', Icon: AnvilIcon },
 ];
 
 interface NavbarProps {

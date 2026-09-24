@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import PixelCat from './components/PixelCat';
 import KonamiOverlay from './components/KonamiOverlay';
@@ -11,6 +11,10 @@ import Resume from './pages/Resume';
 import Homelab from './pages/Homelab';
 import Credits from './pages/Credits';
 import SkillTreePage from './pages/SkillTreePage';
+
+// Tools are code-split so the WASM worker only loads for visitors who open one.
+const Tools = lazy(() => import('./pages/Tools'));
+const PdfUnlock = lazy(() => import('./pages/PdfUnlock'));
 import ShaderOverlay from './components/ShaderOverlay';
 import { useKonamiCode } from './hooks/useKonamiCode';
 import { useShaderPreset } from './hooks/useShaderPreset';
@@ -59,6 +63,8 @@ function AppContent() {
             <Route path="/homelab" element={<Homelab />} />
             <Route path="/skill-tree" element={<SkillTreePage />} />
             <Route path="/credits" element={<Credits />} />
+            <Route path="/tools" element={<Suspense fallback={null}><Tools /></Suspense>} />
+            <Route path="/tools/pdf-unlock" element={<Suspense fallback={null}><PdfUnlock /></Suspense>} />
           </Routes>
         </AnimatePresence>
       </main>

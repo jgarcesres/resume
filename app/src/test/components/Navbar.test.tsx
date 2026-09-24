@@ -35,3 +35,23 @@ describe('Navbar shader selector visibility', () => {
     expect((selectors[0] as HTMLSelectElement).tagName).toBe('SELECT');
   });
 });
+
+describe('Navbar tools link', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.documentElement.dataset.theme = '';
+  });
+
+  it('links to /tools as "Tools"', () => {
+    renderNavbar();
+    const links = screen.getAllByRole('link', { name: /tools/i });
+    expect(links.some((link) => link.getAttribute('href') === '/tools')).toBe(true);
+  });
+
+  it('calls it "Forge" in RPG mode', () => {
+    localStorage.setItem('site-theme', 'rpg');
+    renderNavbar();
+    const links = screen.getAllByRole('link', { name: /forge/i });
+    expect(links.some((link) => link.getAttribute('href') === '/tools')).toBe(true);
+  });
+});

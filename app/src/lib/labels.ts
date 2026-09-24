@@ -27,6 +27,10 @@ const rpgLabels = {
   credits: 'Credits',
   creditsEnd: '— THE END? —',
   pressStart: 'PRESS START TO CONTINUE...',
+  toolsTitle: 'The Forge',
+  toolsSub: 'Handy spells that run entirely in your browser.',
+  pdfUnlockTitle: 'Unseal a Scroll',
+  pdfUnlockSub: 'Remove the password from a PDF you already know the password to.',
 } as const;
 
 const proLabels: typeof rpgLabels = {
@@ -56,6 +60,10 @@ const proLabels: typeof rpgLabels = {
   credits: 'Colophon',
   creditsEnd: '— end —',
   pressStart: 'Thank you for reading.',
+  toolsTitle: 'Tools',
+  toolsSub: 'Small utilities that run entirely in your browser.',
+  pdfUnlockTitle: 'PDF Unlock',
+  pdfUnlockSub: 'Remove the password from a PDF you already know the password to.',
 } as const;
 
 export function useLabels(): typeof rpgLabels {

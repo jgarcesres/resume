@@ -1,5 +1,5 @@
 use lopdf::{Document, Object, dictionary};
-use pdf_unlock::{Inspection, UnlockError, inspect};
+use pdf_unlock::{Inspection, UnlockError, inspect, unlock};
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = format!("{}/tests/fixtures/{name}.pdf", env!("CARGO_MANIFEST_DIR"));
@@ -90,6 +90,118 @@ fn inspect_rejects_non_pdf_bytes() {
 fn inspect_rejects_non_standard_security_handlers() {
     assert_eq!(
         inspect(&pubsec_pdf()),
+        Err(UnlockError::UnsupportedEncryption)
+    );
+}
+
+const TEXT: &str = "Hello from the unlock fixture";
+
+/// Parses unlock output and returns page 1's text, asserting no encryption survived.
+fn unlocked_text(pdf: &[u8]) -> String {
+    let doc = Document::load_mem(pdf).expect("unlocked output should parse");
+    assert!(
+        !doc.is_encrypted() && !doc.was_encrypted(),
+        "output must not be encrypted"
+    );
+    assert!(
+        doc.trailer.get(b"Encrypt").is_err(),
+        "output trailer must not reference /Encrypt"
+    );
+    doc.extract_text(&[1])
+        .expect("page 1 text")
+        .trim()
+        .to_string()
+}
+
+#[test]
+fn unlock_with_user_password_decrypts_every_supported_cipher() {
+    for name in ["rc4-40", "rc4-128", "aes-128", "aes-256", "aes-256-objstm"] {
+        let out = unlock(&fixture(name), "user").unwrap_or_else(|e| panic!("{name}: {e}"));
+        assert_eq!(unlocked_text(&out), TEXT, "{name}");
+    }
+}
+
+#[test]
+fn unlock_accepts_non_ascii_passwords_on_aes_256() {
+    let out = unlock(&fixture("aes-256-utf8"), "contraseña").unwrap();
+    assert_eq!(unlocked_text(&out), TEXT);
+}
+
+#[test]
+fn unlock_refuses_non_ascii_passwords_on_legacy_ciphers_instead_of_corrupting() {
+    // lopdf would "succeed" here and return garbage; see the spec's lopdf section.
+    assert_eq!(
+        unlock(&fixture("rc4-128-utf8"), "contraseña"),
+        Err(UnlockError::UnsupportedEncryption)
+    );
+}
+
+#[test]
+fn unlock_owner_only_pdfs_ignores_the_password() {
+    for name in ["aes-256-owner-only", "rc4-128-owner-only"] {
+        for pw in ["", "anything"] {
+            let out = unlock(&fixture(name), pw).unwrap_or_else(|e| panic!("{name}/{pw:?}: {e}"));
+            assert_eq!(unlocked_text(&out), TEXT, "{name}/{pw:?}");
+        }
+    }
+}
+
+#[test]
+fn unlock_rejects_wrong_passwords() {
+    for name in [
+        "rc4-40",
+        "rc4-128",
+        "aes-128",
+        "aes-256",
+        "aes-256-objstm",
+        "aes-256-utf8",
+        "rc4-128-utf8",
+    ] {
+        assert_eq!(
+            unlock(&fixture(name), "nope"),
+            Err(UnlockError::WrongPassword),
+            "{name}"
+        );
+        assert_eq!(
+            unlock(&fixture(name), ""),
+            Err(UnlockError::WrongPassword),
+            "{name} (empty)"
+        );
+    }
+}
+
+#[test]
+fn unlock_does_not_trim_passwords() {
+    assert_eq!(
+        unlock(&fixture("aes-256"), " user"),
+        Err(UnlockError::WrongPassword)
+    );
+    assert_eq!(
+        unlock(&fixture("rc4-128"), "user "),
+        Err(UnlockError::WrongPassword)
+    );
+}
+
+#[test]
+fn unlock_reports_plain_pdfs_as_not_encrypted() {
+    assert_eq!(
+        unlock(&fixture("plain"), "user"),
+        Err(UnlockError::NotEncrypted)
+    );
+}
+
+#[test]
+fn unlock_rejects_non_pdf_bytes() {
+    assert_eq!(
+        unlock(b"definitely not a pdf", "user"),
+        Err(UnlockError::MalformedPdf)
+    );
+}
+
+#[test]
+fn unlock_rejects_non_standard_security_handlers() {
+    assert_eq!(
+        unlock(&pubsec_pdf(), "user"),
         Err(UnlockError::UnsupportedEncryption)
     );
 }

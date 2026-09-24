@@ -7,4 +7,4 @@ mod error;
 mod pdf;
 
 pub use error::UnlockError;
-pub use pdf::{Inspection, inspect};
+pub use pdf::{Inspection, inspect, unlock};

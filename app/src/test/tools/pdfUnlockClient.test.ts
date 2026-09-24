@@ -80,14 +80,16 @@ describe('createPdfUnlocker', () => {
 
   it('fails pending requests when the worker crashes, then starts a fresh worker', async () => {
     const { unlocker, workers } = setup();
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
     const pending = unlocker.inspect(file);
     workers[0].crash();
 
-    await expect(pending).rejects.toMatchObject({ code: 'MALFORMED_PDF' });
+    await expect(pending).rejects.toMatchObject({ code: 'INTERNAL_ERROR' });
     expect(workers[0].terminated).toBe(true);
 
     void unlocker.inspect(file);
     expect(workers).toHaveLength(2);
+    log.mockRestore();
   });
 
   it('terminates the worker on dispose', () => {

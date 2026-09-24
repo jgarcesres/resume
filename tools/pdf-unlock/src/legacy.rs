@@ -57,6 +57,31 @@ pub(crate) fn recover_user_password(
     Some(user)
 }
 
+/// Whether `key` is the file key derived from the *user* password: it must
+/// reproduce the /U entry (ISO 32000-2 §7.6.4.4, Algorithms 4 and 5).
+///
+/// lopdf also accepts the empty password as an *owner* password while loading,
+/// then derives the key as if it were the user password. This catches that.
+pub(crate) fn key_matches_user_entry(
+    key: &[u8],
+    u_entry: &[u8],
+    first_file_id: &[u8],
+    revision: i64,
+) -> bool {
+    if revision == 2 {
+        return u_entry.len() >= 32 && rc4(key, &PAD) == u_entry[..32];
+    }
+    let mut hasher = Md5::new();
+    hasher.update(PAD);
+    hasher.update(first_file_id);
+    let mut value = rc4(key, &hasher.finalize());
+    for i in 1..=19u8 {
+        let round_key: Vec<u8> = key.iter().map(|b| b ^ i).collect();
+        value = rc4(&round_key, &value);
+    }
+    u_entry.len() >= 16 && value[..] == u_entry[..16]
+}
+
 fn rc4(key: &[u8], data: &[u8]) -> Vec<u8> {
     let mut s: [u8; 256] = core::array::from_fn(|i| i as u8);
     let mut j = 0u8;

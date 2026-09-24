@@ -96,6 +96,63 @@ describe('PdfUnlock page', () => {
     expect(mocks.create).toHaveBeenCalledTimes(1);
   });
 
+  it('unlocks on Enter, outside a form so browsers don\'t offer to save the password', async () => {
+    mocks.inspect.mockResolvedValue(LOCKED);
+    mocks.unlock.mockResolvedValue(new Uint8Array([1]));
+    const user = userEvent.setup();
+    const { container } = renderPage();
+
+    await user.upload(screen.getByLabelText(/choose a pdf/i), pdfFile());
+    const field = await screen.findByLabelText(/password for statement\.pdf/i);
+    expect(container.querySelector('form')).toBeNull();
+    expect(field).toHaveAttribute('data-1p-ignore');
+    expect(field).toHaveAttribute('data-lpignore', 'true');
+    await user.type(field, 'secret{Enter}');
+
+    expect(await screen.findByRole('link', { name: /download/i })).toBeInTheDocument();
+    expect(mocks.unlock).toHaveBeenCalledWith(expect.any(File), 'secret');
+  });
+
+  it('isolates file names from surrounding text direction', async () => {
+    mocks.inspect.mockResolvedValue(LOCKED);
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.upload(screen.getByLabelText(/choose a pdf/i), pdfFile());
+    const label = (await screen.findByText(/password for/i)).closest('label');
+    expect(label?.querySelector('bdi')).toHaveTextContent('statement.pdf');
+  });
+
+  it('stops the worker as soon as a file is done, freeing its memory', async () => {
+    mocks.inspect.mockResolvedValue(LOCKED);
+    mocks.unlock.mockResolvedValue(new Uint8Array([1]));
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.upload(screen.getByLabelText(/choose a pdf/i), pdfFile());
+    await unlockWithPassword(user, 'secret');
+    await screen.findByRole('link', { name: /download/i });
+    expect(mocks.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops the worker after an error, but keeps it for a password retry', async () => {
+    mocks.inspect.mockResolvedValue(LOCKED);
+    mocks.unlock
+      .mockRejectedValueOnce(new UnlockFailure('WRONG_PASSWORD'))
+      .mockRejectedValueOnce(new UnlockFailure('UNSUPPORTED_ENCRYPTION'));
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.upload(screen.getByLabelText(/choose a pdf/i), pdfFile());
+    await unlockWithPassword(user, 'wrong');
+    await screen.findByText(/didn't work/i);
+    expect(mocks.dispose).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: /^unlock$/i }));
+    await screen.findByText(/can't remove/i);
+    expect(mocks.dispose).toHaveBeenCalledTimes(1);
+  });
+
   it('passes the password exactly as typed', async () => {
     mocks.inspect.mockResolvedValue(LOCKED);
     mocks.unlock.mockResolvedValue(new Uint8Array([1]));
@@ -113,6 +170,7 @@ describe('PdfUnlock page', () => {
     [{ encrypted: false, needsPassword: false }, null, /isn't password-protected/i],
     [null, 'UNSUPPORTED_ENCRYPTION', /can't remove/i],
     [null, 'MALFORMED_PDF', /couldn't read this file/i],
+    [null, 'INTERNAL_ERROR', /something went wrong/i],
   ] as const)('explains inspect outcome %#', async (inspection, code, message) => {
     if (inspection) mocks.inspect.mockResolvedValue(inspection);
     else mocks.inspect.mockRejectedValue(new UnlockFailure(code!));

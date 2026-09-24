@@ -61,7 +61,8 @@ export function createPdfUnlocker(factory: WorkerFactory = spawnWorker): PdfUnlo
       // The worker failed to load or crashed; don't reuse it.
       spawned.terminate();
       worker = null;
-      failAll('MALFORMED_PDF');
+      console.error('pdf-unlock: worker failed', event.message);
+      failAll('INTERNAL_ERROR');
     };
     worker = spawned;
     return spawned;
@@ -78,18 +79,18 @@ export function createPdfUnlocker(factory: WorkerFactory = spawnWorker): PdfUnlo
   return {
     async inspect(file) {
       const response = await send((id) => ({ id, op: 'inspect', file }));
-      if (response.op !== 'inspect') throw new UnlockFailure('MALFORMED_PDF');
+      if (response.op !== 'inspect') throw new UnlockFailure('INTERNAL_ERROR');
       return response.inspection;
     },
     async unlock(file, password) {
       const response = await send((id) => ({ id, op: 'unlock', file, password }));
-      if (response.op !== 'unlock') throw new UnlockFailure('MALFORMED_PDF');
+      if (response.op !== 'unlock') throw new UnlockFailure('INTERNAL_ERROR');
       return new Uint8Array(response.pdf);
     },
     dispose() {
       worker?.terminate();
       worker = null;
-      failAll('MALFORMED_PDF');
+      failAll('INTERNAL_ERROR');
     },
   };
 }

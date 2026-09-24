@@ -49,7 +49,10 @@ jobs:
 
   wasm:
     name: WASM (Rust)
-    runs-on: ubuntu-latest
+    # Rust builds are only byte-reproducible on the same host platform (cargo
+    # hashes the host into crate metadata), and the committed WASM is built on
+    # an Apple Silicon Mac, so verify it on one.
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: tools/pdf-unlock
@@ -61,12 +64,12 @@ jobs:
         run: rustup toolchain install && rustup show active-toolchain
 
       - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: tools/pdf-unlock
 
       - name: Install wasm-pack
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@9983c65e42da123ff25d1f78505eb6de315aa172 # v2.87.20
         with:
           tool: wasm-pack@0.15.0
 
@@ -81,11 +84,23 @@ jobs:
       - name: Test
         run: cargo test
 
-      - name: Build WASM
-        run: wasm-pack build --release --target web --out-dir "$RUNNER_TEMP/pdf-unlock-pkg" --out-name pdf_unlock
+      # The committed build is what ships (Cloudflare and Docker don't build Rust),
+      # so rebuild it here and require the exact same bytes.
+      - name: Rebuild WASM and compare with the committed build
+        run: |
+          bash scripts/build.sh
+          if [ -n "$(git status --porcelain -- ../../app/src/wasm)" ]; then
+            git status --short -- ../../app/src/wasm
+            echo "::error::app/src/wasm/pdf-unlock differs from a clean build. Run 'npm run build:wasm' in app/ and commit the result."
+            exit 1
+          fi
 
-      - name: Committed WASM matches sources
-        run: node scripts/source-hash.mjs --check
+      - name: Upload the CI build for comparison
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-unlock-wasm-ci
+          path: app/src/wasm/pdf-unlock/
 
   build:
     name: Build

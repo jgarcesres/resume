@@ -1,5 +1,8 @@
+use std::io::Read;
+
 use flate2::read::ZlibDecoder;
-use lopdf::encryption::PasswordAlgorithm;
+use lopdf::encryption::{PasswordAlgorithm, decrypt_object};
+use lopdf::xref::XrefEntry;
 use lopdf::{Dictionary, Document, EncryptionState, LoadOptions, Object};
 
 use crate::UnlockError;
@@ -37,8 +40,7 @@ pub fn unlock(bytes: &[u8], password: &str) -> Result<Vec<u8>, UnlockError> {
     if !probe.is_encrypted() {
         // Owner-only PDFs were already decrypted with the empty user password.
         return if probe.was_encrypted() {
-            check_decrypted(&probe)?;
-            save(probe)
+            finish(probe)
         } else {
             Err(UnlockError::NotEncrypted)
         };
@@ -46,18 +48,50 @@ pub fn unlock(bytes: &[u8], password: &str) -> Result<Vec<u8>, UnlockError> {
     let revision = standard_revision(&probe)?;
     let key_password = key_password(&probe, revision, password)?;
 
-    let doc = Document::load_mem_with_options(bytes, LoadOptions::with_password(&key_password))
-        .map_err(|e| match e {
-            // We authenticated above, so a rejection here means lopdf would
-            // derive a different key than we did — refuse rather than guess.
-            lopdf::Error::InvalidPassword => UnlockError::UnsupportedEncryption,
-            _ => UnlockError::MalformedPdf,
+    let doc =
+        Document::load_mem_with_options(bytes, load_options(Some(&key_password))).map_err(|e| {
+            match e {
+                // We authenticated above, so a rejection here means lopdf would
+                // derive a different key than we did — refuse rather than guess.
+                lopdf::Error::InvalidPassword => UnlockError::UnsupportedEncryption,
+                _ => UnlockError::MalformedPdf,
+            }
         })?;
     if doc.is_encrypted() {
         return Err(UnlockError::UnsupportedEncryption);
     }
+    finish(doc)
+}
+
+/// Completes lopdf's decryption, refuses anything it may have garbled, and saves.
+fn finish(mut doc: Document) -> Result<Vec<u8>, UnlockError> {
+    decrypt_stream_dictionaries(&mut doc)?;
     check_decrypted(&doc)?;
     save(doc)
+}
+
+/// lopdf decrypts stream *content* but not strings in the stream's dictionary
+/// (an attachment's /Params /CheckSum and dates, for example), so finish the job.
+fn decrypt_stream_dictionaries(doc: &mut Document) -> Result<(), UnlockError> {
+    let Some(state) = doc.encryption_state.clone() else {
+        return Ok(());
+    };
+    for (&id, object) in doc.objects.iter_mut() {
+        let Object::Stream(stream) = object else {
+            continue;
+        };
+        // Cross-reference stream dictionaries are never encrypted.
+        if stream.dict.has_type(b"XRef") {
+            continue;
+        }
+        let mut dict = Object::Dictionary(std::mem::take(&mut stream.dict));
+        let result = decrypt_object(&state, id, &mut dict);
+        if let Object::Dictionary(decrypted) = dict {
+            stream.dict = decrypted;
+        }
+        result.map_err(unsupported)?;
+    }
+    Ok(())
 }
 
 /// Works out the password string to hand lopdf's reader so it derives the right
@@ -68,7 +102,15 @@ pub fn unlock(bytes: &[u8], password: &str) -> Result<Vec<u8>, UnlockError> {
 /// stream is garbage.
 fn key_password(doc: &Document, revision: i64, password: &str) -> Result<String, UnlockError> {
     let algorithm = PasswordAlgorithm::try_from(doc).map_err(unsupported)?;
-    let encoded = algorithm.sanitize_password(password).map_err(unsupported)?;
+    let encoded = algorithm.sanitize_password(password).map_err(|_| {
+        // AES-256 passwords go through SASLprep; one it rejects can't be the
+        // real password. Older revisions may have used another encoding.
+        if revision >= 5 {
+            UnlockError::WrongPassword
+        } else {
+            UnlockError::UnsupportedEncryption
+        }
+    })?;
 
     let key_bytes = if doc.authenticate_raw_user_password(&encoded).is_ok() {
         encoded
@@ -126,8 +168,22 @@ fn save(mut doc: Document) -> Result<Vec<u8>, UnlockError> {
     Ok(out)
 }
 
+/// Caps how far lopdf may inflate object and xref streams while loading, so a
+/// tiny hostile PDF can't exhaust the worker's memory. Real object and xref
+/// streams are a few MB even in huge files; peak use is about twice the cap.
+const MAX_DECOMPRESSED_BYTES: usize = 64 * 1024 * 1024;
+
+fn load_options(password: Option<&str>) -> LoadOptions {
+    LoadOptions {
+        password: password.map(str::to_owned),
+        max_decompressed_size: Some(MAX_DECOMPRESSED_BYTES),
+        ..LoadOptions::default()
+    }
+}
+
 fn load(bytes: &[u8]) -> Result<Document, UnlockError> {
-    Document::load_mem(bytes).map_err(|_| UnlockError::MalformedPdf)
+    Document::load_mem_with_options(bytes, load_options(None))
+        .map_err(|_| UnlockError::MalformedPdf)
 }
 
 /// Returns the security handler revision (/R) if this is the Standard password
@@ -186,13 +242,61 @@ fn check_crypt_filters(dict: &Dictionary) -> Result<(), UnlockError> {
 
 /// Post-decryption checks: refuse anything lopdf may have silently garbled.
 fn check_decrypted(doc: &Document) -> Result<(), UnlockError> {
+    if has_missing_objects(doc) {
+        return Err(UnlockError::MalformedPdf);
+    }
     if let Some(state) = &doc.encryption_state {
         check_state(state)?;
+        if state.revision() <= 4 && !legacy_key_is_user_key(doc, state) {
+            return Err(UnlockError::UnsupportedEncryption);
+        }
     }
     if has_crypt_streams(doc) || looks_garbled(doc) {
         return Err(UnlockError::UnsupportedEncryption);
     }
     Ok(())
+}
+
+/// lopdf silently skips objects it can't parse (a stale xref offset is enough)
+/// and would save the document without them.
+fn has_missing_objects(doc: &Document) -> bool {
+    let encrypt = doc
+        .encryption_state
+        .as_ref()
+        .and_then(EncryptionState::encrypt_object_id)
+        .map(|(num, _)| num);
+    let loaded = |num: u32| {
+        doc.objects
+            .range((num, 0)..=(num, u16::MAX))
+            .next()
+            .is_some()
+    };
+    let dropped = doc.reference_table.entries.iter().any(|(&num, entry)| {
+        matches!(
+            entry,
+            XrefEntry::Normal { .. } | XrefEntry::Compressed { .. }
+        ) && Some(num) != encrypt
+            && !loaded(num)
+    });
+    dropped || doc.catalog().is_err()
+}
+
+/// Revision <= 4: the key lopdf decrypted with must be the user-password key.
+fn legacy_key_is_user_key(doc: &Document, state: &EncryptionState) -> bool {
+    let first_id = doc
+        .trailer
+        .get(b"ID")
+        .and_then(Object::as_array)
+        .ok()
+        .and_then(|ids| ids.first())
+        .and_then(|id| id.as_str().ok())
+        .unwrap_or_default();
+    legacy::key_matches_user_entry(
+        state.file_encryption_key(),
+        state.user_value(),
+        first_id,
+        state.revision(),
+    )
 }
 
 /// `check_crypt_filters` for PDFs lopdf decrypted while loading (owner-only
@@ -243,8 +347,7 @@ fn looks_garbled(doc: &Document) -> bool {
             continue;
         }
         checked += 1;
-        let mut decoder = ZlibDecoder::new(stream.content.as_slice());
-        if std::io::copy(&mut decoder, &mut std::io::sink()).is_err() {
+        if !inflates(&stream.content) {
             failed += 1;
         }
         if checked == SAMPLE {
@@ -252,6 +355,14 @@ fn looks_garbled(doc: &Document) -> bool {
         }
     }
     failed > 0 && failed * 2 >= checked
+}
+
+/// Whether the start of a zlib stream inflates. Only a bounded prefix is read:
+/// wrong-key noise fails within bytes, and a bomb can't make this run long.
+fn inflates(data: &[u8]) -> bool {
+    const PREFIX: u64 = 1024 * 1024;
+    let mut decoder = ZlibDecoder::new(data).take(PREFIX);
+    std::io::copy(&mut decoder, &mut std::io::sink()).is_ok()
 }
 
 fn unsupported<E>(_: E) -> UnlockError {
@@ -340,6 +451,17 @@ mod tests {
         assert!(!has_crypt_streams(&doc_with_streams(vec![flate_stream(
             deflate(b"ok")
         )])));
+    }
+
+    #[test]
+    fn garble_check_only_inflates_a_bounded_prefix() {
+        // Healthy for the first megabytes, corrupt at the very end: a capped
+        // check never gets there (and a bomb can't make it inflate forever).
+        let mut data = deflate(&vec![0u8; 8 << 20]);
+        let len = data.len();
+        data[len - 4..].fill(0xff);
+        assert!(inflates(&data));
+        assert!(!inflates(&[0x5a, 0xc3, 0x11, 0x9e, 0x42, 0x07]));
     }
 
     #[test]

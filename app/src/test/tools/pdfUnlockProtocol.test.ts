@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { toUnlockCode } from '../../tools/pdfUnlock/protocol';
 
 describe('toUnlockCode', () => {
@@ -7,9 +7,13 @@ describe('toUnlockCode', () => {
     expect(toUnlockCode(new Error('UNSUPPORTED_ENCRYPTION'))).toBe('UNSUPPORTED_ENCRYPTION');
   });
 
-  it('maps anything unrecognised to MALFORMED_PDF', () => {
-    expect(toUnlockCode(new Error('RuntimeError: unreachable'))).toBe('MALFORMED_PDF');
-    expect(toUnlockCode('boom')).toBe('MALFORMED_PDF');
-    expect(toUnlockCode(undefined)).toBe('MALFORMED_PDF');
+  it('maps anything unrecognised to INTERNAL_ERROR and logs it for debugging', () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const trap = new Error('RuntimeError: unreachable');
+    expect(toUnlockCode(trap)).toBe('INTERNAL_ERROR');
+    expect(toUnlockCode('boom')).toBe('INTERNAL_ERROR');
+    expect(toUnlockCode(undefined)).toBe('INTERNAL_ERROR');
+    expect(log).toHaveBeenCalledWith(expect.any(String), trap);
+    log.mockRestore();
   });
 });

@@ -9,6 +9,7 @@ describe('unlockedFilename', () => {
     ['no-extension', 'no-extension-unlocked.pdf'],
     ['.pdf', 'document-unlocked.pdf'],
     ['   .pdf', 'document-unlocked.pdf'],
+    ['report.pdf ', 'report-unlocked.pdf'],
   ])('%s → %s', (input, expected) => {
     expect(unlockedFilename(input)).toBe(expected);
   });

@@ -32,8 +32,10 @@ describe('pdf-unlock wasm', () => {
     expect(startsWithPdfHeader(unlock(fixture('rc4-128'), 'owner'))).toBe(true);
   });
 
-  it('throws error codes as messages', () => {
+  it('throws every error code as a message across the WASM boundary', () => {
     expect(() => unlock(fixture('aes-256'), 'nope')).toThrow('WRONG_PASSWORD');
     expect(() => inspect(new TextEncoder().encode('not a pdf'))).toThrow('MALFORMED_PDF');
+    expect(() => unlock(fixture('plain'), 'user')).toThrow('NOT_ENCRYPTED');
+    expect(() => unlock(fixture('rc4-128-utf8'), 'contraseña')).toThrow('UNSUPPORTED_ENCRYPTION');
   });
 });

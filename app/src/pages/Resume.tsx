@@ -111,7 +111,46 @@ function Resume() {
         renderJobs(jobsOnSecondPage);
       }
 
+      const projects = structuredResume.personal_projects;
+      if (projects?.items.length > 0) {
+        const ensureSpace = (needed: number) => {
+          if (y + needed > pageHeight - bottomMargin) {
+            doc.addPage();
+            y = marginY;
+          }
+        };
+        y += 6;
+        ensureSpace(30);
+        doc.setFontSize(fontSizeTitle);
+        doc.setTextColor(37, 99, 235);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Personal Projects', marginX, y);
+        y += 6;
+        doc.setTextColor(100, 116, 139);
+        y = addMultilineText(doc, projects.summary, marginX, y, maxWidth, lineHeight, fontSizeSmall, 'italic');
+        doc.setTextColor(33, 37, 41);
+        projects.items.forEach((project) => {
+          const highlightLines = project.highlights.reduce(
+            (n, h) => n + doc.splitTextToSize(`• ${h}`, maxWidth - 16).length,
+            0,
+          );
+          ensureSpace(lineHeight * (2 + highlightLines));
+          y = addMultilineText(doc, project.name, marginX, y, maxWidth, lineHeight, fontSizeSection, 'bold');
+          doc.setTextColor(100, 116, 139);
+          y = addMultilineText(doc, project.stack, marginX, y - 1, maxWidth, 5, fontSizeSmall);
+          doc.setTextColor(33, 37, 41);
+          project.highlights.forEach((h) => {
+            y = addMultilineText(doc, `• ${h}`, marginX + 4, y, maxWidth - 16, lineHeight, fontSizeSmall);
+          });
+          y += 2;
+        });
+      }
+
       y += 6;
+      if (y + 30 > pageHeight - bottomMargin) {
+        doc.addPage();
+        y = marginY;
+      }
       doc.setFontSize(fontSizeTitle);
       doc.setTextColor(37, 99, 235);
       doc.setFont('helvetica', 'bold');
@@ -266,6 +305,38 @@ function Resume() {
             ))}
           </div>
         </PixelPanel>
+
+        {/* Personal Projects */}
+        {structuredResume.personal_projects?.items.length > 0 && (
+          <PixelPanel title={L.personalProjects}>
+            <div className="space-y-5 pt-2">
+              <p className="text-xs text-rpg-text-dim font-body italic">
+                {structuredResume.personal_projects.summary}
+              </p>
+              {structuredResume.personal_projects.items.map((project, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  className="relative pl-6 border-l-2 border-rpg-border"
+                >
+                  <div className="absolute -left-[5px] top-1 w-2 h-2 bg-neon-gold border border-neon-gold/50" />
+                  <h3 className="font-pixel text-[10px] text-rpg-text-bright uppercase">{project.name}</h3>
+                  <p className="font-pixel text-[8px] text-rpg-text-dim mt-1">{project.stack}</p>
+                  <ul className="mt-2 space-y-1">
+                    {project.highlights.map((h, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs text-rpg-text font-body">
+                        <span className="text-neon-green text-[8px] mt-1 shrink-0">◆</span>
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </PixelPanel>
+        )}
 
         {/* Education */}
         <PixelPanel title={L.trainingGrounds} glow="gold">

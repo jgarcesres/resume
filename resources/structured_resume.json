@@ -74,6 +74,60 @@
       ]
     }
   ],
+  "personal_projects": {
+    "summary": "Private repositories; I'm happy to walk through the code and design docs in an interview.",
+    "items": [
+      {
+        "name": "Homelab platform",
+        "stack": "K3s, Argo CD, Cilium, Tailscale, Proxmox, Ansible, OpenTofu, Prometheus, Thanos, Loki, VolSync",
+        "highlights": [
+          "Run a six-node K3s cluster (3-member etcd control plane, GPU and arm64 workers) across Florida and Medell\u00edn over Tailscale, fully GitOps with ~90 Argo CD Applications.",
+          "Built a PR gate that lints, schema-checks and renders both branches through a real Argo CD in an ephemeral cluster, posting the manifest diff to the PR.",
+          "Designed four independent backup layers to self-hosted S3 (VolSync/restic with an hourly restore canary, Postgres WAL archiving with 14-day PITR, etcd snapshots, off-host replica of the object store).",
+          "Self-hosted CI runners on Kubernetes (ARC) split by CPU architecture; Ansible runs keyless from CI over Tailscale SSH with secrets from 1Password."
+        ]
+      },
+      {
+        "name": "nms (No More Sheets)",
+        "stack": "Python, FastAPI, PostgreSQL, React, Swift/SwiftUI, MCP, Helm",
+        "highlights": [
+          "Household finance app we use daily at home: a virtual joint account over separate bank accounts, with buckets, statement imports and strict per-currency reporting.",
+          "Web, native iOS (widgets, Siri) and an MCP server; runs on the homelab as prod, staging and per-PR preview environments."
+        ]
+      },
+      {
+        "name": "juanflix (juanflix.xyz)",
+        "stack": "Python, FastAPI, SQLModel, React, MCP, OAuth, Prometheus",
+        "highlights": [
+          "Community portal for my Plex servers: access management, activity, and Sonarr/Radarr/Seerr integration behind an editable roles-and-permissions model.",
+          "Ships an MCP server with its own OAuth authorization server so Claude can manage titles under each user's permissions, with every action audited."
+        ]
+      },
+      {
+        "name": "Out-of-cluster alerting: herald, status page, courier",
+        "stack": "Cloudflare Workers, D1, Queues, KV, TypeScript, Swift/SwiftUI, APNs",
+        "highlights": [
+          "herald: push notification server and iOS app that replaced self-hosted ntfy, so alerts reach my phone even when the whole cluster is down.",
+          "status.juanflix.xyz watches the cluster from outside and pages through herald on a stale heartbeat; courier relays cluster email without any service holding the API key."
+        ]
+      },
+      {
+        "name": "wisp",
+        "stack": "Cloudflare Workers, Hono, D1, KV, WebAuthn, Rust",
+        "highlights": [
+          "My own passkey-primary OIDC identity provider and the SSO for every homelab service; clients and users are declared in YAML, and a Rust CLI lets an AI agent administer it without seeing secrets."
+        ]
+      },
+      {
+        "name": "AI tooling: foreman, homelab-mcp, mise",
+        "stack": "MCP, OAuth, Cloudflare Durable Objects, FastMCP",
+        "highlights": [
+          "foreman: a project board where Claude Code sessions claim tasks, ask questions and request review through one MCP server.",
+          "homelab-mcp exposes the media stack to AI clients; mise (in development) is a recipe and pantry app with its own MCP server."
+        ]
+      }
+    ]
+  },
   "education": {
     "institution": "EAFIT University",
     "degree": "Bachelor of Computer Science",

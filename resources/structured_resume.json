@@ -88,6 +88,14 @@
         ]
       },
       {
+        "name": "nms (No More Sheets)",
+        "stack": "Python, FastAPI, PostgreSQL, React, Swift/SwiftUI, MCP, Helm",
+        "highlights": [
+          "Household finance app we use daily at home: a virtual joint account over separate bank accounts, with buckets, statement imports and strict per-currency reporting.",
+          "Web, native iOS (widgets, Siri) and an MCP server; runs on the homelab as prod, staging and per-PR preview environments."
+        ]
+      },
+      {
         "name": "juanflix (juanflix.xyz)",
         "stack": "Python, FastAPI, SQLModel, React, MCP, OAuth, Prometheus",
         "highlights": [
@@ -96,19 +104,26 @@
         ]
       },
       {
-        "name": "herald",
-        "stack": "Cloudflare Workers, D1, Queues, TypeScript, Swift/SwiftUI, APNs",
+        "name": "Out-of-cluster alerting: herald, status page, courier",
+        "stack": "Cloudflare Workers, D1, Queues, KV, TypeScript, Swift/SwiftUI, APNs",
         "highlights": [
-          "Push notification server and iOS app that replaced self-hosted ntfy, so alerts reach my phone even when the whole cluster is down; paired with an external status page that pages on a stale heartbeat."
+          "herald: push notification server and iOS app that replaced self-hosted ntfy, so alerts reach my phone even when the whole cluster is down.",
+          "status.juanflix.xyz watches the cluster from outside and pages through herald on a stale heartbeat; courier relays cluster email without any service holding the API key."
         ]
       },
       {
-        "name": "wisp, status page, homelab-mcp",
-        "stack": "Cloudflare Workers, OIDC, Hono, D1, KV, FastMCP",
+        "name": "wisp",
+        "stack": "Cloudflare Workers, Hono, D1, KV, WebAuthn, Rust",
         "highlights": [
-          "wisp: my own OIDC identity provider on Cloudflare Workers, SSO for every homelab service.",
-          "status.juanflix.xyz: outside-in monitoring with an in-cluster heartbeat companion.",
-          "homelab-mcp: MCP server exposing the media-automation stack to AI clients."
+          "My own passkey-primary OIDC identity provider and the SSO for every homelab service; clients and users are declared in YAML, and a Rust CLI lets an AI agent administer it without seeing secrets."
+        ]
+      },
+      {
+        "name": "AI tooling: foreman, homelab-mcp, mise",
+        "stack": "MCP, OAuth, Cloudflare Durable Objects, FastMCP",
+        "highlights": [
+          "foreman: a project board where Claude Code sessions claim tasks, ask questions and request review through one MCP server.",
+          "homelab-mcp exposes the media stack to AI clients; mise (in development) is a recipe and pantry app with its own MCP server."
         ]
       }
     ]

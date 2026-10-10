@@ -30,6 +30,29 @@
         ]
       },
       {
+        "title": "nms (No More Sheets)",
+        "private": true,
+        "description": "A household finance app my household uses daily. It simulates a joint account on top of separate bank accounts, with bucket-based budgeting, and replaced our monthly Google Sheets.",
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "SQLModel",
+          "PostgreSQL",
+          "React",
+          "Swift",
+          "SwiftUI",
+          "MCP",
+          "Helm"
+        ],
+        "features": [
+          "Multi-tenant households with roles; strict per-currency reporting (COP and USD are never summed)",
+          "Imports from bank statements and card integrations into a review queue, with credit-card statement tracking and due-date reminders",
+          "Native iOS app with widgets and Siri via App Intents, shipped through TestFlight",
+          "MCP server with OAuth, so Claude can log, categorize and analyze transactions",
+          "Runs on the homelab as prod, staging and per-PR preview environments from its own Helm chart, with Release-Please versioning"
+        ]
+      },
+      {
         "title": "juanflix",
         "private": true,
         "liveUrl": "https://juanflix.xyz",
@@ -75,18 +98,42 @@
       {
         "title": "wisp",
         "private": true,
-        "description": "My own OpenID Connect identity provider, running as a single Cloudflare Worker. It is the SSO for the whole homelab and replaced a self-hosted IdP.",
+        "description": "My own OpenID Connect identity provider on Cloudflare Workers, and the SSO for the whole homelab. It replaced a self-hosted Pocket ID.",
         "technologies": [
           "Cloudflare Workers",
+          "TypeScript",
+          "Hono",
           "D1",
           "KV",
+          "Rust",
           "OIDC",
-          "OAuth 2.0",
-          "PKCE"
+          "WebAuthn"
         ],
         "features": [
+          "Passkey-primary sign-in (no passwords for regular users) with Turnstile bot protection",
           "Authorization Code + PKCE for Grafana, Argo CD, Immich, oauth2-proxy and my own apps",
-          "Separate dev and prod environments; client secrets delivered straight into 1Password"
+          "GitOps-native: users, groups and OIDC clients are declared in YAML and reconciled on deploy",
+          "Rust admin CLI shipped as prebuilt binaries; secrets go straight to Cloudflare Secrets Store or 1Password, so an AI agent can administer it without ever seeing a raw secret"
+        ]
+      },
+      {
+        "title": "foreman",
+        "private": true,
+        "liveUrl": "https://foreman.juanflix.xyz",
+        "description": "An AI-first project board where Claude Code sessions are the workers: they claim tasks, check in, ask blocking questions, request review and hand off through one MCP server, while I triage from a board and get paged on my phone.",
+        "technologies": [
+          "Cloudflare Workers",
+          "Durable Objects",
+          "D1",
+          "Hono",
+          "MCP",
+          "OAuth",
+          "React"
+        ],
+        "features": [
+          "Remote MCP server behind OAuth brokered by wisp",
+          "Claude Code plugin that adds a /foreman command and a run status line",
+          "Prod and dev deployed by Workers Builds, with migrations in the deploy step"
         ]
       },
       {
@@ -107,6 +154,21 @@
         ]
       },
       {
+        "title": "courier",
+        "private": true,
+        "description": "A Cloudflare Worker email relay for the cluster. Alertmanager, Argo CD and other services send mail through an in-cluster proxy that injects the credential, so no service holds the API key.",
+        "technologies": [
+          "Cloudflare Workers",
+          "Email Sending",
+          "KV",
+          "TypeScript"
+        ],
+        "features": [
+          "One Worker serving two domains, each with its own sender allowlist",
+          "Accepts native Alertmanager webhooks as well as plain messages, with KV-backed rate limiting"
+        ]
+      },
+      {
         "title": "homelab-mcp",
         "private": true,
         "description": "An MCP server that exposes the media-automation stack (Seerr, Radarr, Sonarr, qBittorrent, SABnzbd, Tautulli) as tools, so an AI client can operate it without shell access to the cluster.",
@@ -119,6 +181,23 @@
         "features": [
           "Stateless HTTP transport with auth, deployed in-cluster",
           "Multi-arch (amd64 + arm64) images published to GHCR on tagged releases"
+        ]
+      },
+      {
+        "title": "mise",
+        "private": true,
+        "description": "An AI-native recipe tracker with pantry, meal planning and smart shopping lists. Still in active development; the homelab deployment is mostly practice for GitOps, backups and migrations.",
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "SQLModel",
+          "React",
+          "FastMCP",
+          "Swift"
+        ],
+        "features": [
+          "Shopping lists generated from the meal plan minus what's in the pantry",
+          "Bring-your-own LLM key plus an MCP server for Claude"
         ]
       },
       {

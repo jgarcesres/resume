@@ -74,6 +74,45 @@
       ]
     }
   ],
+  "personal_projects": {
+    "summary": "Private repositories; I'm happy to walk through the code and design docs in an interview.",
+    "items": [
+      {
+        "name": "Homelab platform",
+        "stack": "K3s, Argo CD, Cilium, Tailscale, Proxmox, Ansible, OpenTofu, Prometheus, Thanos, Loki, VolSync",
+        "highlights": [
+          "Run a six-node K3s cluster (3-member etcd control plane, GPU and arm64 workers) across Florida and Medell\u00edn over Tailscale, fully GitOps with ~90 Argo CD Applications.",
+          "Built a PR gate that lints, schema-checks and renders both branches through a real Argo CD in an ephemeral cluster, posting the manifest diff to the PR.",
+          "Designed four independent backup layers to self-hosted S3 (VolSync/restic with an hourly restore canary, Postgres WAL archiving with 14-day PITR, etcd snapshots, off-host replica of the object store).",
+          "Self-hosted CI runners on Kubernetes (ARC) split by CPU architecture; Ansible runs keyless from CI over Tailscale SSH with secrets from 1Password."
+        ]
+      },
+      {
+        "name": "juanflix (juanflix.xyz)",
+        "stack": "Python, FastAPI, SQLModel, React, MCP, OAuth, Prometheus",
+        "highlights": [
+          "Community portal for my Plex servers: access management, activity, and Sonarr/Radarr/Seerr integration behind an editable roles-and-permissions model.",
+          "Ships an MCP server with its own OAuth authorization server so Claude can manage titles under each user's permissions, with every action audited."
+        ]
+      },
+      {
+        "name": "herald",
+        "stack": "Cloudflare Workers, D1, Queues, TypeScript, Swift/SwiftUI, APNs",
+        "highlights": [
+          "Push notification server and iOS app that replaced self-hosted ntfy, so alerts reach my phone even when the whole cluster is down; paired with an external status page that pages on a stale heartbeat."
+        ]
+      },
+      {
+        "name": "wisp, status page, homelab-mcp",
+        "stack": "Cloudflare Workers, OIDC, Hono, D1, KV, FastMCP",
+        "highlights": [
+          "wisp: my own OIDC identity provider on Cloudflare Workers, SSO for every homelab service.",
+          "status.juanflix.xyz: outside-in monitoring with an in-cluster heartbeat companion.",
+          "homelab-mcp: MCP server exposing the media-automation stack to AI clients."
+        ]
+      }
+    ]
+  },
   "education": {
     "institution": "EAFIT University",
     "degree": "Bachelor of Computer Science",

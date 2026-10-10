@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import projectsContent from '@resources/projects_content.json';
 import PixelPanel from '../components/ui/PixelPanel';
 import PixelBadge from '../components/ui/PixelBadge';
-import { CrossedSwordsIcon, CastleIcon } from '../components/ui/PixelIcons';
+import { CrossedSwordsIcon, CastleIcon, LockIcon } from '../components/ui/PixelIcons';
 import type { ComponentType, CSSProperties } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useLabels } from '../lib/labels';
@@ -15,6 +15,7 @@ interface Project {
   description: string;
   githubUrl?: string;
   liveUrl?: string;
+  private?: boolean;
   technologies: string[];
   features: string[];
 }
@@ -114,6 +115,14 @@ function Projects() {
                     <h2 className="font-pixel text-xs text-rpg-text-bright uppercase">
                       {project.title}
                     </h2>
+                    {project.private && (
+                      <span
+                        className="inline-flex items-center gap-1 font-pixel text-[7px] uppercase text-rpg-text-dim border border-rpg-border px-1.5 py-0.5"
+                        title="Source is private; happy to walk through it"
+                      >
+                        <LockIcon className="w-2.5 h-2.5" /> Private
+                      </span>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {project.githubUrl && (

@@ -1,98 +1,237 @@
 {
-  "projects":
-    {
-      "public": [
-        {
-          "title": "homelab",
-          "description": "A geo-distributed GitOps homelab spanning Florida and Medellin, Colombia. Runs a K3s cluster across two sites connected via Tailscale mesh VPN, with full ArgoCD App of Apps GitOps, Cilium CNI, Proxmox virtualization, and a complete observability stack.",
-          "githubUrl": "https://github.com/jgarcesres/homelab",
-          "technologies": ["K3s", "ArgoCD", "Tailscale", "Cilium", "Proxmox", "Helm", "OpenTofu", "Grafana", "Prometheus", "Loki"],
-          "features": [
-            "Multi-site Kubernetes cluster across two countries with Tailscale site-to-site VPN",
-            "GitOps-driven with ArgoCD App of Apps pattern and auto-discovery",
-            "Cilium eBPF CNI with native routing and kube-proxy replacement",
-            "Proxmox VMs managed via OpenTofu infrastructure-as-code",
-            "Full observability stack: Prometheus, Grafana, Loki, AlertManager",
-            "1Password Operator for Kubernetes-native secrets management",
-            "Tailscale VIP Services via ProxyGroups and Gateway API HTTPRoutes for external ingress",
-            "~140TB raw storage across TrueNAS (ZFS), Synology NAS, NFS CSI, and Democratic CSI (iSCSI)"
-          ]
-        },
-        {
-
-          "title": "resume",
-          "description": "this resume is defined in github and deployed through github actions to a static site hosted on my homelab. The resume is built using React and Tailwind CSS, and the content is managed through JSON files.",
-          "githubUrl": "https://github.com/jgarcesres/resume",
-          "technologies": ["GitHub Actions", "Docker", "traefik2", "React", "Tailwind CSS", "JSON"],
-          "features": [
-            "Static site deployment",
-            "Responsive design",
-            "Content management through JSON",
-            "Leverages CI/CD (github actions) for automated lint, build, test and deploy",
-            "Dockerized for easy deployment"
-          ]
-        },
-        {
-          "title": "git2jamf",
-          "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
-          "githubUrl": "https://github.com/jgarcesres/git2jamf",
-          "technologies": ["Python", "Docker", "CI/CD", "Automation"],
-          "features": [
-            "Automated synchronization between Git repositories and Jamf Pro",
-            "Git triggers for real-time updates",
-            "Comprehensive logging and error handling",
-            "Docker containerization for easy deployment"
-          ]
-        }
-      ]
-    },
-    "work": [
+  "projects": {
+    "public": [
       {
-        "title": "Metrics and Monitoring",
-        "description": "Implemented Grafana's mimir along with grafana itself on AWS EKS for metrics storage and monitoring, enhancing observability and creating a centralized dashboard for all cluster and services. I secured the remote write endpoints using auth2proxy allowing for m2m authentication with the prometheus clients and getting us off mainting whitelists and security groups",	
-        "technologies": ["AWS", "EKS", "kubernetes", "Grafana", "Monitoring"],
+        "title": "homelab",
+        "private": true,
+        "description": "A geo-distributed, GitOps-managed K3s cluster spanning Florida and Medellín, Colombia over Tailscale. Every change goes through a pull request and Argo CD; nothing is applied by hand.",
+        "technologies": [
+          "K3s",
+          "Argo CD",
+          "Cilium",
+          "Tailscale",
+          "Proxmox",
+          "Ansible",
+          "OpenTofu",
+          "Prometheus",
+          "Thanos",
+          "Loki",
+          "VolSync",
+          "GitHub Actions"
+        ],
         "features": [
-          "Centralized metrics dashboard",
-          "Enhanced observability",
-          "Real-time monitoring",
-          "Scalable architecture",
-          "oauth2proxy Machine to machine authentication"
+          "Six-node cluster (3-member etcd control plane plus amd64 GPU and arm64 workers) across two countries, joined over Tailscale with Cilium native routing and no kube-proxy",
+          "~90 Argo CD Applications via App of Apps with directory auto-discovery and ApplicationSets",
+          "PR gate on every manifest change: yamllint, kubeconform, and a full Argo CD render of both branches in an ephemeral cluster, posted back as a diff comment",
+          "Four independent backup layers to self-hosted Garage S3: VolSync/restic PVC snapshots with an hourly end-to-end restore canary, CNPG continuous WAL archiving (14-day PITR), etcd snapshots every 6h, and an off-host copy of Garage itself",
+          "Observability on kube-prometheus-stack with Thanos and Loki shipping long-term data to S3, plus OpenTelemetry",
+          "Self-hosted GitHub Actions runners (ARC) split by CPU architecture; Ansible runs keyless from CI over Tailscale SSH with 1Password-sourced secrets",
+          "Secrets from 1Password Operator, Tailscale ACLs as code, UPS-driven graceful shutdown via NUT, and written postmortems for real outages"
         ]
       },
       {
-        "title": "Custom Metrics Exporter",
-        "description": "Wrote a custom metric's exporter for Scuba's services to expose metrics that were not natively generated  by the application. This allows for better monitoring and alerting on critical application metrics.",
-        "technologies": ["python", "fastapi", "Grafana", "Prometheus", "Monitoring"],
+        "title": "juanflix",
+        "private": true,
+        "liveUrl": "https://juanflix.xyz",
+        "description": "The community portal for my Plex servers. It manages who has access (invites, library shares, removals), shows activity, and lets maintainers add and search titles across Sonarr and Radarr, with an editable roles-and-permissions model behind every action.",
+        "technologies": [
+          "Python",
+          "FastAPI",
+          "SQLModel",
+          "Alembic",
+          "React",
+          "MCP",
+          "OAuth",
+          "Prometheus"
+        ],
         "features": [
-          "Custom metrics collection",
-          "Prometheus compatible exporter",
-          "Lightweight fastapi endpoint that generates metrics on scrape",
-          "Alerting on critical application metrics"
+          "Two sign-in paths: OIDC for admins and Plex accounts for friends, with audited access changes",
+          "Built-in MCP server with its own OAuth authorization server, so Claude can add titles and file Seerr requests under the user's own permissions",
+          "Cleanup report from Tautulli and Seerr that flags titles nobody watches, without ever deleting media",
+          "Structured JSON logs with secret redaction, plus Prometheus metrics for scheduled jobs and upstream API health"
         ]
       },
       {
-        "title":"OSS Inventory - SnipeIT",
-        "description": "Implemented the first inventory system for Sonos's IT assets, including hardware and software, using SnipeIT. This system allows for better tracking and management of IT resources, ensuring compliance and optimizing asset utilization. Offered it as a service to other teams in the org.",
-        "technologies": ["terraform", "ECS", "jamf", "intune", "sccm", "SnipeIT", "Inventory Management", "Asset Tracking"],
+        "title": "herald",
+        "private": true,
+        "description": "A Cloudflare-native push notification server and companion iOS app that replaced a self-hosted ntfy, so alerts still reach my phone when the cluster itself is down.",
+        "technologies": [
+          "Cloudflare Workers",
+          "D1",
+          "Queues",
+          "TypeScript",
+          "Hono",
+          "Swift",
+          "SwiftUI",
+          "APNs"
+        ],
         "features": [
-          "Centralized asset management",
-          "Integrated with existing systems (jamf, intune, sccm) to automatically add and track assets",
-          "Automated inventory updates"
+          "Accepts Alertmanager and apprise publishes and fans out through Cloudflare Queues to APNs, with a dead-letter queue and per-device delivery log",
+          "Pairs with the status page so a stale cluster heartbeat pages with zero homelab components in the path",
+          "iOS app with an inbox that keeps missed or dismissed pushes, built and shipped to TestFlight from GitHub Actions",
+          "Preact admin console and OIDC sign-in through wisp"
         ]
       },
       {
-        "title": "Incident Management for IT",
-        "description": "Created a workflow through the use of aws lambda, python and the API's of the various services we used (pagerduty, jira, confluence, slack) to create an Incident Mangement system for IT that handled the entire lifecycle of an incident from creation to resolution. This system allowed for better tracking and management of incidents, improving response times and reducing downtime.", 
-        "technologies": ["python", "aws", "lambda", "pagerduty", "jira", "confluence", "slack"],
+        "title": "wisp",
+        "private": true,
+        "description": "My own OpenID Connect identity provider, running as a single Cloudflare Worker. It is the SSO for the whole homelab and replaced a self-hosted IdP.",
+        "technologies": [
+          "Cloudflare Workers",
+          "D1",
+          "KV",
+          "OIDC",
+          "OAuth 2.0",
+          "PKCE"
+        ],
         "features": [
-          "Automated incident lifecycle management",
-          "Integration with existing tools (pagerduty, jira, confluence, slack)",
-          "Improved response times and reduced downtime"
+          "Authorization Code + PKCE for Grafana, Argo CD, Immich, oauth2-proxy and my own apps",
+          "Separate dev and prod environments; client secrets delivered straight into 1Password"
+        ]
+      },
+      {
+        "title": "status page",
+        "private": true,
+        "liveUrl": "https://status.juanflix.xyz",
+        "description": "A public status page that watches the homelab from outside it, on Cloudflare Workers, with an in-cluster companion that sends heartbeats and relays Alertmanager alerts.",
+        "technologies": [
+          "Cloudflare Workers",
+          "Hono",
+          "D1",
+          "KV",
+          "TypeScript"
+        ],
+        "features": [
+          "Detects a dead cluster from the outside and pages through herald",
+          "90-day uptime rollups computed incrementally to keep Cloudflare usage low"
+        ]
+      },
+      {
+        "title": "homelab-mcp",
+        "private": true,
+        "description": "An MCP server that exposes the media-automation stack (Seerr, Radarr, Sonarr, qBittorrent, SABnzbd, Tautulli) as tools, so an AI client can operate it without shell access to the cluster.",
+        "technologies": [
+          "Python",
+          "FastMCP",
+          "MCP",
+          "Docker"
+        ],
+        "features": [
+          "Stateless HTTP transport with auth, deployed in-cluster",
+          "Multi-arch (amd64 + arm64) images published to GHCR on tagged releases"
+        ]
+      },
+      {
+        "title": "resume",
+        "description": "this resume is defined in github and deployed through github actions to a static site hosted on my homelab. The resume is built using React and Tailwind CSS, and the content is managed through JSON files.",
+        "githubUrl": "https://github.com/jgarcesres/resume",
+        "technologies": [
+          "GitHub Actions",
+          "Docker",
+          "traefik2",
+          "React",
+          "Tailwind CSS",
+          "JSON"
+        ],
+        "features": [
+          "Static site deployment",
+          "Responsive design",
+          "Content management through JSON",
+          "Leverages CI/CD (github actions) for automated lint, build, test and deploy",
+          "Dockerized for easy deployment"
+        ]
+      },
+      {
+        "title": "git2jamf",
+        "description": "A github action that synchronizes Git repositories with Jamf Pro, streamlining the deployment of scripts and configurations and allowing for version control missing in JAMF.",
+        "githubUrl": "https://github.com/jgarcesres/git2jamf",
+        "technologies": [
+          "Python",
+          "Docker",
+          "CI/CD",
+          "Automation"
+        ],
+        "features": [
+          "Automated synchronization between Git repositories and Jamf Pro",
+          "Git triggers for real-time updates",
+          "Comprehensive logging and error handling",
+          "Docker containerization for easy deployment"
         ]
       }
-
-
     ]
-    
+  },
+  "work": [
+    {
+      "title": "Metrics and Monitoring",
+      "description": "Implemented Grafana's mimir along with grafana itself on AWS EKS for metrics storage and monitoring, enhancing observability and creating a centralized dashboard for all cluster and services. I secured the remote write endpoints using auth2proxy allowing for m2m authentication with the prometheus clients and getting us off mainting whitelists and security groups",
+      "technologies": [
+        "AWS",
+        "EKS",
+        "kubernetes",
+        "Grafana",
+        "Monitoring"
+      ],
+      "features": [
+        "Centralized metrics dashboard",
+        "Enhanced observability",
+        "Real-time monitoring",
+        "Scalable architecture",
+        "oauth2proxy Machine to machine authentication"
+      ]
+    },
+    {
+      "title": "Custom Metrics Exporter",
+      "description": "Wrote a custom metric's exporter for Scuba's services to expose metrics that were not natively generated  by the application. This allows for better monitoring and alerting on critical application metrics.",
+      "technologies": [
+        "python",
+        "fastapi",
+        "Grafana",
+        "Prometheus",
+        "Monitoring"
+      ],
+      "features": [
+        "Custom metrics collection",
+        "Prometheus compatible exporter",
+        "Lightweight fastapi endpoint that generates metrics on scrape",
+        "Alerting on critical application metrics"
+      ]
+    },
+    {
+      "title": "OSS Inventory - SnipeIT",
+      "description": "Implemented the first inventory system for Sonos's IT assets, including hardware and software, using SnipeIT. This system allows for better tracking and management of IT resources, ensuring compliance and optimizing asset utilization. Offered it as a service to other teams in the org.",
+      "technologies": [
+        "terraform",
+        "ECS",
+        "jamf",
+        "intune",
+        "sccm",
+        "SnipeIT",
+        "Inventory Management",
+        "Asset Tracking"
+      ],
+      "features": [
+        "Centralized asset management",
+        "Integrated with existing systems (jamf, intune, sccm) to automatically add and track assets",
+        "Automated inventory updates"
+      ]
+    },
+    {
+      "title": "Incident Management for IT",
+      "description": "Created a workflow through the use of aws lambda, python and the API's of the various services we used (pagerduty, jira, confluence, slack) to create an Incident Mangement system for IT that handled the entire lifecycle of an incident from creation to resolution. This system allowed for better tracking and management of incidents, improving response times and reducing downtime.",
+      "technologies": [
+        "python",
+        "aws",
+        "lambda",
+        "pagerduty",
+        "jira",
+        "confluence",
+        "slack"
+      ],
+      "features": [
+        "Automated incident lifecycle management",
+        "Integration with existing tools (pagerduty, jira, confluence, slack)",
+        "Improved response times and reduced downtime"
+      ]
+    }
+  ]
 }
-

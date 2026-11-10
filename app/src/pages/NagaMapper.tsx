@@ -25,6 +25,7 @@ import {
   type PlateSize,
 } from '../tools/naga/naga';
 import { comboFromEvent, comboLabel, isModifierUsage } from '../tools/naga/keys';
+import { inputFromKey, inputFromMouse, inputFromWheel, inputId, inputLabel, sends, type Input } from '../tools/naga/tester';
 import { previouslyAllowedNaga, requestNaga, webHidSupported } from '../tools/naga/webhid';
 
 const SOURCE_URL = 'https://github.com/jgarcesres/resume/tree/main/app/src/tools/naga';
@@ -44,6 +45,8 @@ const RPG_UI = {
   rowOn: 'w-full flex items-center justify-between gap-3 px-3 py-2 border-2 border-neon-gold text-left bg-neon-gold/10',
   key: 'border-2 border-rpg-border-light bg-rpg-panel text-rpg-text-bright hover:border-neon-cyan',
   keyOn: 'border-2 border-neon-gold bg-neon-gold/20 text-neon-gold',
+  lit: 'border-2 border-neon-green bg-neon-green/30 text-rpg-text-bright',
+  pad: 'border-2 border-dashed border-rpg-border-light focus:border-neon-green focus:outline-none',
   keyNum: 'font-pixel text-[7px] text-rpg-text-dim',
   keyLabel: 'font-pixel text-[8px]',
   body: '#141c33',
@@ -68,6 +71,8 @@ const PRO_UI: typeof RPG_UI = {
   rowOn: 'w-full flex items-center justify-between gap-3 px-3 py-2 border border-pro-accent text-left bg-pro-accent-tint',
   key: 'border border-pro-rule-strong bg-pro-surface-2 text-pro-ink hover:border-pro-accent',
   keyOn: 'border border-pro-accent bg-pro-accent-tint text-pro-ink ring-1 ring-pro-accent',
+  lit: 'border border-pro-led-green bg-pro-led-green/25 text-pro-ink ring-2 ring-pro-led-green',
+  pad: 'border border-dashed border-pro-rule-strong focus:border-pro-led-green focus:outline-none',
   keyNum: 'font-mono text-[10px] text-pro-muted',
   keyLabel: 'text-[13px] font-medium',
   body: '#171B17',
@@ -90,7 +95,8 @@ interface KeyBox {
 }
 const LAYOUT: Record<PlateSize, KeyBox[]> = {
   12: Array.from({ length: 12 }, (_, i) => ({ x: [182, 248, 314, 380][Math.floor(i / 3)], y: [246, 182, 118][i % 3], w: 58, h: 56 })),
-  6: Array.from({ length: 6 }, (_, i) => ({ x: [196, 270, 344][i % 3], y: i < 3 ? 122 : 180, w: 66, h: 50 })),
+  // Top row 1 2 3 from the front; the bottom row runs back to front, 4 under 3: 1 2 3 / 6 5 4.
+  6: Array.from({ length: 6 }, (_, i) => ({ x: [196, 270, 344][i < 3 ? i : 5 - i], y: i < 3 ? 122 : 180, w: 66, h: 50 })),
   2: [
     { x: 186, y: 126, w: 122, h: 48 },
     { x: 314, y: 126, w: 122, h: 48 },
@@ -361,6 +367,67 @@ function NagaMapper() {
     }
   }
 
+  // Button tester: what arrives from the mouse, and which buttons are mapped to send it.
+  const [held, setHeld] = useState<Map<string, { input: Input; hits: { button: number; layer: number }[] }>>(new Map());
+  const [testLog, setTestLog] = useState<{ n: number; text: string }[]>([]);
+  const logCount = useRef(0);
+  const pad = useRef<HTMLDivElement | null>(null);
+
+  const hitsFor = (input: Input) => {
+    if (!state) return [];
+    const hits: { button: number; layer: number }[] = [];
+    for (const lay of [0, 1])
+      for (const b of allButtons()) {
+        const m = stored.get(mkey(state.active, lay, b));
+        if (m && sends(m, input)) hits.push({ button: b, layer: lay });
+      }
+    return hits;
+  };
+
+  const hitLabel = (h: { button: number; layer: number }) => {
+    const n = buttonName(h.button);
+    return `${n.where === 'Top' ? '' : `${n.where} `}${n.name}${h.layer ? ' (Hypershift)' : ''}`;
+  };
+
+  function press(input: Input | null, momentary = false) {
+    if (!input) return;
+    const id = inputId(input);
+    if (!momentary && held.has(id)) return; // key repeat
+    const hits = hitsFor(input);
+    setHeld((old) => new Map(old).set(id, { input, hits }));
+    // Name the normal-layer buttons; Hypershift ones only when nothing else sends it.
+    const named = hits.some((h) => h.layer === 0) ? hits.filter((h) => h.layer === 0) : hits;
+    const text = `${inputLabel(input)}: ${named.length ? named.map(hitLabel).join(', ') : 'no button in this profile sends this'}`;
+    setTestLog((old) => [{ n: ++logCount.current, text }, ...old].slice(0, 8));
+    if (momentary) setTimeout(() => release(input), 250);
+  }
+
+  function release(input: Input | null) {
+    if (!input) return;
+    setHeld((old) => {
+      const next = new Map(old);
+      next.delete(inputId(input));
+      return next;
+    });
+  }
+
+  // React's wheel handler is passive, so it can't stop the page scrolling; listen natively.
+  const wheelRef = useRef(press);
+  wheelRef.current = press;
+  const setPad = useCallback((el: HTMLDivElement | null) => {
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      wheelRef.current(inputFromWheel(e.deltaX, e.deltaY), true);
+    };
+    pad.current?.removeEventListener('wheel', onWheel as EventListener);
+    pad.current = el;
+    el?.addEventListener('wheel', onWheel, { passive: false });
+  }, []);
+
+  const lit = new Set<number>();
+  if (state && slot === state.active) for (const { hits } of held.values()) for (const h of hits) if (h.layer === layerByte) lit.add(h.button);
+  const keyClass = (b: number) => (lit.has(b) ? ui.lit : selected === b ? ui.keyOn : ui.key);
+
   const sel = useMemo(() => buttonName(selected), [selected]);
   const selMapping = current(selected);
   const selStored = stored.get(mkey(slot, layerByte, selected));
@@ -535,7 +602,7 @@ function NagaMapper() {
                         aria-pressed={selected === b}
                         title={label}
                         onClick={() => setSelected(b)}
-                        className={`absolute flex flex-col items-center justify-center overflow-hidden rounded-lg px-1 ${selected === b ? ui.keyOn : ui.key}`}
+                        className={`absolute flex flex-col items-center justify-center overflow-hidden rounded-lg px-1 ${keyClass(b)}`}
                         style={{ left: `${(box.x / 600) * 100}%`, top: `${(box.y / 350) * 100}%`, width: `${(box.w / 600) * 100}%`, height: `${(box.h / 350) * 100}%` }}
                       >
                         <span className={ui.keyNum} style={{ fontSize: 'clamp(7px, 1.7cqw, 10px)' }}>
@@ -558,12 +625,69 @@ function NagaMapper() {
                 </p>
               </PixelPanel>
 
+              <PixelPanel title="Button test">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <div
+                      ref={setPad}
+                      tabIndex={0}
+                      role="application"
+                      aria-label="Button test pad"
+                      className={`flex min-h-[9rem] flex-col items-center justify-center gap-2 p-4 text-center ${ui.pad}`}
+                      onKeyDown={(e) => {
+                        e.preventDefault();
+                        press(inputFromKey(e.nativeEvent));
+                      }}
+                      onKeyUp={(e) => {
+                        e.preventDefault();
+                        release(inputFromKey(e.nativeEvent));
+                      }}
+                      onMouseDown={(e) => {
+                        if (e.button !== 0) e.preventDefault();
+                        e.currentTarget.focus();
+                        press(inputFromMouse(e.button));
+                      }}
+                      onMouseUp={(e) => {
+                        e.preventDefault();
+                        release(inputFromMouse(e.button));
+                      }}
+                      onAuxClick={(e) => e.preventDefault()}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onBlur={() => setHeld(new Map())}
+                    >
+                      {held.size ? (
+                        <p className={ui.strong}>{[...held.values()].map((h) => inputLabel(h.input)).join(' + ')}</p>
+                      ) : (
+                        <p className={ui.text}>Click here, then press buttons on the mouse.</p>
+                      )}
+                      <p className={ui.dim}>Keys, clicks, side buttons and the wheel all show up. Mapped buttons light up on the plate.</p>
+                    </div>
+                    {state.mode === 'driver' && <p className={`${ui.dim} mt-2`}>The mouse is in driver mode, so it isn't using these mappings yet.</p>}
+                    {slot !== state.active && <p className={`${ui.dim} mt-2`}>Buttons light up when you view the active profile.</p>}
+                  </div>
+                  <div>
+                    <p className={ui.strong}>Received</p>
+                    {testLog.length ? (
+                      <ol className="mt-2 space-y-1" aria-label="Received inputs">
+                        {testLog.map((l) => (
+                          <li key={l.n} className={ui.dim}>
+                            {l.text}
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className={`${ui.dim} mt-2`}>Nothing yet.</p>
+                    )}
+                  </div>
+                </div>
+              </PixelPanel>
+
               <PixelPanel title="Top, wheel and DPI">
                 <div className="grid gap-x-4 sm:grid-cols-2">
                   {TOP_BUTTONS.map((t) => {
                     const m = current(t.id);
                     return (
-                      <button key={t.id} type="button" className={selected === t.id ? ui.rowOn : ui.row} onClick={() => setSelected(t.id)}>
+                      <button key={t.id} type="button" className={lit.has(t.id) ? `${ui.row} ${ui.lit}` : selected === t.id ? ui.rowOn : ui.row} onClick={() => setSelected(t.id)}>
                         <span className={ui.text}>{t.name}</span>
                         <span className={`flex items-center gap-2 ${ui.dim}`}>
                           {m ? describeMapping(m) : '…'}

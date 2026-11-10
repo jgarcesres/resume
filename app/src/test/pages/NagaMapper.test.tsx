@@ -129,4 +129,20 @@ describe('Naga Pro mapper page', () => {
     expect(await screen.findByText(/slot 05 · active/, {}, { timeout: 8000 })).toBeInTheDocument();
     expect(screen.queryByText(/slot 01 · active/)).toBeNull();
   }, 20000);
+
+  it('shows which button sent a key in the button test', async () => {
+    const mouse = simulatedMouse();
+    Object.defineProperty(navigator, 'hid', { value: mouse.hid, configurable: true });
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /connect the mouse/i }));
+    await screen.findByRole('button', { name: 'Button 3: 3' }, { timeout: 8000 });
+    await user.click(screen.getByRole('application', { name: /button test pad/i }));
+    await user.keyboard('{3>}');
+    expect(screen.getByRole('list', { name: /received inputs/i })).toHaveTextContent(/3: .*Button 3/);
+    expect(screen.getByRole('button', { name: 'Button 3: 3' }).className).toMatch(/led-green/);
+    await user.keyboard('{/3}');
+    expect(screen.getByRole('button', { name: 'Button 3: 3' }).className).not.toMatch(/led-green/);
+  }, 20000);
 });

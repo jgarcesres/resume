@@ -14,6 +14,7 @@ import {
   parseProfileName,
 } from '../../tools/naga/naga';
 import { comboFromEvent, comboLabel, MODS } from '../../tools/naga/keys';
+import { inputFromMouse, inputFromWheel, inputLabel, sends } from '../../tools/naga/tester';
 
 // Mouse-only frames extracted from Synapse USB captures (jg-homelab/razer-gui tests/fixtures).
 const FIXTURES = join(__dirname, 'fixtures', 'naga');
@@ -207,3 +208,21 @@ describe('NagaPro over a feature-report transport', () => {
   });
 });
 
+
+describe('button tester', () => {
+  it('turns browser events into what the mouse sent', () => {
+    expect(inputFromMouse(3)).toEqual({ kind: 'mouse', button: 0x04 });
+    expect(inputFromMouse(7)).toBeNull();
+    expect(inputFromWheel(0, -120)).toEqual({ kind: 'mouse', button: 0x09 });
+    expect(inputFromWheel(40, 0)).toEqual({ kind: 'hscroll', dir: 2 });
+    expect(inputFromWheel(0, 0)).toBeNull();
+  });
+
+  it('matches inputs to mappings', () => {
+    expect(sends(keyMapping(KEY.a, MODS.rctrl), { kind: 'key', usage: KEY.a, mods: MODS.ctrl })).toBe(true);
+    expect(sends(keyMapping(KEY.a), { kind: 'key', usage: KEY.a, mods: MODS.ctrl })).toBe(false);
+    expect(sends(mappingFromArgs([0, 0x40, 0, 0x02, 0x01, 0x00, 0x1e, 0x00]), { kind: 'key', usage: 0x1e, mods: 0 })).toBe(true);
+    expect(sends({ action: 0x06, flag: 1, data: [1, 0, 0] }, { kind: 'hscroll', dir: 1 })).toBe(true);
+    expect(inputLabel({ kind: 'mouse', button: 0x05 })).toBe('Forward');
+  });
+});

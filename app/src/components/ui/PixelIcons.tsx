@@ -469,6 +469,27 @@ export function LockIcon({ className, style }: PixelIconProps) {
   );
 }
 
+/** Pixel art mouse with a side button grid, for the Naga mapper */
+export function MouseIcon({ className, style }: PixelIconProps) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} style={{ ...style, ...px }} aria-hidden="true">
+      {/* Body */}
+      <rect x="4" y="1" width="8" height="2" fill="currentColor" opacity="0.8" />
+      <rect x="3" y="3" width="10" height="10" fill="currentColor" />
+      <rect x="4" y="13" width="8" height="2" fill="currentColor" opacity="0.8" />
+      {/* Wheel */}
+      <rect x="7" y="3" width="2" height="3" fill="#0a0e1a" />
+      {/* Side buttons */}
+      <rect x="4" y="8" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+      <rect x="7" y="8" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+      <rect x="10" y="8" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+      <rect x="4" y="10" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+      <rect x="7" y="10" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+      <rect x="10" y="10" width="2" height="1" fill="#0a0e1a" opacity="0.7" />
+    </svg>
+  );
+}
+
 // ─── RESUME PAGE ICONS ───────────────────────────────────────────────────────
 
 /** Hourglass for loading/saving state */

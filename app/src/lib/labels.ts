@@ -32,6 +32,8 @@ const rpgLabels = {
   toolsSub: 'Handy spells that run entirely in your browser.',
   pdfUnlockTitle: 'Unseal a Scroll',
   pdfUnlockSub: 'Remove the password from a PDF you already know the password to.',
+  nagaTitle: 'Rebind the Rune Stones',
+  nagaSub: 'Remap the side buttons of a Razer Naga Pro from Linux or macOS. No Synapse needed.',
 } as const;
 
 const proLabels: typeof rpgLabels = {
@@ -66,6 +68,8 @@ const proLabels: typeof rpgLabels = {
   toolsSub: 'Small utilities that run entirely in your browser.',
   pdfUnlockTitle: 'PDF Unlock',
   pdfUnlockSub: 'Remove the password from a PDF you already know the password to.',
+  nagaTitle: 'Naga Pro Mapper',
+  nagaSub: 'Remap the side buttons of a Razer Naga Pro from Linux or macOS. No Synapse needed.',
 } as const;
 
 export function useLabels(): typeof rpgLabels {

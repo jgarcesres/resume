@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import type { ComponentType } from 'react';
 import PageTransition from '../components/PageTransition';
 import PixelPanel from '../components/ui/PixelPanel';
-import { LockIcon, type PixelIconProps } from '../components/ui/PixelIcons';
+import { LockIcon, MouseIcon, type PixelIconProps } from '../components/ui/PixelIcons';
 import { useTheme } from '../context/ThemeContext';
 import { useLabels } from '../lib/labels';
 
@@ -24,6 +24,13 @@ const tools: Tool[] = [
     descriptionKey: 'pdfUnlockSub',
     stack: 'Rust · WebAssembly · runs locally',
     Icon: LockIcon,
+  },
+  {
+    to: '/tools/naga',
+    titleKey: 'nagaTitle',
+    descriptionKey: 'nagaSub',
+    stack: 'TypeScript · WebHID · Chrome or Edge',
+    Icon: MouseIcon,
   },
 ];
 

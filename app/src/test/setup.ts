@@ -27,3 +27,10 @@ if (typeof window !== 'undefined') {
     }),
   });
 }
+
+// jsdom has no canvas backend; return "no context" quietly instead of logging
+// a not-implemented error for every component that probes for one.
+// (Some suites run in the node environment, where there is no DOM at all.)
+if (typeof HTMLCanvasElement !== 'undefined') {
+  HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext;
+}

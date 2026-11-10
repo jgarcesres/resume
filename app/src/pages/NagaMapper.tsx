@@ -110,6 +110,9 @@ type Conn =
   | { kind: 'ready' }
   | { kind: 'error'; message: string };
 
+/** How often the page re-reads the active profile, plate and mode. */
+const POLL_MS = 1500;
+
 interface MouseState {
   plate: PlateSize | null;
   mode: Mode;
@@ -221,6 +224,42 @@ function NagaMapper() {
       hid.removeEventListener('disconnect', onDisconnect);
     };
   }, [attach]);
+
+  // Follow the mouse: its profile button, a plate swap or Synapse can change state behind the page's back.
+  const live = useRef({ slot, state, busy: false });
+  live.current = { slot, state, busy: conn.kind === 'busy' };
+  const watching = state !== null && conn.kind === 'ready';
+  useEffect(() => {
+    if (!watching) return;
+    let stopped = false;
+    const tick = async () => {
+      const m = mouse.current;
+      const { state: st, busy } = live.current;
+      if (!m || !st || busy || document.hidden) return;
+      try {
+        const [active, plate, mode] = [await m.naga.activeProfile(), await m.naga.plate(), await m.naga.mode()];
+        if (stopped || live.current.busy) return;
+        if (active === st.active && plate === st.plate && mode === st.mode) return;
+        setState((s) => (s ? { ...s, active, plate, mode } : s));
+        if (plate && plate !== st.plate) {
+          setPlateView(plate);
+          setSelected(PLATE_BUTTONS[plate][0]);
+        }
+        // Follow a profile switch made on the mouse when the page was showing the old active profile.
+        if (active !== st.active && live.current.slot === st.active) {
+          setSlot(active);
+          await loadSlot(active);
+        }
+      } catch {
+        // A read can fail while the mouse is unplugged; the disconnect event handles that.
+      }
+    };
+    const id = setInterval(tick, POLL_MS);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+    };
+  }, [watching, loadSlot]);
 
   async function connect() {
     setMessage(null);

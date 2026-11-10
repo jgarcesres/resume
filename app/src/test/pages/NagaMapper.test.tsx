@@ -16,13 +16,14 @@ function renderPage() {
   );
 }
 
-/** A simulated Naga Pro with a 12-button plate, one profile (slot 01) and factory number keys. */
+/** A simulated Naga Pro with a 12-button plate, profiles in slots 01 and 05, and factory number keys. */
 function simulatedMouse() {
+  const live = { active: 0x01 };
   const table = new Map<string, number[]>();
   const key = (slot: number, button: number, layer: number) => `${slot}|${button}|${layer}`;
   let reply = new Uint8Array(REPORT_LEN);
 
-  function answer(req: Uint8Array): number[] {
+  function answer(req: Uint8Array): number[] | null {
     const c = (req[6] << 8) | req[7];
     const args = Array.from(req.slice(8, 8 + req[5]));
     switch (c) {
@@ -31,11 +32,13 @@ function simulatedMouse() {
       case 0x0084:
         return [0x00, 0x00];
       case 0x0584:
-        return [0x01];
+        return [live.active];
       case 0x0580:
-        return [0x01];
+        return [0x02];
       case 0x0581:
-        return [0x01, 0x01];
+        return [0x02, 0x01, 0x05];
+      case 0x0588:
+        return null; // no stored name
       case 0x028c: {
         const [slot, button, layer] = args;
         const stored = table.get(key(slot, button, layer));
@@ -66,9 +69,9 @@ function simulatedMouse() {
       const req = new Uint8Array(data as ArrayBuffer);
       const out = answer(req);
       reply = Uint8Array.from(req);
-      reply[0] = 0x02;
-      reply[5] = Math.max(req[5], out.length);
-      reply.set(out, 8);
+      reply[0] = out ? 0x02 : 0x05;
+      reply[5] = Math.max(req[5], out?.length ?? 0);
+      reply.set(out ?? [], 8);
     },
     async receiveFeatureReport() {
       return new DataView(reply.buffer.slice(0));
@@ -81,7 +84,7 @@ function simulatedMouse() {
     addEventListener: () => undefined,
     removeEventListener: () => undefined,
   };
-  return { device, hid, table };
+  return { device, hid, table, live };
 }
 
 describe('Naga Pro mapper page', () => {
@@ -112,5 +115,18 @@ describe('Naga Pro mapper page', () => {
 
     await waitFor(() => expect(mouse.table.get(`1|${0x40}|0`)).toEqual([0x02, 0x02, 0x01, 0x14, 0x00]), { timeout: 4000 });
     expect(await screen.findByRole('button', { name: 'Button 1: Ctrl + Q' })).toBeInTheDocument();
+  }, 20000);
+
+  it('follows a profile switch made with the mouse button', async () => {
+    const mouse = simulatedMouse();
+    Object.defineProperty(navigator, 'hid', { value: mouse.hid, configurable: true });
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /connect the mouse/i }));
+    expect(await screen.findByText(/slot 01 · active/, {}, { timeout: 8000 })).toBeInTheDocument();
+    mouse.live.active = 0x05;
+    expect(await screen.findByText(/slot 05 · active/, {}, { timeout: 8000 })).toBeInTheDocument();
+    expect(screen.queryByText(/slot 01 · active/)).toBeNull();
   }, 20000);
 });

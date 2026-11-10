@@ -4,6 +4,7 @@ import PixelPanel from '../components/ui/PixelPanel';
 import PixelBadge from '../components/ui/PixelBadge';
 import TypewriterText from '../components/ui/TypewriterText';
 import TopologyView from '../components/homelab/TopologyView';
+import type { TopologyMode } from '../components/homelab/TopologyView';
 import ServiceStatus from '../components/homelab/ServiceStatus';
 import homelabContent from '@resources/homelab_content.json';
 import {
@@ -15,6 +16,7 @@ import {
   GlobeIcon,
   LockIcon,
 } from '../components/ui/PixelIcons';
+import { useState } from 'react';
 import type { ComponentType, CSSProperties } from 'react';
 import { useLabels } from '../lib/labels';
 import { useTheme } from '../context/ThemeContext';
@@ -41,6 +43,8 @@ function Homelab() {
   const specs = homelabContent.specs;
   const L = useLabels();
   const { isRpg } = useTheme();
+  // The live map narrates itself; the reading guide belongs to the schematic views.
+  const [topologyMode, setTopologyMode] = useState<TopologyMode>('live');
 
   return (
     <PageTransition>
@@ -113,8 +117,9 @@ function Homelab() {
         {/* Topology Diagram */}
         <PixelPanel title="Network Topology">
           <div className="pt-2">
-            <TopologyView />
+            <TopologyView onModeChange={setTopologyMode} />
             {/* Reading guide */}
+            {topologyMode !== 'live' && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
               {[
                 {
@@ -153,6 +158,7 @@ function Homelab() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </PixelPanel>
 

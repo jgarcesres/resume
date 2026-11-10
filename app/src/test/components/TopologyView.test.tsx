@@ -17,24 +17,31 @@ describe('TopologyView', () => {
     localStorage.clear();
   });
 
-  it('shows the 2D diagram by default with a 2D/3D switch', () => {
+  it('shows the live map by default with a Live/2D/3D switch', () => {
     render(<TopologyView />);
-    expect(screen.getByRole('img', { name: /topology/i })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: '2D' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('region', { name: /live map/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Live' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.queryByRole('img', { name: /topology/i })).not.toBeInTheDocument();
     expect(screen.queryByTestId('topology-3d')).not.toBeInTheDocument();
+  });
+
+  it('swaps to the 2D diagram when 2D is picked', () => {
+    render(<TopologyView />);
+    fireEvent.click(screen.getByRole('radio', { name: '2D' }));
+    expect(screen.getByRole('img', { name: /topology/i })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /live map/i })).not.toBeInTheDocument();
   });
 
   it('swaps to the 3D scene when 3D is picked', async () => {
     render(<TopologyView />);
     fireEvent.click(screen.getByRole('radio', { name: '3D' }));
     expect(await screen.findByTestId('topology-3d')).toBeInTheDocument();
-    expect(screen.queryByRole('img', { name: /topology/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /live map/i })).not.toBeInTheDocument();
   });
 
   it('swaps to the pixel-art scene when 3D is picked in RPG mode', async () => {
     localStorage.setItem('site-theme', 'rpg');
     render(<ThemeProvider><TopologyView /></ThemeProvider>);
-    expect(screen.getByRole('img', { name: /topology/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('radio', { name: '3D' }));
     expect(await screen.findByTestId('topology-pixel')).toBeInTheDocument();
     expect(screen.queryByTestId('topology-3d')).not.toBeInTheDocument();

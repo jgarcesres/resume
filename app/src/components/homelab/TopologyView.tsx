@@ -1,18 +1,22 @@
-// TopologyView — the /homelab topology figure with a 2D ⇄ 3D switch.
+// TopologyView — the /homelab topology figure with a Live / 2D / 3D switch.
 //
-// 2D (TopologyDiagram, SVG) is the default. "3D" is the three.js scene in pro
-// mode and its HD-2D pixel-art counterpart in RPG mode. Both are code-split so
-// three.js is only fetched when someone asks for it, and both fall back to 2D
-// if the browser can't create a WebGL context.
+// "Live" (TopologyFlow, canvas) is the default: the two sites on a map with
+// traffic stories playing across them. 2D (TopologyDiagram, SVG) is the full
+// layered schematic. "3D" is the three.js scene in pro mode and its HD-2D
+// pixel-art counterpart in RPG mode; both are code-split so three.js is only
+// fetched when someone asks for it, and both fall back to 2D if the browser
+// can't create a WebGL context.
 
 import { Suspense, lazy, useCallback, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import TopologyDiagram from './TopologyDiagram';
+import TopologyFlow from './topologyFlow/TopologyFlow';
 
 const Topology3D = lazy(() => import('./topology3d/Topology3D'));
 const TopologyPixel = lazy(() => import('./topologyPixel/TopologyPixel'));
 
-type Mode = '2d' | '3d';
+export type TopologyMode = 'live' | '2d' | '3d';
+type Mode = TopologyMode;
 
 function Loading3D({ rpg }: { rpg: boolean }) {
   return rpg ? (
@@ -26,11 +30,12 @@ function Loading3D({ rpg }: { rpg: boolean }) {
   );
 }
 
-function TopologyView() {
+function TopologyView({ onModeChange }: { onModeChange?: (mode: TopologyMode) => void }) {
   const { isRpg } = useTheme();
-  const [mode, setMode] = useState<Mode>('2d');
+  const [mode, setModeState] = useState<Mode>('live');
+  const setMode = useCallback((m: Mode) => { setModeState(m); onModeChange?.(m); }, [onModeChange]);
   const [webglFailed, setWebglFailed] = useState(false);
-  const onUnsupported = useCallback(() => { setWebglFailed(true); setMode('2d'); }, []);
+  const onUnsupported = useCallback(() => { setWebglFailed(true); setMode('2d'); }, [setMode]);
 
   const btn = (m: Mode, label: string) => (
     <button
@@ -61,6 +66,7 @@ function TopologyView() {
         )}
         <div role="radiogroup" aria-label="Topology view"
           className={isRpg ? 'inline-flex border-2 border-rpg-border bg-rpg-panel' : 'inline-flex border border-pro-rule bg-pro-surface'}>
+          {btn('live', 'Live')}
           {btn('2d', '2D')}
           {btn('3d', '3D')}
         </div>
@@ -69,8 +75,10 @@ function TopologyView() {
         <Suspense fallback={<Loading3D rpg={isRpg} />}>
           {isRpg ? <TopologyPixel onUnsupported={onUnsupported} /> : <Topology3D onUnsupported={onUnsupported} />}
         </Suspense>
-      ) : (
+      ) : mode === '2d' ? (
         <TopologyDiagram />
+      ) : (
+        <TopologyFlow />
       )}
     </div>
   );

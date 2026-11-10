@@ -15,6 +15,7 @@ import SkillTreePage from './pages/SkillTreePage';
 // Tools are code-split so the WASM worker only loads for visitors who open one.
 const Tools = lazy(() => import('./pages/Tools'));
 const PdfUnlock = lazy(() => import('./pages/PdfUnlock'));
+const NagaMapper = lazy(() => import('./pages/NagaMapper'));
 import ShaderOverlay from './components/ShaderOverlay';
 import { useKonamiCode } from './hooks/useKonamiCode';
 import { useShaderPreset } from './hooks/useShaderPreset';
@@ -65,6 +66,7 @@ function AppContent() {
             <Route path="/credits" element={<Credits />} />
             <Route path="/tools" element={<Suspense fallback={null}><Tools /></Suspense>} />
             <Route path="/tools/pdf-unlock" element={<Suspense fallback={null}><PdfUnlock /></Suspense>} />
+            <Route path="/tools/naga" element={<Suspense fallback={null}><NagaMapper /></Suspense>} />
           </Routes>
         </AnimatePresence>
       </main>

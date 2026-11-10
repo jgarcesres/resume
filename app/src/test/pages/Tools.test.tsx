@@ -21,6 +21,7 @@ describe('Tools page', () => {
     renderTools();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Tools');
     expect(screen.getByRole('link', { name: /pdf unlock/i })).toHaveAttribute('href', '/tools/pdf-unlock');
+    expect(screen.getByRole('link', { name: /naga pro mapper/i })).toHaveAttribute('href', '/tools/naga');
   });
 
   it('uses RPG naming in RPG mode', () => {
@@ -28,5 +29,6 @@ describe('Tools page', () => {
     renderTools();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('The Forge');
     expect(screen.getByRole('link', { name: /unseal a scroll/i })).toHaveAttribute('href', '/tools/pdf-unlock');
+    expect(screen.getByRole('link', { name: /rebind the rune stones/i })).toHaveAttribute('href', '/tools/naga');
   });
 });

@@ -18,6 +18,7 @@ import {
   NagaPro,
   PLATE_BUTTONS,
   sameMapping,
+  SLOTS,
   TOP_BUTTONS,
   type Layer,
   type Mapping,
@@ -140,6 +141,12 @@ function buttonName(button: number): { where: string; name: string } {
   return { where: 'Button', name: `0x${button.toString(16)}` };
 }
 
+async function readProfiles(naga: NagaPro): Promise<MouseState['profiles']> {
+  const profiles: MouseState['profiles'] = [];
+  for (const s of await naga.profiles()) profiles.push({ slot: s, name: s === 0x01 ? null : await naga.profileName(s) });
+  return profiles;
+}
+
 function NagaMapper() {
   const { isRpg } = useTheme();
   const L = useLabels();
@@ -188,9 +195,7 @@ function NagaMapper() {
       setStored(new Map());
       setPending(new Map());
       setConn({ kind: 'busy', what: 'Reading the mouse' });
-      const [plate, mode, slots, active] = [await naga.plate(), await naga.mode(), await naga.profiles(), await naga.activeProfile()];
-      const profiles: MouseState['profiles'] = [];
-      for (const s of slots) profiles.push({ slot: s, name: s === 0x01 ? null : await naga.profileName(s) });
+      const [plate, mode, profiles, active] = [await naga.plate(), await naga.mode(), await readProfiles(naga), await naga.activeProfile()];
       setState({ plate, mode, profiles, active });
       setSlot(active);
       if (plate) {
@@ -290,15 +295,17 @@ function NagaMapper() {
     }
   }
 
-  async function run(what: string, fn: (n: NagaPro) => Promise<void>) {
+  async function run(what: string, fn: (n: NagaPro) => Promise<void>): Promise<boolean> {
     const m = mouse.current;
-    if (!m) return;
+    if (!m) return false;
     setConn({ kind: 'busy', what });
     try {
       await fn(m.naga);
       setConn({ kind: 'ready' });
+      return true;
     } catch (err) {
       fail(err);
+      return false;
     }
   }
 
@@ -315,6 +322,47 @@ function NagaMapper() {
       const active = await n.activeProfile();
       setState((st) => (st ? { ...st, active } : st));
     });
+
+  const [creating, setCreating] = useState<number | null>(null);
+  const [newName, setNewName] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const nameBytes = new TextEncoder().encode(newName.trim()).length;
+
+  const forgetSlot = (s: number) => {
+    loadedSlots.current.delete(s);
+    setStored((old) => new Map([...old].filter(([k]) => !k.startsWith(`${s}|`))));
+    setPending((old) => new Map([...old].filter(([k]) => !k.startsWith(`${s}|`))));
+  };
+
+  async function createProfile() {
+    const s = creating;
+    if (s === null) return;
+    const ok = await run('Creating the profile', async (n) => {
+      await n.newProfile(s, newName.trim());
+      const profiles = await readProfiles(n);
+      setState((st) => (st ? { ...st, profiles } : st));
+    });
+    if (!ok) return;
+    setCreating(null);
+    setNewName('');
+    forgetSlot(s);
+    setMessage(`Created a profile in ${slotLabel(s)} with factory-default buttons.`);
+    await chooseSlot(s);
+  }
+
+  async function deleteProfile() {
+    const s = slot;
+    setConfirmDelete(false);
+    const ok = await run('Deleting the profile', async (n) => {
+      await n.deleteProfile(s);
+      const profiles = await readProfiles(n);
+      setState((st) => (st ? { ...st, profiles } : st));
+    });
+    if (!ok) return;
+    forgetSlot(s);
+    setSlot(state?.active ?? 0x01);
+    setMessage(`Deleted the profile in ${slotLabel(s)}.`);
+  }
 
   const writeAll = () =>
     run('Writing to the mouse', async (n) => {
@@ -510,25 +558,101 @@ function NagaMapper() {
           <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)_300px]">
             <PixelPanel title="Profiles">
               <ul className="space-y-1">
-                {state.profiles.map((p) => (
-                  <li key={p.slot}>
-                    <button type="button" className={p.slot === slot ? ui.rowOn : ui.row} onClick={() => chooseSlot(p.slot)} disabled={busy}>
-                      <span className="min-w-0">
-                        <span className={`block truncate ${ui.strong}`}>{slotName(p.slot)}</span>
-                        <span className={ui.dim}>
-                          {slotLabel(p.slot)}
-                          {p.slot === state.active ? ' · active' : ''}
+                {SLOTS.map((s) =>
+                  state.profiles.some((p) => p.slot === s) ? (
+                    <li key={s}>
+                      <button
+                        type="button"
+                        className={s === slot ? ui.rowOn : ui.row}
+                        onClick={() => {
+                          setConfirmDelete(false);
+                          chooseSlot(s);
+                        }}
+                        disabled={busy}
+                      >
+                        <span className="min-w-0">
+                          <span className={`block truncate ${ui.strong}`}>{slotName(s)}</span>
+                          <span className={ui.dim}>
+                            {slotLabel(s)}
+                            {s === state.active ? ' · active' : ''}
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
+                      </button>
+                    </li>
+                  ) : (
+                    <li key={s}>
+                      <button
+                        type="button"
+                        className={creating === s ? ui.rowOn : ui.row}
+                        onClick={() => {
+                          setCreating(creating === s ? null : s);
+                          setNewName('');
+                        }}
+                        disabled={busy}
+                        aria-label={`New profile in ${slotLabel(s)}`}
+                      >
+                        <span className="min-w-0">
+                          <span className={`block ${ui.dim}`}>Empty</span>
+                          <span className={ui.dim}>{slotLabel(s)} · + new profile</span>
+                        </span>
+                      </button>
+                    </li>
+                  ),
+                )}
               </ul>
+              {creating !== null && (
+                <div className="mt-3 space-y-2">
+                  <label className={`block ${ui.strong}`} htmlFor="naga-new-name">
+                    Name for {slotLabel(creating)}
+                  </label>
+                  <input
+                    id="naga-new-name"
+                    className={`w-full ${ui.chip}`}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="e.g. FPS"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && nameBytes > 0 && nameBytes <= 64 && !busy) createProfile();
+                    }}
+                  />
+                  {nameBytes > 64 && <p className={ui.error}>Names can be up to 64 bytes.</p>}
+                  <div className="flex flex-wrap gap-2">
+                    <PixelButton variant="gold" onClick={createProfile} disabled={busy || nameBytes === 0 || nameBytes > 64}>
+                      Create
+                    </PixelButton>
+                    <PixelButton variant="magenta" onClick={() => setCreating(null)}>
+                      Cancel
+                    </PixelButton>
+                  </div>
+                  <p className={ui.dim}>It starts with the factory buttons. Synapse sees it too.</p>
+                </div>
+              )}
               {slot !== state.active && (
-                <div className="mt-3">
+                <div className="mt-3 flex flex-wrap gap-2">
                   <PixelButton variant="magenta" onClick={() => makeActive(slot)} disabled={busy}>
                     Make active
                   </PixelButton>
+                  {slot !== 0x01 && !confirmDelete && (
+                    <PixelButton variant="magenta" onClick={() => setConfirmDelete(true)} disabled={busy}>
+                      Delete
+                    </PixelButton>
+                  )}
+                </div>
+              )}
+              {confirmDelete && slot !== state.active && slot !== 0x01 && (
+                <div className={`mt-3 space-y-2 ${ui.warn}`} role="alert">
+                  <p className={ui.text}>
+                    Delete {slotName(slot)} ({slotLabel(slot)})? Its mappings are erased from the mouse.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <PixelButton variant="gold" onClick={deleteProfile} disabled={busy}>
+                      Delete it
+                    </PixelButton>
+                    <PixelButton variant="magenta" onClick={() => setConfirmDelete(false)}>
+                      Keep it
+                    </PixelButton>
+                  </div>
                 </div>
               )}
               <p className={`${ui.dim} mt-3`}>The mouse's profile button cycles through these. The active one is what the buttons do now.</p>

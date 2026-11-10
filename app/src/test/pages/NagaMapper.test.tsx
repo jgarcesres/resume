@@ -18,7 +18,8 @@ function renderPage() {
 
 /** A simulated Naga Pro with a 12-button plate, profiles in slots 01 and 05, and factory number keys. */
 function simulatedMouse() {
-  const live = { active: 0x01 };
+  const live = { active: 0x01, slots: [0x01, 0x05] };
+  const info = new Map<number, number[]>();
   const table = new Map<string, number[]>();
   const key = (slot: number, button: number, layer: number) => `${slot}|${button}|${layer}`;
   let reply = new Uint8Array(REPORT_LEN);
@@ -34,11 +35,27 @@ function simulatedMouse() {
       case 0x0584:
         return [live.active];
       case 0x0580:
-        return [0x02];
+        return [live.slots.length];
       case 0x0581:
-        return [0x02, 0x01, 0x05];
-      case 0x0588:
-        return null; // no stored name
+        return [0x05, ...live.slots];
+      case 0x0502:
+        live.slots = [...live.slots, args[0]].sort();
+        return args;
+      case 0x0503:
+        live.slots = live.slots.filter((s) => s !== args[0]);
+        return args;
+      case 0x0508: {
+        const [slot, , offset] = args;
+        const data = info.get(slot) ?? new Array(0xfa).fill(0);
+        data.splice(offset, args.length - 5, ...args.slice(5));
+        info.set(slot, data);
+        return args;
+      }
+      case 0x0588: {
+        const [slot, , offset] = args;
+        const data = info.get(slot);
+        return data ? [slot, 0, offset, 0, 0xfa, ...data.slice(offset, offset + Math.min(64, 0xfa - offset))] : null;
+      }
       case 0x028c: {
         const [slot, button, layer] = args;
         const stored = table.get(key(slot, button, layer));
@@ -145,4 +162,25 @@ describe('Naga Pro mapper page', () => {
     await user.keyboard('{/3}');
     expect(screen.getByRole('button', { name: 'Button 3: 3' }).className).not.toMatch(/led-green/);
   }, 20000);
+
+  it('creates a profile in an empty slot and deletes it', async () => {
+    const mouse = simulatedMouse();
+    Object.defineProperty(navigator, 'hid', { value: mouse.hid, configurable: true });
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /connect the mouse/i }));
+    await screen.findByRole('button', { name: 'Button 1: 1' }, { timeout: 8000 });
+    await user.click(screen.getByRole('button', { name: /new profile in slot 03/i }));
+    await user.type(screen.getByLabelText(/name for slot 03/i), 'Raid{Enter}');
+    expect(await screen.findByText('Raid', {}, { timeout: 8000 })).toBeInTheDocument();
+    expect(mouse.live.slots).toEqual([0x01, 0x03, 0x05]);
+
+    const del = await screen.findByRole('button', { name: /^delete$/i }, { timeout: 8000 });
+    await waitFor(() => expect(del).toBeEnabled(), { timeout: 8000 });
+    await user.click(del);
+    await user.click(screen.getByRole('button', { name: /delete it/i }));
+    await waitFor(() => expect(mouse.live.slots).toEqual([0x01, 0x05]), { timeout: 4000 });
+    expect(await screen.findByRole('button', { name: /new profile in slot 03/i })).toBeInTheDocument();
+  }, 30000);
 });

@@ -12,6 +12,7 @@ import {
   PLATE_BUTTONS,
   PLATE_BY_ID,
   parseProfileName,
+  profileInfoChunks,
 } from '../../tools/naga/naga';
 import { comboFromEvent, comboLabel, MODS } from '../../tools/naga/keys';
 import { inputFromMouse, inputFromWheel, inputLabel, sends } from '../../tools/naga/tester';
@@ -224,5 +225,48 @@ describe('button tester', () => {
     expect(sends(mappingFromArgs([0, 0x40, 0, 0x02, 0x01, 0x00, 0x1e, 0x00]), { kind: 'key', usage: 0x1e, mods: 0 })).toBe(true);
     expect(sends({ action: 0x06, flag: 1, data: [1, 0, 0] }, { kind: 'hscroll', dir: 1 })).toBe(true);
     expect(inputLabel({ kind: 'mouse', button: 0x05 })).toBe('Forward');
+  });
+});
+
+describe('profiles', () => {
+  it('writes profile info the way Synapse does when assigning a slot', () => {
+    const reqs = requests('profile-onboard-assign');
+    const create = reqs.find((r) => cmd(r) === 0x0502)!;
+    expect(Array.from(create.slice(8, 8 + create[5]))).toEqual([0x02]);
+    // Synapse resends the last chunk until the mouse takes it; keep one write per offset.
+    const info = reqs.filter((r) => cmd(r) === 0x0508).filter((r, i, all) => all.findIndex((o) => o[10] === r[10]) === i);
+    const sent = Uint8Array.from(info.flatMap((r) => Array.from(r.slice(8 + 5, 8 + r[5]))));
+    const name = parseProfileName(sent)!;
+    expect(name.length).toBeGreaterThan(0);
+    const ours = profileInfoChunks(sent.slice(0, 16), name);
+    expect(ours.map(([off, c]) => [off, c.length])).toEqual(info.map((r) => [r[10], r[5] - 5]));
+    info.forEach((r) => expect(Array.from(r.slice(8, 13))).toEqual([0x02, 0x00, r[10], 0x00, 0xfa]));
+    const prefix = 16 + new TextEncoder().encode(name).length + 1;
+    const flat = Uint8Array.from(ours.flatMap(([, c]) => Array.from(c)));
+    expect(Array.from(flat.slice(0, prefix))).toEqual(Array.from(sent.slice(0, prefix)));
+    expect(() => profileInfoChunks(new Uint8Array(16), '')).toThrow();
+    expect(() => profileInfoChunks(new Uint8Array(16), 'x'.repeat(65))).toThrow();
+  });
+
+  it('creates a profile, retrying a refused info chunk, and guards deletes', async () => {
+    let refuseLast = 1;
+    const { transport, sent } = fakeMouse((req) => {
+      const c = cmd(req);
+      if (c === 0x0580) return okReply(req, [0x02]);
+      if (c === 0x0581) return okReply(req, [0x05, 0x01, 0x03]);
+      if (c === 0x0584) return okReply(req, [0x03]);
+      const r = okReply(req, []);
+      if (c === 0x0508 && req[10] === 0xc0 && refuseLast-- > 0) r[0] = 0x03;
+      return r;
+    });
+    const mouse = new NagaPro(transport, fast);
+    await mouse.newProfile(0x04, 'fps', new Uint8Array(16).fill(9));
+    const writes = sent.filter((r) => cmd(r) === 0x0502 || cmd(r) === 0x0508).map((r) => `${cmd(r).toString(16)}:${r[10]}`);
+    expect(writes).toEqual(['502:0', '508:0', '508:64', '508:128', '508:192', '508:192']);
+    await expect(mouse.newProfile(0x03, 'x')).rejects.toThrow(/already/);
+    await expect(mouse.newProfile(0x01, 'x')).rejects.toThrow(/02 to 05/);
+    await expect(mouse.deleteProfile(0x03)).rejects.toThrow(/active/);
+    await expect(mouse.deleteProfile(0x01)).rejects.toThrow(/can't/);
+    await expect(mouse.deleteProfile(0x05)).rejects.toThrow(/no profile/);
   });
 });

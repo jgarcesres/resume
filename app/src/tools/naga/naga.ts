@@ -20,9 +20,16 @@ const CMD = {
   getProfileCount: [0x05, 0x80],
   getProfileList: [0x05, 0x81],
   getProfileInfo: [0x05, 0x88],
+  setProfileInfo: [0x05, 0x08],
+  newProfile: [0x05, 0x02],
+  deleteProfile: [0x05, 0x03],
   getMapping: [0x02, 0x8c],
   setMapping: [0x02, 0x0c],
 } as const;
+
+/** On-board profile slots. Slot 01 always holds a profile and can't be deleted. */
+export const SLOTS = [0x01, 0x02, 0x03, 0x04, 0x05] as const;
+export const PROFILE_INFO_LEN = 0xfa;
 
 export const MODE = { normal: 0x00, driver: 0x03 } as const;
 export type Mode = 'normal' | 'driver' | 'unknown';
@@ -138,8 +145,11 @@ export function factoryMapping(button: number): Mapping | null {
 export class NagaPro {
   readonly channel: RazerChannel;
 
+  private readonly sleep: (ms: number) => Promise<void>;
+
   constructor(transport: FeatureTransport, options?: TransactOptions) {
     this.channel = new RazerChannel(transport, TRANSACTION_ID, options);
+    this.sleep = options?.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   }
 
   async plate(): Promise<PlateSize | null> {
@@ -174,16 +184,43 @@ export class NagaPro {
 
   /** Name stored for the slot (GUID(16), name, NUL, in 64-byte chunks), or null. */
   async profileName(slot: number): Promise<string | null> {
-    const INFO_LEN = 0xfa;
     const bytes: number[] = [];
-    for (let offset = 0; offset < INFO_LEN; offset += 64) {
-      const size = Math.min(64, INFO_LEN - offset);
+    for (let offset = 0; offset < PROFILE_INFO_LEN; offset += 64) {
+      const size = Math.min(64, PROFILE_INFO_LEN - offset);
       const { status, reply } = await this.channel.transact(...CMD.getProfileInfo, [slot, 0, offset, 0, ...new Array(size + 1).fill(0)]);
       if (status !== 'ok') break;
       bytes.push(...reply.slice(8 + 5, 8 + reply[5]));
       if (bytes.slice(16).includes(0)) break;
     }
     return parseProfileName(Uint8Array.from(bytes));
+  }
+
+  /** Create a profile with factory-default mappings and DPI in an empty slot, and name it (05/02, then 05/08). */
+  async newProfile(slot: number, name: string, guid: Uint8Array = crypto.getRandomValues(new Uint8Array(16))): Promise<void> {
+    if (slot === 0x01 || !(SLOTS as readonly number[]).includes(slot)) throw new RangeError('new profiles go in slots 02 to 05');
+    const chunks = profileInfoChunks(guid, name); // validates the name before touching the mouse
+    if ((await this.profiles()).includes(slot)) throw new RangeError(`slot ${hex(slot)} already holds a profile`);
+    await this.channel.call(...CMD.newProfile, [slot]);
+    for (const [offset, chunk] of chunks) {
+      // The mouse often answers the last chunk busy or failed at first; Synapse resends it too.
+      for (let attempt = 0; ; attempt++) {
+        try {
+          await this.channel.call(...CMD.setProfileInfo, [slot, 0x00, offset, 0x00, PROFILE_INFO_LEN, ...chunk]);
+          break;
+        } catch (err) {
+          if (attempt === 4) throw err;
+          await this.sleep(100);
+        }
+      }
+    }
+  }
+
+  /** Delete one profile (05/03). Slot 01 and the active slot are refused. */
+  async deleteProfile(slot: number): Promise<void> {
+    if (slot === 0x01) throw new RangeError("slot 01 can't be deleted");
+    if (!(await this.profiles()).includes(slot)) throw new RangeError(`no profile in slot ${hex(slot)}`);
+    if (slot === (await this.activeProfile())) throw new RangeError(`slot ${hex(slot)} is active; switch to another profile first`);
+    await this.channel.call(...CMD.deleteProfile, [slot]);
   }
 
   async getMapping(slot: number, button: number, layer: number): Promise<Mapping> {
@@ -194,6 +231,21 @@ export class NagaPro {
   async setMapping(slot: number, button: number, layer: number, m: Mapping): Promise<void> {
     await this.channel.call(...CMD.setMapping, mappingArgs(slot, button, layer, m));
   }
+}
+
+const hex = (n: number) => n.toString(16).padStart(2, '0');
+
+/** (offset, bytes) chunks for 05/08: GUID(16), name, NUL, zero padding, 0xFA bytes in all. */
+export function profileInfoChunks(guid: Uint8Array, name: string): [number, Uint8Array][] {
+  const raw = new TextEncoder().encode(name);
+  if (guid.length !== 16) throw new RangeError('GUID must be 16 bytes');
+  if (!raw.length || raw.length > 64 || raw.includes(0)) throw new RangeError('name must be 1 to 64 bytes');
+  const data = new Uint8Array(PROFILE_INFO_LEN);
+  data.set(guid, 0);
+  data.set(raw, 16);
+  const chunks: [number, Uint8Array][] = [];
+  for (let off = 0; off < PROFILE_INFO_LEN; off += 64) chunks.push([off, data.slice(off, Math.min(off + 64, PROFILE_INFO_LEN))]);
+  return chunks;
 }
 
 export function parseProfileName(info: Uint8Array): string | null {
